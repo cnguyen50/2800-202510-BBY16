@@ -1,6 +1,21 @@
 {
+  "type": "module",          
+  "main": "scripts/db.js",
   "dependencies": {
     "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-sessions": "^1.0.6",
     "mongodb": "^6.16.0"
-  }
+  },
+  "name": "comp2800_bby16",
+  "description": "Team Name: BBY-16\r Team Members:\r - Taylor Hillier\r - Calvin Nguyen\r - Veronica Sheng\r - Leen Seydoun\r - Tom Padilla",
+  "version": "1.0.0",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node -r dotenv/config scripts/server.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
