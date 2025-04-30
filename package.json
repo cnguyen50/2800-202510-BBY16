@@ -1,21 +1,28 @@
 {
-  "type": "module",          
+  "type": "commonjs",
   "main": "scripts/db.js",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
+    "connect-mongo": "^5.1.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-session": "^1.18.1",
     "express-sessions": "^1.0.6",
-    "mongodb": "^6.16.0"
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.14.1"
   },
   "name": "comp2800_bby16",
   "description": "Team Name: BBY-16\r Team Members:\r - Taylor Hillier\r - Calvin Nguyen\r - Veronica Sheng\r - Leen Seydoun\r - Tom Padilla",
   "version": "1.0.0",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node -r dotenv/config scripts/server.cjs"
+    "start": "node -r dotenv/config scripts/server.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@faker-js/faker": "^9.7.0"
+  }
 }
