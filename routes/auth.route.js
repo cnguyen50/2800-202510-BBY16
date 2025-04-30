@@ -33,10 +33,25 @@ function makeAuthRouter() {
     });
 
     router.post('/login', async (req, res) => {
-        const {username, password} = req.body;
+        const {username, password, email, neighbourhood} = req.body;
 
-        const user = await User.findOne({username});
-        if(!user) return res.status(400).json({error: 'Invalid credentials'});
+        let user = await User.findOne({username});
+
+        if(!user) {
+            try {
+                const hash = await bcrypt.hash(password, 10);
+
+                user = await User.create({
+                    role_id: "Resident",
+                    username,
+                    password: hash,
+                    email,
+                    neighbourhood
+                });
+            } catch (err) {
+                return res.status(400).json({error: "Registration failed: " + err.message});
+            }
+        }
 
         const ok = await bcrypt.compare(password, user.password);
         if(!ok) return res.status(400).json({error: 'Invalid credentials'});
@@ -45,7 +60,7 @@ function makeAuthRouter() {
         res.json({ message: 'Logged in', userId: user._id});
     });
 
-    router.get('/me', (req, res) => {
+    router.get('/profile', (req, res) => {
         if(!req.session.userId) return res.status(401).json({error: 'Unauthorized'});
         res.json({userId: req.session.userId});
     });

@@ -5,7 +5,6 @@ async function connectDB() {
     if(mongoose.connection.readyState === 0) {
         await mongoose.connect(uri, {
             dbName: process.env.DB_NAME,
-
         });
         console.log('Connected to MongoDB');
     }
@@ -13,7 +12,6 @@ async function connectDB() {
     return {
         db: mongoose.connection.db,
         client: mongoose.connection.getClient(),
-
     };
 }
 
