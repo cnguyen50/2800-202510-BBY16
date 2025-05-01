@@ -7,6 +7,7 @@ const makePostsRouter = require('./routes/posts.route.js');
 const makeUsersRouter = require('./routes/users.route.js');
 const makeAuthRouter = require('./routes/auth.route.js');
 const path = require('path');
+const makeCommentsRouter = require('./routes/comments.route.js');
 
 (async () => {
     try {
@@ -42,11 +43,21 @@ const path = require('path');
         app.use('/posts', makePostsRouter());
 
         app.use('/users', makeUsersRouter());
+
+        app.use('/comments', makeCommentsRouter());
         
         app.use(express.static('public'));
 
         app.get('/', (_req, res) =>
             res.sendFile(path.join(__dirname, './public/index.html'))
+        );
+
+        app.get('/profile', (_req, res) =>
+            res.sendFile(path.join(__dirname, './public/profile.html'))
+        );
+
+        app.get('/home', (_req, res) =>
+            res.sendFile(path.join(__dirname, './public/main.html'))
         );
 
         app.use('/login', (req, res) => {
