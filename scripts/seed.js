@@ -2,8 +2,8 @@
 require('dotenv').config();
 const bcrypt   = require('bcryptjs');
 const { faker } = require('@faker-js/faker');
-const { connectDB, mongoose } = require('./scripts/db.js');  // ← reuse your singleton
-const User     = require('./models/user.model.js');
+const { connectDB, mongoose } = require('./db.js');  // ← reuse your singleton
+const User     = require('../models/user.model.js');
 
 (async () => {
   try {

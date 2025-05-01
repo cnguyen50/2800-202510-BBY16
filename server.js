@@ -2,10 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongo');
-const { connectDB } = require('./db.js');
-const makePostsRouter = require('../routes/posts.route.js');
-const makeUsersRouter = require('../routes/users.route.js');
-const makeAuthRouter = require('../routes/auth.route.js');
+const { connectDB } = require('./scripts/db.js'); // Adjust the path as necessary
+const makePostsRouter = require('./routes/posts.route.js');
+const makeUsersRouter = require('./routes/users.route.js');
+const makeAuthRouter = require('./routes/auth.route.js');
 const path = require('path');
 
 (async () => {
@@ -46,14 +46,14 @@ const path = require('path');
         app.use(express.static('public'));
 
         app.get('/', (_req, res) =>
-        res.json({status:'ok', db: db.databaseName, time: new Date().toISOString()})
+            res.sendFile(path.join(__dirname, './public/index.html'))
         );
 
         app.use('/login', (req, res) => {
             if (req.session.user) {
-                res.redirect('/');
+                res.redirect('/main.html');
             } else {
-                res.sendFile(path.join(__dirname, '../public/login.html'));
+                res.sendFile(path.join(__dirname, './public/login.html'));
             }
         });
 

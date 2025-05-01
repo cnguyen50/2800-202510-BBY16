@@ -57,7 +57,8 @@ function makeAuthRouter() {
         if(!ok) return res.status(400).json({error: 'Invalid credentials'});
 
         req.session.userId = user._id;
-        res.json({ message: 'Logged in', userId: user._id});
+        res.redirect('/main.html');
+       
     });
 
     router.get('/profile', (req, res) => {
