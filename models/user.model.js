@@ -9,6 +9,10 @@ const { Schema, model } = require('mongoose');
  * * password    String    – password
  * * email       String    – email
  * * neighbourhood String    – neighbourhood
+ * location: {             - GeoJSON point
+ *  type         String    - JSON type of 'Point"
+ *  coordinates [Number]   - [long, lat]
+ * }
  */
 const UserSchema = new Schema(
 {
@@ -36,6 +40,18 @@ const UserSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+    },
+
+    location: {
+      type: {
+        type: String,
+        enum: ['Point']
+      },
+      coordinates: {
+        type: [Number],
+        default: [0,0],
+        required: true
+      }
     }
 },
   {
