@@ -1,5 +1,6 @@
 const express = require('express');
 const Post    = require('../models/post.model.js');
+const requireAuth = require('../middleware/requireAuth.js');
 
 function makePostsRouter() {
   const router = express.Router();
@@ -16,6 +17,11 @@ function makePostsRouter() {
     } catch (err) {
       res.status(400).json({ error: err.message });
     }
+  });
+
+  router.get('/me', requireAuth, async (req,res) => {
+    const posts = await Post.find({user_id: req.session.userId}).sort({createdAt: -1});
+    res.json(posts);
   });
 
   router.get('/:id', async (req, res) => {

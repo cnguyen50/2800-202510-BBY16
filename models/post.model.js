@@ -19,7 +19,8 @@ const PostSchema = new Schema(
       required: true,
     },
     user_id: {
-      type: String,                 // change to Schema.Types.ObjectId if you store users
+      type: Schema.Types.ObjectId,  
+      ref : 'User',              
       required: true,
     },
     content: {

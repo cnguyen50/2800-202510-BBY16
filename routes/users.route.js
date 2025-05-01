@@ -1,5 +1,6 @@
 const express = require('express');
 const User    = require('../models/user.model.js');
+const requireAuth = require('../middleware/requireAuth.js');
 
 function makeUsersRouter() {
   const router = express.Router();
@@ -18,6 +19,12 @@ function makeUsersRouter() {
     }
   });
 
+  router.get('/me', requireAuth, async (req,res) => {
+    const user = await User.findById(req.session.userId).select('-password');
+    if(!user) return res.status(404).json({error: 'Not found'});
+    res.json(user);
+  })
+  
   router.get('/:id', async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'Not found' });
