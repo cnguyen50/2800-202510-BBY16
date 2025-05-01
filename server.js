@@ -13,7 +13,7 @@ const makePostsRouter    = require('./routes/posts.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
 
 (async () => {
-  try {
+    try {
     // connectDB() returns { db, client }
     const { db, client } = await connectDB();
 
@@ -26,23 +26,23 @@ const makeCommentsRouter = require('./routes/comments.route.js');
     // app.use(session(options)) adds req.session support
     // stores sessions in MongoDB, 14-day cookie
     app.use(
-      session({
-        name: 'sessionId',
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-        store: MongoDBStore.create({
-          client,
-          collectionName: 'sessions',
-          ttl: 14 * 24 * 60 * 60
-        }),
-        cookie: {
-          httpOnly: true,
-          sameSite: 'lax',
-          // secure: process.env.NODE_ENV === 'production',
-          maxAge: 14 * 24 * 60 * 60 * 1000
-        }
-      })
+        session({
+            name: 'sessionId',
+            secret: process.env.SESSION_SECRET,
+            resave: false,
+            saveUninitialized: false,
+            store: MongoDBStore.create({
+                client,
+                collectionName: 'sessions',
+                ttl: 14 * 24 * 60 * 60
+            }),
+            cookie: {
+                httpOnly: true,
+                sameSite: 'lax',
+                // secure: process.env.NODE_ENV === 'production',
+                maxAge: 14 * 24 * 60 * 60 * 1000
+            }
+        })
     );
 
     // app.use(middleware) attaches URL-encoded parser
@@ -57,11 +57,10 @@ const makeCommentsRouter = require('./routes/comments.route.js');
     // profile, update, delete, current user endpoints
     app.use('/users', makeUsersRouter());
 
-        app.get('/map', (req, res) => {
-            res.sendFile(path.join(__dirname, './public/map.html'))
-        })
+    app.get('/map', (req, res) => {
+        res.sendFile(path.join(__dirname, './public/map.html'))
+    })
 
-        const PORT = process.env.PORT || 3000;
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());
@@ -77,41 +76,42 @@ const makeCommentsRouter = require('./routes/comments.route.js');
     // app.get(path, handler) sends index page
     // landing page
     app.get('/', (_req, res) =>
-      res.sendFile(path.join(__dirname, './public/index.html'))
+        res.sendFile(path.join(__dirname, './public/index.html'))
     );
 
     // app.get(path, handler) sends profile page
     // profile page (uses JS to fetch /current endpoints)
     app.get('/profile', (_req, res) =>
-      res.sendFile(path.join(__dirname, './public/profile.html'))
+        res.sendFile(path.join(__dirname, './public/profile.html'))
     );
 
     // app.get(path, handler) sends main feed
     // main/home page
     app.get('/home', (_req, res) =>
-      res.sendFile(path.join(__dirname, './public/main.html'))
+        res.sendFile(path.join(__dirname, './public/main.html'))
     );
 
     // app.use(path, handler) intercepts /login
     // redirects logged-in users, otherwise shows login form
     app.use('/login', (req, res) => {
-      if (req.session.user) {
-        res.redirect('/home');
-      } else {
-        res.sendFile(path.join(__dirname, './public/login.html'));
-      }
+        if (req.session.user) {
+            res.redirect('/home');
+        } else {
+            res.sendFile(path.join(__dirname, './public/login.html'));
+        }
     });
 
     // Start HTTP server on given port
     // default 3000
     const PORT = process.env.PORT || 3000;
+
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+        console.log(`Server is running on port ${PORT}`);
     });
 
-  } catch (error) {
+    } catch (error) {
     // Print DB connection errors and exit
     console.error('Error connecting to the database:', error);
     process.exit(1);
-  }
+    }
 })();
