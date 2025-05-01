@@ -60,4 +60,7 @@ const UserSchema = new Schema(
   }
 );
 
+//Defining a geospatial index for queries and maps
+UserSchema.index({ location: '2dsphere' });
+
 module.exports = model('User', UserSchema);
