@@ -10,6 +10,7 @@ const { connectDB }          = require('./scripts/db.js');
 const makeAuthRouter     = require('./routes/auth.route.js');
 const makeUsersRouter    = require('./routes/users.route.js');
 const makePostsRouter    = require('./routes/posts.route.js');
+const makePollsRouter    = require('./routes/polls.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
 
 (async () => {
@@ -60,6 +61,10 @@ const makeCommentsRouter = require('./routes/comments.route.js');
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());
+
+    // app.use('/polls', router) mounts router under /polls
+    // create, read, update, delete polls
+    app.use('/polls', makePollsRouter());
 
     // app.use('/comments', router) mounts router under /comments
     // create and list current user comments
