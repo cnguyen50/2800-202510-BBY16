@@ -18,4 +18,28 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('location-info').textContent = 'Geolocation not supported';
         return;
     }
+
+    //Requesting user's position
+    navigator.geolocation.getCurrentPosition(
+        //on success callback
+        async ({ coords }) => {
+            const { latitude, longitude } = coords;
+
+            //Re-center the map to user's current position
+            map.setView([latitude, longitude], 15);
+
+            //Drop a pin on user's current location
+            L.marker([latitude, longitude])
+                .addTo(map)
+                .bindPopup("📍 You're Here!!")
+                .openPopup();
+        },
+
+        //Error callback
+        (err) => {
+            console.log("Error: ", err);
+            document.getElementById('location-info').textContent =
+            'Location unavailable';
+        }
+    )
 })
