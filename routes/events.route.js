@@ -3,7 +3,7 @@ const Event    = require('../models/event.model.js');
 const {requireAuth} = require('../middleware/requireAuth.js');
 
 function makeEventsRouter() {
-    const router = express.router();
+    const router = express.Router();
 
     router.get('/', requireAuth, async (req, res) => {
         

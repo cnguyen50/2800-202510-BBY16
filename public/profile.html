@@ -12,6 +12,17 @@
       <p><strong>Neighbourhood:</strong> <span id="neighbourhood"></span></p>
     </section>
 
+    <div id="profilePicSection">
+      <h2>Profile Picture</h2>
+      <img id="profilePic" src="path/to/default/profile-pic.jpg" alt="Profile Picture" />
+      <form id="profilePicForm" enctype="multipart/form-data">
+        <input type="file" id="profilePicInput" name="profilePic" accept="image/*" />
+        <button type="submit">Upload</button>
+      </form>
+      <div id="uploadMessage"></div>
+    </div>
+  </section>
+
     <section id="comments">
       <h2>My Comments</h2>
       <div id="comments-list">Loading comments…</div>

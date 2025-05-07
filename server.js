@@ -11,6 +11,7 @@ const makeAuthRouter     = require('./routes/auth.route.js');
 const makeUsersRouter    = require('./routes/users.route.js');
 const makePostsRouter    = require('./routes/posts.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
+const makeNewsRouter = require('./routes/news.route.js');
 
 (async () => {
   try {
@@ -64,6 +65,9 @@ const makeCommentsRouter = require('./routes/comments.route.js');
     // app.use('/comments', router) mounts router under /comments
     // create and list current user comments
     app.use('/comments', makeCommentsRouter());
+
+    // app.use('/news', router) mounts router under /news
+    app.use('/news', makeNewsRouter());
 
     // app.use(express.static(dir)) serves static files
     // exposes everything inside /public

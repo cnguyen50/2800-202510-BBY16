@@ -1,4 +1,4 @@
-const {Schema, model} = require('mongoose');
+const { Schema, model } = require('mongoose');
 
 module.exports = model('poll', new Schema({
     user_id: {
@@ -11,13 +11,13 @@ module.exports = model('poll', new Schema({
         required: true
     },
     expires_at: {
-        type:Date,
+        type: Date,
         required: true,
         default: () => Date.now() + 24 * 60 * 60 * 1000
     }
 }, {
     timestamps: {
-       createdAt: 'created_at',
-       updatedAt: false
+        createdAt: 'created_at',
+        updatedAt: false
     }
 }))
