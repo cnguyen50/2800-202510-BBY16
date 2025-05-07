@@ -10,7 +10,10 @@ const { connectDB }          = require('./scripts/db.js');
 const makeAuthRouter     = require('./routes/auth.route.js');
 const makeUsersRouter    = require('./routes/users.route.js');
 const makePostsRouter    = require('./routes/posts.route.js');
+const makeTypedRouter   = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
+
+const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
 (async () => {
   try {
@@ -68,6 +71,12 @@ const makeCommentsRouter = require('./routes/comments.route.js');
     // app.use('/comments', router) mounts router under /comments
     // create and list current user comments
     app.use('/comments', makeCommentsRouter());
+
+    // app.use('/events', router) mounts router under /events
+    // create, read, update, delete typed posts
+    app.use('/events', makeTypedRouter(EventPost));
+    app.use('/polls', makeTypedRouter(PollPost));
+    app.use('/news', makeTypedRouter(NewsPost));
 
     // app.use(express.static(dir)) serves static files
     // exposes everything inside /public
