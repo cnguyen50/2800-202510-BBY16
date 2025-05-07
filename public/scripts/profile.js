@@ -42,12 +42,12 @@ async function fetchJson(url) {
       return;
     }
   
-    list.forEach(({ content, created_at }) => {
+    list.forEach(({ type, createdAt }) => {
       const div = document.createElement('div');
       div.className = 'post';
       div.innerHTML = `
-        <p>${content}</p>
-        <time>${new Date(created_at).toLocaleString()}</time>
+        <p>${type}</p>
+        <time>${new Date(createdAt).toLocaleString()}</time>
       `;
       container.appendChild(div);
     });

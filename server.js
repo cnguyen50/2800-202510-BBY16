@@ -10,7 +10,10 @@ const { connectDB }          = require('./scripts/db.js');
 const makeAuthRouter     = require('./routes/auth.route.js');
 const makeUsersRouter    = require('./routes/users.route.js');
 const makePostsRouter    = require('./routes/posts.route.js');
+const makeTypedRouter   = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
+
+const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
 (async () => {
     try {
@@ -22,6 +25,10 @@ const makeCommentsRouter = require('./routes/comments.route.js');
     // app.use(middleware) attaches JSON-body parser to all requests
     // handles application/json
     app.use(express.json());
+
+    app.set('view engine', 'ejs');
+    app.set('views', path.join(__dirname, 'views'));
+
 
     // app.use(session(options)) adds req.session support
     // stores sessions in MongoDB, 14-day cookie
@@ -69,6 +76,12 @@ const makeCommentsRouter = require('./routes/comments.route.js');
     // create and list current user comments
     app.use('/comments', makeCommentsRouter());
 
+    // app.use('/events', router) mounts router under /events
+    // create, read, update, delete typed posts
+    app.use('/events', makeTypedRouter(EventPost));
+    app.use('/polls', makeTypedRouter(PollPost));
+    app.use('/news', makeTypedRouter(NewsPost));
+
     // app.use(express.static(dir)) serves static files
     // exposes everything inside /public
     app.use(express.static('public'));
@@ -82,13 +95,21 @@ const makeCommentsRouter = require('./routes/comments.route.js');
     // app.get(path, handler) sends profile page
     // profile page (uses JS to fetch /current endpoints)
     app.get('/profile', (_req, res) =>
+<<<<<<< HEAD
         res.sendFile(path.join(__dirname, './public/profile.html'))
+=======
+     res.render('profile')
+>>>>>>> Taylor
     );
 
     // app.get(path, handler) sends main feed
     // main/home page
     app.get('/home', (_req, res) =>
+<<<<<<< HEAD
         res.sendFile(path.join(__dirname, './public/main.html'))
+=======
+      res.render('main')
+>>>>>>> Taylor
     );
 
     // app.use(path, handler) intercepts /login
