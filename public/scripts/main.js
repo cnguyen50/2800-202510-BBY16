@@ -14,20 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("create-post-form");
   const postContainer = document.getElementById("post-container");
   const typeSelect = document.getElementById("post-type");
-  const showFormBtn = document.getElementById("show-post-form-btn");
-  const formSection = document.getElementById("create-post-wrapper");
-
-  showFormBtn.addEventListener("click", () => {
-    formSection.style.display = formSection.style.display === "none" ? "block" : "none";
-  });
-  showFormBtn.textContent = formSection.style.display === "none" ? "Create a Post" : "Hide Post Form";
 
   // Load existing posts
-  fetch("/api/posts")
-    .then(res => res.json())
-    .then(posts => posts.forEach(renderPost));
-
-  // Submit post
+  // Submit post from modal
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const content = document.getElementById("post-content").value;
@@ -49,6 +38,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const newPost = await res.json();
       renderPost(newPost);
       form.reset();
+
+      // Hide modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('postModal'));
+      modal.hide();
     } catch (err) {
       console.error("Error creating post:", err);
     }

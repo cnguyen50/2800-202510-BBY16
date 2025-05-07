@@ -16,24 +16,10 @@
 
     <!-- Header -->
     <div class="buttons">
-        <button id="show-post-form-btn">Create a Post</button>
+        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#postModal">Create a Post</button>
         <button>Create a Poll</button>
-        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#eventModal">Create an Event</button>
+        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#eventModal">Create an Event</button>
     </div>
-
-    <!-- Posts -->
-    <section id="create-post-wrapper" style="display: none;">
-        <form id="create-post-form">
-            <textarea id="post-content" class="form-control mb-2" rows="3"
-                placeholder="Share your thought!!"></textarea>
-            <select id="post-type" class="form-select mb-2">
-                <option value="news">News</option>
-                <option value="event">Event</option>
-                <option value="post">Post</option>
-            </select>
-            <button type="submit">Post</button>
-        </form>
-    </section>
 
     <!-- Feed -->
     <section class="feed">
@@ -41,7 +27,31 @@
         <div id="post-container"></div>
     </section>
 
-    <!-- Event Creation Modal -->
+    <!-- Post Modal -->
+    <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" id="create-post-form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="postModalLabel">Create a Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="post-content" class="form-control mb-2" rows="3"
+                        placeholder="Share your thoughts!"></textarea>
+                    <select id="post-type" class="form-select mb-2">
+                        <option value="post">Post</option>
+                        <option value="news">News</option>
+                        <option value="event">Event</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
     <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content" id="create-event-form">
