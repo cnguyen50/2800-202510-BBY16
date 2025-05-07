@@ -23,6 +23,15 @@ const PostSchema = new Schema(
       ref : 'User',              
       required: true,
     },
+    // If this is a post of type poll, it will have a poll_id
+    // Otherwise, it will not have a poll_id
+    poll_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Poll',
+      required: function () {
+        return this.type === 'poll';
+      }
+    },
     content: {
       type: String,
       required: true,
