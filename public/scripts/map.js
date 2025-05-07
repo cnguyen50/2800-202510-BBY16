@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         10 //zoom level
     )
 
-      // 2) Load and display tile layers on the map. Requires attribution
+      //Load and display tile layers on the map, requires attribution
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19

@@ -25,6 +25,14 @@ function makeUsersRouter() {
     res.json(user);
   })
   
+  router.put('/me/location', requireAuth, async (req,res) => {
+    const { latitude, longitude } = req.body;
+
+    if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+      return res.status(400).json({ error: 'Invalid coords' });
+    }
+  })
+
   router.get('/:id', async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'Not found' });
