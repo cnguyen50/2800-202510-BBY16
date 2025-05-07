@@ -78,11 +78,23 @@ document.addEventListener("DOMContentLoaded", () => {
     div.innerHTML = `
       <div class="post-header">
         <strong>${post.user_id}</strong> — <span class="badge bg-secondary">${typeLabel}</span><br>
-        <small>${new Date(post.created_at).toLocaleString()}</small>
+        <small>${new Date(post.createdAt).toLocaleString()}</small>
       </div>
       <p>${post.content}</p>
     `;
 
     postContainer.prepend(div);
   }
+
+  async function loadPosts() {
+    try {
+      const res = await fetch("/posts", { credentials: "include" });
+      const posts = await res.json();
+      posts.forEach(post => renderPost(post));
+    } catch (err) {
+      console.error("Failed to load posts:", err);
+    }
+  }
+  
+  loadPosts();
 });
