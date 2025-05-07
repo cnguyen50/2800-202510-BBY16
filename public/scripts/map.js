@@ -7,9 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
         10 //zoom level
     )
 
-      //Load and display tile layers on the map, requires attribution
+      //Load and display tile layers on the map
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19
     }).addTo(map);
 
@@ -36,14 +35,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
             //fetching and display location info (city, region and current neighbourhood)
             try {
+                // Fetching city and region with IP-API
                 const ipRes = await fetch('https://ipapi.co/json/');
-                if (!ipRes.ok) throw new Error(`Can't look up IP: ${ipRes.status}`);
                 const { city, region } = await ipRes.json();
 
+                //Fetching users static neighbourhood value from login form
                 const meRes = await fetch('/users/me', { credentials: 'include' });
-                if (!meRes.ok) throw new Error(`Can't look up User: ${meRes.status}`);
                 const { neighbourhood } = await meRes.json();
                 
+                //Reverse geocoded to get current neighbourhood with Nominatim as per documentation
+                const nomURL = 'https://nominatim.openstreetmap.org/reverse?' +
+                    newURLSearchParams({
+                        format: 'json',
+                        lat: latitude,
+                        lon: longitude,
+                        addressdetails: 1, // need to access the address elementss
+                        zoom: 14 // neighbourhood zoom level
+                })
+
                 //Update the div with id=location-info
                 document.getElementById('location-info').textContent =
                 `📍 ${city}, ${region} — Your Neighbourhood: ${neighbourhood}`;
