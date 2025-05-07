@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!ipRes.ok) throw new Error(`Can't look up IP: ${ipRes.status}`);
                 const { city, region } = await ipRes.json();
 
-
                 const meRes = await fetch('/users/me', { credentials: 'include' });
                 if (!meRes.ok) throw new Error(`Can't look up User: ${meRes.status}`);
                 const { neighbourhood } = await meRes.json();
