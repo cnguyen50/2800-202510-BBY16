@@ -95,32 +95,32 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // app.get(path, handler) sends profile page
     // profile page (uses JS to fetch /current endpoints)
     app.get('/profile', (_req, res) =>
-<<<<<<< HEAD
-        res.sendFile(path.join(__dirname, './public/profile.html'))
-=======
      res.render('profile')
->>>>>>> Taylor
     );
 
     // app.get(path, handler) sends main feed
     // main/home page
     app.get('/home', (_req, res) =>
-<<<<<<< HEAD
-        res.sendFile(path.join(__dirname, './public/main.html'))
-=======
       res.render('main')
->>>>>>> Taylor
     );
 
     // app.use(path, handler) intercepts /login
     // redirects logged-in users, otherwise shows login form
     app.use('/login', (req, res) => {
-        if (req.session.user) {
+        if (req.session.userId) {
             res.redirect('/home');
         } else {
             res.sendFile(path.join(__dirname, './public/login.html'));
         }
     });
+
+    app.use('/logout', (req,res) => {
+      if(!req.session.userId) {
+        res.redirect('/login');
+      } else {
+        res.render('logout');
+      }
+    })
 
     // Start HTTP server on given port
     // default 3000
