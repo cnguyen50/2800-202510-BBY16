@@ -9,6 +9,10 @@ body {
 }
 
 /* Navbar */
+.nav-list i {
+    font-size: 1.5rem;
+    vertical-align: middle;
+}
 .navbar-toggler {
     border: none;
     padding: 0.5rem;

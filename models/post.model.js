@@ -16,7 +16,7 @@ const PostSchema = new Schema(
     post_id: {
       type: Schema.Types.ObjectId,
       ref : 'Post',
-      required: true,
+      required: false, //This causes an error if try to create a top-level post bc it doesn't have a post_id
     },
     user_id: {
       type: String,                 // change to Schema.Types.ObjectId if you store users
