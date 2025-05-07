@@ -35,7 +35,7 @@ function makeUsersRouter() {
     try {
       //updating with Mongoose
       const updated = await User.findByIdAndUpdate(
-        req.session.user.Id, {
+        req.session.userId, {
           location: {
             type: 'Point',
             coordinates: [longitude, latitude]

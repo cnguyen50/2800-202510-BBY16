@@ -28,11 +28,30 @@ document.addEventListener('DOMContentLoaded', () => {
             //Re-center the map to user's current position
             map.setView([latitude, longitude], 15);
 
-            //Drop a pin on user's current location
+            //Drop a pin on user's current location with a popup
             L.marker([latitude, longitude])
                 .addTo(map)
                 .bindPopup("📍 You're Here!!")
                 .openPopup();
+
+            //fetching city and neighbourhood using IP based lookup
+            try {
+                const ipRes = await fetch('https://ip-api.com/json/');
+                if (!ipRes.ok) throw new Error(`Can't look up IP: ${ipRes.status}`);
+                const { city, regionName } = await ipRes.json();
+
+                const meRes = await fetch('/api/users/me');
+                if (!meRes.ok) throw new Error(`Can't look up User: ${meRes.status}`);
+                const { neighbourhood } = await meRes.json();  
+                
+                //Update the div with id=location-info
+                document.getElementById('location-info').textContent =
+                `📍 ${city}, ${regionName} — Neighbourhood: ${neighbourhood}`;
+
+            } catch (err) {
+                console.log('Location info fetch error:', err);
+                document.getElementById('location-info').textContent = 'Could not load location info';
+            }
         },
 
         //Error callback
