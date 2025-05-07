@@ -36,17 +36,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             //fetching city and neighbourhood using IP based lookup
             try {
-                const ipRes = await fetch('https://ip-api.com/json/');
+                const ipRes = await fetch('https://ipapi.co/json/');
                 if (!ipRes.ok) throw new Error(`Can't look up IP: ${ipRes.status}`);
-                const { city, regionName } = await ipRes.json();
+                const { city, region } = await ipRes.json();
 
-                const meRes = await fetch('/api/users/me');
+
+                const meRes = await fetch('/users/me', { credentials: 'include' });
                 if (!meRes.ok) throw new Error(`Can't look up User: ${meRes.status}`);
-                const { neighbourhood } = await meRes.json();  
+                const { neighbourhood } = await meRes.json();
                 
                 //Update the div with id=location-info
                 document.getElementById('location-info').textContent =
-                `📍 ${city}, ${regionName} — Neighbourhood: ${neighbourhood}`;
+                `📍 ${city}, ${region} — Neighbourhood: ${neighbourhood}`;
 
             } catch (err) {
                 console.log('Location info fetch error:', err);
