@@ -9,8 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // 2) Load and display tile layers on the map. Requires attribution
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: 
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 19
     }).addTo(map);
+
+    //Checking geolocation service is supported by browser
+    if (!navigator.geolocation) {
+        document.getElementById('location-info').textContent = 'Geolocation not supported';
+        return;
+    }
 })
