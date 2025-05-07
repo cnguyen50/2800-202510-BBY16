@@ -62,7 +62,8 @@ const PollOption = require('../models/pollOption.model.js');
                 post_id: postId,
                 user_id: user._id,
                 content: text,
-                type: 'poll'
+                type: 'poll',
+                poll_id: poll._id // Link to the poll
             });
 
             pollList.push(poll.text);
