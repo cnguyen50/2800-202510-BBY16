@@ -23,6 +23,10 @@ const makeCommentsRouter = require('./routes/comments.route.js');
     // handles application/json
     app.use(express.json());
 
+    app.set('view engine', 'ejs');
+    app.set('views', path.join(__dirname, 'views'));
+
+
     // app.use(session(options)) adds req.session support
     // stores sessions in MongoDB, 14-day cookie
     app.use(
@@ -78,13 +82,13 @@ const makeCommentsRouter = require('./routes/comments.route.js');
     // app.get(path, handler) sends profile page
     // profile page (uses JS to fetch /current endpoints)
     app.get('/profile', (_req, res) =>
-      res.sendFile(path.join(__dirname, './public/profile.html'))
+     res.render('profile')
     );
 
     // app.get(path, handler) sends main feed
     // main/home page
     app.get('/home', (_req, res) =>
-      res.sendFile(path.join(__dirname, './public/main.html'))
+      res.render('main')
     );
 
     // app.use(path, handler) intercepts /login

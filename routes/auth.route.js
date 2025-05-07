@@ -24,7 +24,6 @@ function makeAuthRouter() {
 
       // User.create(doc) inserts user
       const user = await User.create({
-        role_id: 'Resident',
         username,
         password: hash,
         email,
@@ -53,7 +52,6 @@ function makeAuthRouter() {
         const hash = await bcrypt.hash(password, 10);
 
         user = await User.create({
-          role_id: 'Resident',
           username,
           password: hash,
           email,
