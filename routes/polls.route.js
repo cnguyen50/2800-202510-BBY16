@@ -1,6 +1,7 @@
 const express = require('express');
 const Poll = require('../models/poll.model.js');
 const PollOption = require('../models/pollOption.model.js');
+const Post = require('../models/post.model.js');
 const requireAuth = require('../middleware/requireAuth.js');
 
 
@@ -35,6 +36,15 @@ function makePollsRouter() {
             }));
 
             await PollOption.insertMany(optionDocs);
+
+            // Create a post for the poll
+            await Post.create({
+                post_id: poll._id,
+                user_id: req.session.userId,
+                content: text,
+                type: 'poll'
+            });
+
             res.status(201).json(poll);
         } catch (err) {
             res.status(400).json({ error: err.message });
