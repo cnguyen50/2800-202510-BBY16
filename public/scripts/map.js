@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .bindPopup("📍 You're Here!!")
                 .openPopup();
 
-            //fetching city and neighbourhood using IP based lookup
+            //fetching and display location info (city, region and current neighbourhood)
             try {
                 const ipRes = await fetch('https://ipapi.co/json/');
                 if (!ipRes.ok) throw new Error(`Can't look up IP: ${ipRes.status}`);
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 //Update the div with id=location-info
                 document.getElementById('location-info').textContent =
-                `📍 ${city}, ${region} — Neighbourhood: ${neighbourhood}`;
+                `📍 ${city}, ${region} — Your Neighbourhood: ${neighbourhood}`;
 
             } catch (err) {
                 console.log('Location info fetch error:', err);
