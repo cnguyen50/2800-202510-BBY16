@@ -9,6 +9,7 @@ const { faker } = require('@faker-js/faker');
 const { connectDB, mongoose } = require('./db.js');
 const User = require('../models/user.model.js');
 const Poll = require('../models/poll.model.js');
+const Post = require('../models/post.model.js');
 const PollOption = require('../models/pollOption.model.js');
 
 (async () => {
@@ -19,6 +20,7 @@ const PollOption = require('../models/pollOption.model.js');
         if (process.argv.includes('--clean')) {
             await Poll.deleteMany({});
             await PollOption.deleteMany({});
+            await Post.deleteMany({ type: 'poll' }); // Only remove poll-type posts
             console.log('cleared Polls and PollOptions collections');
         }
 
@@ -52,6 +54,17 @@ const PollOption = require('../models/pollOption.model.js');
             }));
 
             await PollOption.insertMany(options);
+
+            //Create the post so it shows in the feed
+            const postId = new mongoose.Types.ObjectId();
+            await Post.create({
+                _id: postId,
+                post_id: postId,
+                user_id: user._id,
+                content: text,
+                type: 'poll'
+            });
+
             pollList.push(poll.text);
         }
 

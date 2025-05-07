@@ -37,13 +37,16 @@ function makePollsRouter() {
 
             await PollOption.insertMany(optionDocs);
 
-            // Create a post for the poll
+            // Create a post for the poll (with self-referencing post_id)
+            const postId = new mongoose.Types.ObjectId();
             await Post.create({
-                post_id: poll._id,
+                _id: postId,
+                post_id: postId,
                 user_id: req.session.userId,
                 content: text,
                 type: 'poll'
             });
+
 
             res.status(201).json(poll);
         } catch (err) {
