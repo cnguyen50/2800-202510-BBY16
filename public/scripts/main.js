@@ -11,6 +11,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("create-post-form");
   const postContainer = document.getElementById("post-container");
   const typeSelect = document.getElementById("post-type");
+  const showFormBtn = document.getElementById("show-post-form-btn");
+  const formSection = document.getElementById("create-post-wrapper");
+
+  showFormBtn.addEventListener("click", () => {
+    formSection.style.display = formSection.style.display === "none" ? "block" : "none";
+  });
+  showFormBtn.textContent = formSection.style.display === "none" ? "Create a Post" : "Hide Post Form";
 
   // Load existing posts
   fetch("/api/posts")

@@ -15,33 +15,25 @@
     <nav id="navPlaceholder"></nav>
 
     <!-- Header -->
-    <header class="dashboard">
-        <section class="profile-actions">
-            <div class="avatar-large">🌟</div>
-            <div class="buttons">
-                <button>Create a Post</button>
-                <button>Create a Poll</button>
-                <button>Create an Event</button>
-            </div>
-        </section>
-    </header>
+    <div class="buttons">
+        <button id="show-post-form-btn">Create a Post</button>
+        <button>Create a Poll</button>
+        <button>Create an Event</button>
+    </div>
 
     <!-- Posts -->
-    <section class="create-post-section">
+    <section id="create-post-wrapper" style="display: none;">
         <form id="create-post-form">
-          <div class="mb-2">
-            <textarea id="post-content" class="form-control" rows="3" placeholder="What's on your mind?"></textarea>
-          </div>
-          <div class="mb-2">
-            <select id="post-type" class="form-select">
-              <option value="news">News</option>
-              <option value="event">Event</option>
-              <option value="post">Post</option>
+            <textarea id="post-content" class="form-control mb-2" rows="3"
+                placeholder="Share your thought!!"></textarea>
+            <select id="post-type" class="form-select mb-2">
+                <option value="news">News</option>
+                <option value="event">Event</option>
+                <option value="post">Post</option>
             </select>
-          </div>
-          <button type="submit" class="btn btn-primary mt-2">Post</button>
+            <button type="submit">Post</button>
         </form>
-    </section>      
+    </section>
 
     <!-- Feed -->
     <section class="feed">
