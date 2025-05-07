@@ -37,6 +37,8 @@ const makeCommentsRouter = require('./routes/comments.route.js');
         );
 
         app.use(express.urlencoded({ extended: true }));
+
+        app.use('/image', express.static('./public/image'));
         
         app.use('/auth', makeAuthRouter());
         

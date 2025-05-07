@@ -18,7 +18,6 @@
     <div class="buttons">
         <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#postModal">Create a Post</button>
         <button>Create a Poll</button>
-        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#eventModal">Create an Event</button>
     </div>
 
     <!-- Feed -->
@@ -29,58 +28,39 @@
 
     <!-- Post Modal -->
     <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form class="modal-content" id="create-post-form" enctype="multipart/form-data">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="postModalLabel">Create a Post</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="file" class="form-control mb-2" id="post-image" accept="image/*">
-                    <textarea id="post-content" class="form-control mb-2" rows="3"
-                        placeholder="Share your thoughts!"></textarea>
-                    <select id="post-type" class="form-select mb-2">
-                        <option value="post">Post</option>
-                        <option value="news">News</option>
-                        <option value="event">Event</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Submit Post</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Event Modal -->
-    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form class="modal-content" id="create-event-form">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="eventModalLabel">Create an Event</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-                    <div class="mb-2">
-                        <input type="text" class="form-control" id="event-name" placeholder="Event Name" required>
-                    </div>
-                    <div class="mb-2">
-                        <input type="date" class="form-control" id="event-date" required>
-                    </div>
-                    <div class="mb-2">
-                        <input type="text" class="form-control" id="event-location" placeholder="Location" required>
-                    </div>
-                    <div class="mb-2">
-                        <textarea class="form-control" id="event-description" rows="3"
-                            placeholder="Event Description"></textarea>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <form id="create-post-form" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="postModalLabel">Create a Post</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Submit Event</button>
-                </div>
-            </form>
+                    <div class="modal-body">
+                        <input type="file" class="form-control mb-2" id="post-image" accept="image/*">
+                        <textarea id="post-content" class="form-control mb-2" rows="3"
+                            placeholder="Share your thoughts!"></textarea>
+
+                        <select id="post-type" class="form-select mb-2">
+                            <option value="post">Post</option>
+                            <option value="news">News</option>
+                            <option value="event">Event</option>
+                        </select>
+
+                        <div id="event-fields" style="display: none;">
+                            <input type="text" class="form-control mb-2" id="event-name" placeholder="Event Name">
+                            <input type="date" class="form-control mb-2" id="event-date">
+                            <input type="text" class="form-control mb-2" id="event-location" placeholder="Location">
+                            <textarea class="form-control mb-2" id="event-description" rows="2"
+                                placeholder="Event Description"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Submit Post</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 

@@ -15,7 +15,7 @@ const PostSchema = new Schema(
   {
     post_id: {
       type: Schema.Types.ObjectId,
-      ref : 'Post',
+      ref: 'Post',
       required: false, //This causes an error if try to create a top-level post bc it doesn't have a post_id
     },
     user_id: {
@@ -33,9 +33,13 @@ const PostSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ['news', 'poll', 'event'],
+      enum: ['news', 'post', 'event'],
       default: 'news',
     },
+    event_name: String,
+    event_date: Date,
+    location: String,
+    description: String,
   },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
@@ -44,3 +48,4 @@ const PostSchema = new Schema(
 );
 
 module.exports = model('Post', PostSchema);
+

@@ -1,5 +1,3 @@
-const eventForm = document.getElementById("create-event-form");
-
 document.addEventListener("DOMContentLoaded", () => {
   fetch("../text/nav.html")
     .then(res => res.text())
@@ -9,38 +7,58 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch(err => console.error("Error loading nav:", err));
 });
 
+document.getElementById("post-type").addEventListener("change", (e) => {
+  const type = e.target.value;
+  const eventFields = document.getElementById("event-fields");
+
+  if (type === "event") {
+    eventFields.style.display = "block";
+  } else {
+    eventFields.style.display = "none";
+  }
+});
+
 // Post
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("create-post-form");
   const postContainer = document.getElementById("post-container");
   const typeSelect = document.getElementById("post-type");
 
-  // Load existing posts
   // Submit post from modal
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const content = document.getElementById("post-content").value;
+  
     const type = document.getElementById("post-type").value;
-
-    const postData = {
-      user_id: "guest", // temporary or replace with actual user
-      content,
-      type
-    };
-
+    const formData = new FormData();
+  
+    formData.append("type", type);
+    formData.append("content", document.getElementById("post-content").value);
+    
+    if (type === "event") {
+      // Add extra event-related fields
+      formData.append("event_name", document.getElementById("event-name").value);
+      formData.append("event_date", document.getElementById("event-date").value);
+      formData.append("location", document.getElementById("event-location").value);
+      formData.append("description", document.getElementById("event-description").value);
+    }
+  
+    const fileInput = document.getElementById("post-image");
+    if (fileInput.files.length > 0) {
+      formData.append("image", fileInput.files[0]);
+    }
+  
     try {
-      const res = await fetch("/api/posts", {
+      const res = await fetch("/posts", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(postData)
+        body: formData,
+        credentials: "include"
       });
-
+  
       const newPost = await res.json();
       renderPost(newPost);
       form.reset();
-
-      // Hide modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById('postModal'));
+      document.getElementById("event-fields").style.display = "none"; // reset visibility
+      const modal = bootstrap.Modal.getInstance(document.getElementById("postModal"));
       modal.hide();
     } catch (err) {
       console.error("Error creating post:", err);
@@ -68,38 +86,3 @@ document.addEventListener("DOMContentLoaded", () => {
     postContainer.prepend(div);
   }
 });
-
-// Event
-eventForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const eventData = {
-    user_id: "guest", // Replace with actual logged-in user ID
-    event_name: document.getElementById("event-name").value,
-    event_date: document.getElementById("event-date").value,
-    location: document.getElementById("event-location").value,
-    description: document.getElementById("event-description").value
-  };
-
-  try {
-    const res = await fetch("/api/events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(eventData)
-    });
-
-    if (!res.ok) throw new Error("Event creation failed");
-
-    // Hide modal and reset form
-    const modal = bootstrap.Modal.getInstance(document.getElementById('eventModal'));
-    modal.hide();
-    eventForm.reset();
-
-    // Optionally: alert or refresh event feed
-    alert("Event created!");
-  } catch (err) {
-    console.error(err);
-    alert("Something went wrong while creating the event.");
-  }
-});
-
