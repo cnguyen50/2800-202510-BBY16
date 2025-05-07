@@ -8,37 +8,60 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("create-post-form");
+  const postContainer = document.getElementById("post-container");
+  const typeSelect = document.getElementById("post-type");
+
+  // Load existing posts
   fetch("/api/posts")
     .then(res => res.json())
-    .then(posts => {
-      const container = document.getElementById("post-container");
+    .then(posts => posts.forEach(renderPost));
 
-      if (posts.length === 0) {
-        container.innerHTML = "<p>No posts available yet.</p>";
-        return;
-      }
+  // Submit post
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const content = document.getElementById("post-content").value;
+    const type = document.getElementById("post-type").value;
 
-      posts.forEach(post => {
-        const postElement = document.createElement("div");
-        postElement.classList.add("post-card");
+    const postData = {
+      user_id: "guest", // temporary or replace with actual user
+      content,
+      type
+    };
 
-        postElement.innerHTML = `
-          <div class="post-header">
-            <strong>User:</strong> ${post.user_id}<br />
-            <small>${new Date(post.created_at).toLocaleString()}</small>
-          </div>
-          <p class="post-content">${post.content}</p>
-          <div class="post-footer">
-            <span class="post-type">Type: ${post.type}</span>
-          </div>
-        `;
-
-        container.appendChild(postElement);
+    try {
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(postData)
       });
-    })
-    .catch(err => {
-      console.error("Failed to fetch posts:", err);
-      document.getElementById("post-container").innerHTML =
-        "<p>Failed to load posts. Please try again later.</p>";
-    });
+
+      const newPost = await res.json();
+      renderPost(newPost);
+      form.reset();
+    } catch (err) {
+      console.error("Error creating post:", err);
+    }
+  });
+
+  function renderPost(post) {
+    const div = document.createElement("div");
+    div.classList.add("post-card");
+
+    let typeLabel = {
+      news: "📰 News",
+      event: "📅 Event",
+      post: "💬 Post"
+    }[post.type] || post.type;
+
+    div.innerHTML = `
+      <div class="post-header">
+        <strong>${post.user_id}</strong> — <span class="badge bg-secondary">${typeLabel}</span><br>
+        <small>${new Date(post.created_at).toLocaleString()}</small>
+      </div>
+      <p>${post.content}</p>
+    `;
+
+    postContainer.prepend(div);
+  }
 });
