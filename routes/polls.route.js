@@ -1,120 +1,80 @@
 const express = require('express');
-const Poll = require('../models/poll.model.js');
-const PollOption = require('../models/pollOption.model.js');
-const Post = require('../models/post.model.js');
+const { PollPost } = require('../models/post.model.js');
 const requireAuth = require('../middleware/requireAuth.js');
-
+const mongoose = require('mongoose');
 
 function makePollsRouter() {
     const router = express.Router();
 
-    router.get('/', async (_req, res) => {
-        const polls = await Poll.find().sort({ created_at: -1 });
-        res.json(polls);
-    });
+    // Cast a vote using optionId
+    router.post('/:pollId/vote', requireAuth, async (req, res) => {
+        const { pollId } = req.params;
+        const { optionId } = req.body;
+        const userId = req.session.userId;
 
+        // Validate IDs
+        if (!mongoose.Types.ObjectId.isValid(pollId) || !mongoose.Types.ObjectId.isValid(optionId)) {
+            return res.status(400).json({ error: 'Invalid poll or option ID' });
+        }
 
-    // Create a poll with options
-    router.post('/', requireAuth, async (req, res) => {
         try {
-            const { text, expires_at, options } = req.body;
-
-            if (!text || !Array.isArray(options) || options.length < 2) {
-                return res.status(400).json({ error: 'Poll must have a question and at least 2 options.' });
+            const poll = await PollPost.findById(pollId);
+            if (!poll || poll.type !== 'Poll') {
+                return res.status(404).json({ error: 'Poll not found' });
             }
 
-            const poll = await Poll.create({
-                user_id: req.session.userId,
-                text,
-                expires_at: expires_at || new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hrs default
-            });
+            // Check for expiration
+            if (poll.expires_at && new Date() > poll.expires_at) {
+                return res.status(400).json({ error: 'Poll has expired' });
+            }
 
-            const optionDocs = options.map((opt) => ({
-                poll_id: poll._id,
-                option_type: 'radio',
-                text: opt
-            }));
+            // Check if already voted
+            poll.voted_user_ids = poll.voted_user_ids || [];
+            if (poll.voted_user_ids.includes(userId.toString())) {
+                return res.status(400).json({ error: 'You have already voted' });
+            }
 
-            await PollOption.insertMany(optionDocs);
+            // Find and update the selected option
+            const option = poll.options.id(optionId);
+            if (!option) {
+                return res.status(400).json({ error: 'Poll option not found' });
+            }
 
-            // Create a post for the poll (with self-referencing post_id)
-            const postId = new mongoose.Types.ObjectId();
-            await Post.create({
-                _id: postId,
-                post_id: postId,
-                user_id: req.session.userId,
-                content: text,
-                type: 'poll'
-            });
+            option.votes += 1;
+            poll.voted_user_ids.push(userId.toString());
 
+            await poll.save();
+            res.status(200).json({ message: 'Vote recorded' });
 
-            res.status(201).json(poll);
         } catch (err) {
-            res.status(400).json({ error: err.message });
+            res.status(500).json({ error: 'Server error: ' + err.message });
         }
     });
 
-    // Get my polls
-    router.get('/me', requireAuth, async (req, res) => {
-        const polls = await Poll.find({ user_id: req.session.userId }).sort({ created_at: -1 });
-        res.json(polls);
-    });
+    // View results if voted or poll is expired
+    router.get('/:pollId/results', requireAuth, async (req, res) => {
+        const { pollId } = req.params;
+        const userId = req.session.userId;
 
-    // Get one poll with options
-    router.get('/:id', async (req, res) => {
-        const poll = await Poll.findById(req.params.id);
-        if (!poll) return res.status(404).json({ error: 'Poll not found' });
-
-        const options = await PollOption.find({ poll_id: req.params.id });
-        res.json({ poll, options });
-    });
-
-    // Update poll (text/expiry)
-    router.put('/:id', requireAuth, async (req, res) => {
         try {
-            const poll = await Poll.findByIdAndUpdate(
-                req.params.id,
-                req.body,
-                { new: true, runValidators: true }
-            );
-            if (!poll) return res.status(404).json({ error: 'Poll not found' });
-            res.json(poll);
+            const poll = await PollPost.findById(pollId);
+
+            if (!poll || poll.type !== 'Poll') {
+                return res.status(404).json({ error: 'Poll not found' });
+            }
+
+            const voted = poll.voted_user_ids?.includes(userId.toString());
+            const expired = new Date() > poll.expires_at;
+
+            if (!voted && !expired) {
+                return res.status(403).json({ error: 'Results only available after voting or expiration' });
+            }
+
+            res.json({ question: poll.text, results: poll.options });
+
         } catch (err) {
-            res.status(400).json({ error: err.message });
+            res.status(500).json({ error: 'Server error: ' + err.message });
         }
-    });
-
-    // Delete poll + its options
-    router.delete('/:id', requireAuth, async (req, res) => {
-        const poll = await Poll.findByIdAndDelete(req.params.id);
-        if (!poll) return res.status(404).json({ error: 'Poll not found' });
-
-        await PollOption.deleteMany({ poll_id: req.params.id });
-        res.status(204).end();
-    });
-
-    // Vote on a poll
-    router.post('/:id/vote', requireAuth, async (req, res) => {
-        const { optionId } = req.body;
-
-        const option = await PollOption.findOne({ _id: optionId, poll_id: req.params.id });
-        if (!option) return res.status(404).json({ error: 'Option not found' });
-
-        await PollOption.updateOne({ _id: optionId }, { $inc: { votes_count: 1 } });
-        res.json({ message: 'Vote recorded' });
-    });
-
-    // Get poll results
-    router.get('/:id/results', requireAuth, async (req, res) => {
-        const poll = await Poll.findById(req.params.id);
-        if (!poll) return res.status(404).json({ error: 'Poll not found' });
-
-        if (new Date() < poll.expires_at) {
-            return res.status(403).json({ error: 'Poll has not yet expired.' });
-        }
-
-        const results = await PollOption.find({ poll_id: req.params.id }).select('text votes_count');
-        res.json({ question: poll.text, results });
     });
 
     return router;
