@@ -1,83 +1,125 @@
+// Load .env into process.env
 require('dotenv').config();
-const express = require('express');
-const session = require('express-session');
+
+const express      = require('express');
+const session      = require('express-session');
 const MongoDBStore = require('connect-mongo');
-const { connectDB } = require('./scripts/db.js'); // Adjust the path as necessary
-const makePostsRouter = require('./routes/posts.route.js');
-const makeUsersRouter = require('./routes/users.route.js');
-const makeAuthRouter = require('./routes/auth.route.js');
-const path = require('path');
+const path         = require('path');
+
+const { connectDB }          = require('./scripts/db.js');
+const makeAuthRouter     = require('./routes/auth.route.js');
+const makeUsersRouter    = require('./routes/users.route.js');
+const makePostsRouter    = require('./routes/posts.route.js');
+const makeTypedRouter   = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
 
+const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
+
 (async () => {
-    try {
-        const { db, client } = await connectDB();
+  try {
+    // connectDB() returns { db, client }
+    const { db, client } = await connectDB();
 
-        const app = express();
-        app.use(express.json());
+    const app = express();
 
-        app.use(
-            session({
-                name: 'sessionId',
-                secret: process.env.SESSION_SECRET,
-                resave: false,
-                saveUninitialized: false,
-                store: MongoDBStore.create({
-                    client,
-                    collectionName: 'sessions',
-                    ttl: 14 * 24 * 60 * 60, 
-                }),
-                cookie: {
-                    httpOnly: true,
-                    sameSite: 'lax',
-                    // secure: process.env.NODE_ENV === 'production',
-                    maxAge: 14 * 24 * 60 * 60 * 1000, 
-                }
-            })
-        );
+    // app.use(middleware) attaches JSON-body parser to all requests
+    // handles application/json
+    app.use(express.json());
 
-        app.use(express.urlencoded({ extended: true }));
+    app.set('view engine', 'ejs');
+    app.set('views', path.join(__dirname, 'views'));
 
-        app.use('/image', express.static('./public/image'));
-        
-        app.use('/auth', makeAuthRouter());
-        
-        app.use('/posts', makePostsRouter());
 
-        app.use('/users', makeUsersRouter());
+    // app.use(session(options)) adds req.session support
+    // stores sessions in MongoDB, 14-day cookie
+    app.use(
+      session({
+        name: 'sessionId',
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        store: MongoDBStore.create({
+          client,
+          collectionName: 'sessions',
+          ttl: 14 * 24 * 60 * 60
+        }),
+        cookie: {
+          httpOnly: true,
+          sameSite: 'lax',
+          // secure: process.env.NODE_ENV === 'production',
+          maxAge: 14 * 24 * 60 * 60 * 1000
+        }
+      })
+    );
 
-        app.use('/comments', makeCommentsRouter());
-        
-        app.use(express.static('public'));
+    // app.use(middleware) attaches URL-encoded parser
+    // handles form submissions from HTML <form>
+    app.use(express.urlencoded({ extended: true }));
 
-        app.get('/', (_req, res) =>
-            res.sendFile(path.join(__dirname, './public/index.html'))
-        );
+    // app.use('/auth', router) mounts router under /auth
+    // routes for login, register, logout, etc.
+    app.use('/auth', makeAuthRouter());
 
-        app.get('/profile', (_req, res) =>
-            res.sendFile(path.join(__dirname, './public/profile.html'))
-        );
+    // app.use('/users', router) mounts router under /users
+    // profile, update, delete, current user endpoints
+    app.use('/users', makeUsersRouter());
 
-        app.get('/home', (_req, res) =>
-            res.sendFile(path.join(__dirname, './public/main.html'))
-        );
+    // app.use('/posts', router) mounts router under /posts
+    // create, read, update, delete posts
+    app.use('/posts', makePostsRouter());
 
-        app.use('/login', (req, res) => {
-            if (req.session.user) {
-                res.redirect('/main.html');
-            } else {
-                res.sendFile(path.join(__dirname, './public/login.html'));
-            }
-        });
+    // app.use('/comments', router) mounts router under /comments
+    // create and list current user comments
+    app.use('/comments', makeCommentsRouter());
 
-        const PORT = process.env.PORT || 3000;
+    // app.use('/events', router) mounts router under /events
+    // create, read, update, delete typed posts
+    app.use('/events', makeTypedRouter(EventPost));
+    app.use('/polls', makeTypedRouter(PollPost));
+    app.use('/news', makeTypedRouter(NewsPost));
 
-        app.listen(PORT, () => {
-            console.log(`Server is running on port ${PORT}`);
-        });
+    // app.use(express.static(dir)) serves static files
+    // exposes everything inside /public
+    app.use(express.static('public'));
 
-    } catch (error) {
-        console.error('Error connecting to the database:', error);
-        process.exit(1); // Exit the process with failure
-    }
+    // app.get(path, handler) sends index page
+    // landing page
+    app.get('/', (_req, res) =>
+      res.sendFile(path.join(__dirname, './public/index.html'))
+    );
+
+    // app.get(path, handler) sends profile page
+    // profile page (uses JS to fetch /current endpoints)
+    app.get('/profile', (_req, res) =>
+     res.render('profile')
+    );
+
+    // app.get(path, handler) sends main feed
+    // main/home page
+    app.get('/home', (_req, res) =>
+      res.render('main')
+    );
+
+    // app.use(path, handler) intercepts /login
+    // redirects logged-in users, otherwise shows login form
+    app.use('/login', (req, res) => {
+      if (req.session.user) {
+        res.redirect('/home');
+      } else {
+        res.sendFile(path.join(__dirname, './public/login.html'));
+      }
+    });
+
+    // Start HTTP server on given port
+    // default 3000
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    // Print DB connection errors and exit
+    console.error('Error connecting to the database:', error);
+    process.exit(1);
+  }
 })();

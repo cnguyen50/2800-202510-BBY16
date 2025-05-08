@@ -1,33 +1,37 @@
 const express = require('express');
-const Post = require('../models/post.model.js');
-const requireAuth = require('../middleware/requireAuth');
-const multer = require('multer');
-const upload = multer({ dest: './public/image/' });
+const {Post} = require('../models/post.model.js')
+const requireAuth = require('../middleware/requireAuth.js');
 
 function makePostsRouter() {
   const router = express.Router();
 
-  router.get('/', async (_req, res) => {
-    const posts = await Post.find().sort({ createdAt: -1 });
-    res.json(posts);
+  router.get('/', async (req, res) => {
+    const type = req.query.type;
+    const query = type ? { type } : {}; // ← no filter = return all types
+  
+    try {
+      const posts = await Post.find(query).sort({ createdAt: -1 }).limit(10).populate('user_id', 'username');
+      res.json(posts);
+    } catch (err) {
+      console.error("GET /posts error:", err);
+      res.status(500).json({ error: err.message });
+    }
   });
 
-  router.post('/', requireAuth, upload.single('image'), async (req, res) => {
+  router.post('/', async (req, res) => {
     try {
-      const postData = {
-        user_id: req.user._id,
-        content: req.body.content,
-        type: req.body.type,
-        image_url: req.file ? `/image/${req.file.filename}` : undefined
-      };
-  
-      const post = await Post.create(postData);
+      const post = await Post.create({...req.body, type: 'post', user_id: req.session.userId});
       res.status(201).json(post);
     } catch (err) {
       res.status(400).json({ error: err.message });
     }
   });
-  
+
+  router.get('/me', requireAuth, async (req,res) => {
+    const posts = await Post.find({user_id: req.session.userId}).sort({createdAt: -1});
+    res.json(posts);
+  });
+
   router.get('/:id', async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Not found' });
