@@ -77,6 +77,20 @@ function makePollsRouter() {
         }
     });
 
+    router.get('/:pollId/view', requireAuth, async (req, res) => {
+        const { pollId } = req.params;
+        const userId = req.session.userId;
+
+        const poll = await PollPost.findById(pollId);
+        if (!poll || poll.type !== 'Poll') return res.status(404).send('Poll not found');
+
+        const hasVoted = poll.voted_user_ids?.includes(userId.toString());
+        const expired = new Date() > poll.expires_at;
+
+        res.render('poll', { poll, hasVoted, expired });
+    });
+
+
     return router;
 }
 
