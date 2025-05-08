@@ -68,7 +68,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     app.get('/map', (req, res) => {
       res.sendFile(path.join(__dirname, './public/map.html'))
     })
-
+    
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());
