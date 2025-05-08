@@ -83,19 +83,12 @@ body {
 
 .post-footer {
   display: flex;
-  gap: 1.5rem;
-  color: #888;
-  font-size: 0.9rem;
+  justify-content: space-between;
+  align-items: center;
   border-top: 1px solid #eee;
   padding-top: 0.75rem;
-}
-
-.post-footer span {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  transition: color 0.2s ease;
+  font-size: 0.9rem;
+  color: #888;
 }
 
 .post-footer span:hover {

@@ -20,6 +20,7 @@ function makePostsRouter() {
 
   router.post('/', async (req, res) => {
     try {
+      const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
       const post = await Post.create({...req.body, type: 'post', user_id: req.session.userId});
       res.status(201).json(post);
     } catch (err) {

@@ -128,11 +128,18 @@ function renderEvent(post, username, date, typeLabel) {
     <p><strong>${post.event_name}</strong> — <em>${new Date(post.event_date).toLocaleDateString()}</em></p>
     <p><strong>Location:</strong> ${post.location}</p>
     <p>${post.description}</p>
+    ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
     <div class="post-footer">
-      <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-      <span><i class="bi bi-chat-dots-fill"></i> 0</span>
-      <span><i class="bi bi-share-fill"></i></span>
+      <div class="post-actions-left">
+        <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
+        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
+        <span><i class="bi bi-share-fill"></i></span>
+      </div>
+      <div class="post-bookmark">
+        <span><i class="bi bi-bookmark-fill"></i></span>
+      </div>
     </div>
+
   `;
 }
 
@@ -144,10 +151,16 @@ function renderDefault(post, username, date, typeLabel) {
     </div>
     <div class="post-type-label">${typeLabel}</div>
     <p>${post.content}</p>
+    ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
     <div class="post-footer">
-      <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-      <span><i class="bi bi-chat-dots-fill"></i> 0</span>
-      <span><i class="bi bi-share-fill"></i></span>
+      <div class="post-actions-left">
+        <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
+        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
+        <span><i class="bi bi-share-fill"></i></span>
+      </div>
+      <div class="post-bookmark">
+        <span><i class="bi bi-bookmark-fill"></i></span>
+      </div>
     </div>
   `;
 }
