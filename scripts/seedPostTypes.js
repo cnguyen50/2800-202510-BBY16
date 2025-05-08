@@ -46,14 +46,14 @@ const {                       // ⬅️ the discriminators you created earlier
     /* 4. factories for each type                                          */
     /* ------------------------------------------------------------------ */
     const makeNews = () => ({
-      user_id : randomUser(),
+      user_id : '6812a0b3581952016d55094c',
       headline: faker.company.catchPhrase(),
       body    : faker.lorem.paragraphs(2),
       image_url: faker.image.urlPicsumPhotos()
     });
 
     const makePoll = () => ({
-      user_id : randomUser(),
+      user_id : '6812a0b3581952016d55094c',
       text    : faker.lorem.sentence(),
       expires_at: faker.date.soon({ days: 3 }),
       options : [
@@ -64,7 +64,7 @@ const {                       // ⬅️ the discriminators you created earlier
     });
 
     const makeEvent = () => ({
-        user_id    : randomUser(),
+        user_id    : "6812a0b3581952016d55094c",
         event_name : `${faker.company.buzzPhrase()} Meetup`,
         event_date : faker.date.soon({ days: 30 }),
         location   : faker.location.city(),

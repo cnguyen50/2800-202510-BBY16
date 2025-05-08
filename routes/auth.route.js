@@ -62,25 +62,37 @@ function makeAuthRouter() {
       }
     }
 
-    // bcrypt.compare checks password
-    const ok = await bcrypt.compare(password, user.password);
-    if (!ok) return res.status(400).json({ error: 'Invalid credentials' });
+    if(user) {
+      // bcrypt.compare(plain, hash) checks password against hash
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) return res.status(401).json({ error: 'Invalid credentials' });
+      req.session.userId = user._id;
 
-    req.session.userId = user._id;
-    res.redirect('/home');
+      res.redirect('/profile');
+    } else {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+  
+  });
+
+  router.post('/logout', async (req, res) => {
+    if(req.session.userId) {
+      req.session.destroy(err => {
+        if(err) return res.status(500).json({ error: 'Logout failed: ' + err.message });
+        res.clearCookie('sessionId');
+        res.redirect('/');
+      });
+     
+    } else {
+    res.redirect('/');
+    }
   });
 
   // router.get(path, handler) → quick session check
   // purpose: return current user id (used by client JS)
-  router.get('/profile', (req, res) => {
+  router.post('/profile', (req, res) => {
     if (!req.session.userId) return res.status(401).json({ error: 'Unauthorized' });
     res.json({ userId: req.session.userId });
-  });
-
-  // router.post(path, handler) → destroy session
-  // purpose: log user out
-  router.post('/logout', (req, res) => {
-    req.session.destroy(() => res.status(204).end());
   });
 
   return router;
