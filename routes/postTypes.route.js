@@ -1,10 +1,7 @@
 // routes/makeTypedRouter.js
 const express = require('express');
-<<<<<<< HEAD
-=======
 const multer = require('multer');
 const upload = multer({ dest: 'public/uploads/' });
->>>>>>> Veronica
 const requireAuth = require('../middleware/requireAuth.js');
 
 module.exports = function makeTypedRouter(Model) {
