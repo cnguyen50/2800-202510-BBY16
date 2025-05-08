@@ -5,7 +5,6 @@ const express      = require('express');
 const session      = require('express-session');
 const MongoDBStore = require('connect-mongo');
 const path         = require('path');
-
 const { connectDB }          = require('./scripts/db.js');
 const makeAuthRouter     = require('./routes/auth.route.js');
 const makeUsersRouter    = require('./routes/users.route.js');
@@ -67,7 +66,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     app.get('/map', (req, res) => {
         res.sendFile(path.join(__dirname, './public/map.html'))
     })
-
+    
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());

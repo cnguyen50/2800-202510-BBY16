@@ -1,5 +1,10 @@
 // routes/makeTypedRouter.js
 const express = require('express');
+<<<<<<< HEAD
+=======
+const multer = require('multer');
+const upload = multer({ dest: 'public/uploads/' });
+>>>>>>> Veronica
 const requireAuth = require('../middleware/requireAuth.js');
 
 module.exports = function makeTypedRouter(Model) {
@@ -7,15 +12,21 @@ module.exports = function makeTypedRouter(Model) {
 
   // LIST  /events  /polls  /news
   router.get('/', async (_req, res) => {
-    const docs = await Model.find().sort({ createdAt: -1 });
+    const docs = await Model.find().sort({ createdAt: -1 }).populate('user_id', 'username');
     res.json(docs);
   });
 
   // CREATE
-  router.post('/', requireAuth, async (req, res) => {
+  router.post('/', upload.single('image'), requireAuth, async (req, res) => {
     try {
-      // force the correct discriminator `type`
-      const doc = await Model.create({ ...req.body, user_id: req.session.userId });
+      const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+
+      const doc = await Model.create({
+        ...req.body,
+        user_id: req.session.userId,
+        image_url
+      });
+
       res.status(201).json(doc);
     } catch (err) {
       res.status(400).json({ error: err.message });
