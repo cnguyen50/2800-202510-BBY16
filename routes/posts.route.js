@@ -1,5 +1,5 @@
 const express = require('express');
-const { Post } = require('../models/post.model.js')
+const {Post} = require('../models/post.model.js')
 const requireAuth = require('../middleware/requireAuth.js');
 
 function makePostsRouter() {

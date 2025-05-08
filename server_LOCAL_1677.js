@@ -1,20 +1,17 @@
 // Load .env into process.env
 require('dotenv').config();
 
-const express = require('express');
-const session = require('express-session');
+const express      = require('express');
+const session      = require('express-session');
 const MongoDBStore = require('connect-mongo');
-const path = require('path');
+const path         = require('path');
 
-const { connectDB } = require('./scripts/db.js');
-const makeAuthRouter = require('./routes/auth.route.js');
-const makeUsersRouter = require('./routes/users.route.js');
-const makePostsRouter = require('./routes/posts.route.js');
-const makePollsRouter = require('./routes/polls.route.js');
-const makeTypedRouter = require('./routes/postTypes.route.js');
+const { connectDB }          = require('./scripts/db.js');
+const makeAuthRouter     = require('./routes/auth.route.js');
+const makeUsersRouter    = require('./routes/users.route.js');
+const makePostsRouter    = require('./routes/posts.route.js');
+const makePollsRouter    = require('./routes/polls.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
-
-const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
 (async () => {
   try {
@@ -26,10 +23,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // app.use(middleware) attaches JSON-body parser to all requests
     // handles application/json
     app.use(express.json());
-
-    app.set('view engine', 'ejs');
-    app.set('views', path.join(__dirname, 'views'));
-
 
     // app.use(session(options)) adds req.session support
     // stores sessions in MongoDB, 14-day cookie
@@ -65,10 +58,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // profile, update, delete, current user endpoints
     app.use('/users', makeUsersRouter());
 
-    app.get('/map', (req, res) => {
-      res.sendFile(path.join(__dirname, './public/map.html'))
-    })
-
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());
@@ -80,12 +69,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // app.use('/comments', router) mounts router under /comments
     // create and list current user comments
     app.use('/comments', makeCommentsRouter());
-
-    // app.use('/events', router) mounts router under /events
-    // create, read, update, delete typed posts
-    app.use('/events', makeTypedRouter(EventPost));
-    app.use('/polls', makeTypedRouter(PollPost));
-    app.use('/news', makeTypedRouter(NewsPost));
 
     // app.use(express.static(dir)) serves static files
     // exposes everything inside /public
@@ -100,37 +83,28 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // app.get(path, handler) sends profile page
     // profile page (uses JS to fetch /current endpoints)
     app.get('/profile', (_req, res) =>
-      res.render('profile')
+      res.sendFile(path.join(__dirname, './public/profile.html'))
     );
 
     // app.get(path, handler) sends main feed
     // main/home page
     app.get('/home', (_req, res) =>
-      res.render('main')
+      res.sendFile(path.join(__dirname, './public/main.html'))
     );
 
     // app.use(path, handler) intercepts /login
     // redirects logged-in users, otherwise shows login form
     app.use('/login', (req, res) => {
-      if (req.session.userId) {
+      if (req.session.user) {
         res.redirect('/home');
       } else {
         res.sendFile(path.join(__dirname, './public/login.html'));
       }
     });
 
-    app.use('/logout', (req, res) => {
-      if (!req.session.userId) {
-        res.redirect('/login');
-      } else {
-        res.render('logout');
-      }
-    })
-
     // Start HTTP server on given port
     // default 3000
     const PORT = process.env.PORT || 3000;
-
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });

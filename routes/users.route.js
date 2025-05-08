@@ -25,6 +25,40 @@ function makeUsersRouter() {
     res.json(user);
   })
   
+  router.put('/me/location', requireAuth, async (req,res) => {
+    const { latitude, longitude } = req.body;
+
+    if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+      return res.status(400).json({ error: 'Invalid coords' });
+    }
+
+    try {
+      //updating with Mongoose
+      const updated = await User.findByIdAndUpdate(
+        req.session.userId, {
+          location: {
+            type: 'Point',
+            coordinates: [longitude, latitude]
+          }
+        },
+        {
+          new: true,
+          select: 'location'
+        }
+      )
+
+      // Error handle if user isn't found
+      if (!updated) {
+        return res.status(404).json({ error: 'User not found' })
+      }
+
+      //Return updated location
+      return res.json({ location: updated.location })
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  })
+
   router.get('/:id', async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'Not found' });

@@ -28,15 +28,13 @@ const PollPost = Post.discriminator(
   'Poll',
   new Schema({
     text       : { type: String, required: true },
-    expires_at : { type: Date, default: () => Date.now() + 24*60*60*1000 },
+    expires_at : { type: Date,   default: () => Date.now() + 24*60*60*1000 },
     options    : [{
       label : String,
       votes : { type: Number, default: 0 }
-    }],
-    voted_user_ids: [String] // 👈 new field to track who voted
+    }]
   })
 );
-
 
 const NewsPost = Post.discriminator(
   'News',
