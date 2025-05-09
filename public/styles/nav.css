@@ -1,7 +1,5 @@
 /*  ==== TOP BAR (mobile) ====  */
 .top-bar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
   height: 56px;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 1rem;
