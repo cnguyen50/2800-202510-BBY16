@@ -5,7 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("post-type").addEventListener("change", (e) => {
     const type = e.target.value;
     const eventFields = document.getElementById("event-fields");
+    const pollFields = document.getElementById("poll-fields");
     eventFields.style.display = (type === "event") ? "block" : "none";
+    pollFields.style.display = (type === "poll") ? "block" : "none";
   });
 
   // Filter
@@ -60,13 +62,33 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("description", document.getElementById("event-description").value);
     }
 
+    if (type === "Poll") {
+      const pollText = document.getElementById("poll-text").value;
+      const pollOptions = Array.from(document.querySelectorAll(".poll-option")).map(option => option.value);
+      // const expiresAt = document.getElementById("poll-expiration").value;
+
+      formData.append("text", pollText);
+      // formData.append("options", JSON.stringify(pollOptions));
+      formData.append("options", JSON.stringify(pollOptions.map(label => ({ label }))));
+      // formData.append("expires_at", expiresAt);
+    }
+
     const fileInput = document.getElementById("post-image");
     if (fileInput.files.length > 0) {
       formData.append("image", fileInput.files[0]);
     }
 
     try {
-      const endpoint = (type === "Event") ? "/events" : "/posts";
+      // const endpoint = (type === "Event") ? "/events" : "/posts";
+
+      let endpoint;
+      if (type === "Poll") {
+        endpoint = "/polls";
+      } else if (type === "Event") {
+        endpoint = "/events";
+      } else {
+        endpoint = "/posts";
+      }
 
       const res = await fetch(endpoint, {
         method: "POST",
@@ -78,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
       renderPost(newPost);
       form.reset();
       document.getElementById("event-fields").style.display = "none";
+      document.getElementById("poll-fields").style.display = "none";
       const modal = bootstrap.Modal.getInstance(document.getElementById("postModal"));
       modal.hide();
     } catch (err) {
@@ -172,6 +195,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   `;
   }
+
+  function renderPoll(post, username, date, typeLabel) {
+    const optionsHtml = post.options.map(option => `
+      <li>
+        <span>${option.label}</span>
+        <span class="badge bg-secondary">${option.votes} vote(s)</span>
+      </li>
+    `).join('');
+
+    return `
+      <div class="post-header">
+        <strong>@${username}</strong>
+        <span class="post-date">${date}</span>
+      </div>
+      <div class="post-type-label">${typeLabel}</div>
+      <p><strong>Poll:</strong> ${post.text}</p>
+      <ul class="list-unstyled ps-3">
+        ${optionsHtml}
+      </ul>
+      <a href="/polls/${post._id}/view" class="btn btn-outline-primary btn-sm">Vote or View Results</a>
+      <div class="post-footer">
+        <div class="post-actions-left">
+          <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
+          <span><i class="bi bi-chat-dots-fill"></i> 0</span>
+          <span><i class="bi bi-share-fill"></i></span>
+        </div>
+        <div class="post-bookmark">
+          <span><i class="bi bi-bookmark-fill"></i></span>
+        </div>
+      </div>
+    `;
+  }
+
 
   function renderDefault(post, username, date, typeLabel) {
     return `

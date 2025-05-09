@@ -44,7 +44,7 @@ function makePollsRouter() {
             poll.voted_user_ids.push(userId.toString());
 
             await poll.save();
-            res.status(200).json({ message: 'Vote recorded' });
+            res.redirect(`/polls/${pollId}/view`);
 
         } catch (err) {
             res.status(500).json({ error: 'Server error: ' + err.message });
