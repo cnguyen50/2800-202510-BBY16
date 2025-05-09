@@ -70,7 +70,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         title: 'Map',
         headerLinks: [
           { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
-          { rel: 'stylesheet', href: '/styles/map.css' }
+          { rel: 'stylesheet', href: '/styles/map.css' },
+          { rel: 'stylesheet', href: '/styles/loggedIn.css'}
         ],
         footerScripts: [
           { src: 'https://unpkg.com/leaflet/dist/leaflet.js' },
@@ -133,7 +134,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           title: 'Home',
           headerLinks: [
             { rel: 'stylesheet', href: '/styles/main.css' },
-            { rel: 'stylesheet', href: '/styles/loggedIn.css'}
+            { rel: 'stylesheet', href: '/styles/loggedIn.css'},
+          
           ],
           footerScripts: [
             { src: '/scripts/main.js' },

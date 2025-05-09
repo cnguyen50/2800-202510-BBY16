@@ -1,5 +1,5 @@
 .sidebar{
-    position: fixed;;
+    position: fixed;
 }
 
 @media (min-width: 768px) {
@@ -28,7 +28,4 @@
         grid-row: 1; /* Place in the first row */
     }
 
-    .sidebar {
-        position: static;
-    }
 }
