@@ -3,8 +3,12 @@ const { Schema, model } = require('mongoose');
 const BasePostSchema = new Schema(
   {
     user_id   : { type: Schema.Types.ObjectId, ref: 'User', required: true },
+<<<<<<< HEAD
     parent_id : { type: Schema.Types.ObjectId, ref: 'Post' }, // replies
     image_url : { type: String }
+=======
+    parent_id : { type: Schema.Types.ObjectId, ref: 'Post' } // replies
+>>>>>>> Veronica
   },
   {
     timestamps      : true,
@@ -21,8 +25,12 @@ const EventPost = Post.discriminator(
     event_name : { type: String, required: true },
     event_date : { type: Date,   required: true },
     location   : { type: String, required: true },
+<<<<<<< HEAD
     description: String,
     image_url: { type: String }
+=======
+    description: String
+>>>>>>> Veronica
   })
 );
 

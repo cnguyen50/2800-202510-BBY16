@@ -13,7 +13,6 @@ const makeTypedRouter   = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
-const { title } = require('process');
 
 (async () => {
     try {

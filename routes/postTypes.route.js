@@ -1,7 +1,10 @@
 // routes/makeTypedRouter.js
 const express = require('express');
+<<<<<<< HEAD
 const multer = require('multer');
 const upload = multer({ dest: 'public/uploads/' });
+=======
+>>>>>>> Veronica
 const requireAuth = require('../middleware/requireAuth.js');
 
 module.exports = function makeTypedRouter(Model) {
@@ -9,11 +12,16 @@ module.exports = function makeTypedRouter(Model) {
 
   // LIST  /events  /polls  /news
   router.get('/', async (_req, res) => {
+<<<<<<< HEAD
     const docs = await Model.find().sort({ createdAt: -1 }).populate('user_id', 'username');
+=======
+    const docs = await Model.find().sort({ createdAt: -1 });
+>>>>>>> Veronica
     res.json(docs);
   });
 
   // CREATE
+<<<<<<< HEAD
   router.post('/', upload.single('image'), requireAuth, async (req, res) => {
     try {
       const image_url = req.file ? `/uploads/${req.file.filename}` : null;
@@ -24,6 +32,12 @@ module.exports = function makeTypedRouter(Model) {
         image_url
       });
 
+=======
+  router.post('/', requireAuth, async (req, res) => {
+    try {
+      // force the correct discriminator `type`
+      const doc = await Model.create({ ...req.body, type: 'post', user_id: req.session.userId });
+>>>>>>> Veronica
       res.status(201).json(doc);
     } catch (err) {
       res.status(400).json({ error: err.message });
