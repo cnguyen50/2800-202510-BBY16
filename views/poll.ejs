@@ -1,0 +1,28 @@
+<h2>
+    <%= poll.text %>
+</h2>
+
+<% if (!hasVoted && !expired) { %>
+    <form method="POST" action="/polls/<%= poll._id %>/vote">
+        <% poll.options.forEach(function(option) { %>
+            <div>
+                <label>
+                    <input type="radio" name="optionId" value="<%= option._id %>" required />
+                    <%= option.label %>
+                </label>
+            </div>
+            <% }); %>
+                <button type="submit">Vote</button>
+    </form>
+    <% } else { %>
+        <h3>Results:</h3>
+        <ul>
+            <% poll.options.forEach(function(option) { %>
+                <li>
+                    <%= option.label %>: <%= option.votes %> vote(s)
+                </li>
+                <% }); %>
+        </ul>
+        <% } %>
+
+            <a href="/home">⬅ Back to Feed</a>

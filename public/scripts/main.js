@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Filter
-<<<<<<< HEAD
   document.getElementById('post-select').addEventListener('change', async (e) => {
     const filter = e.target.value;
     postContainer.innerHTML = '';
@@ -23,17 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let endpoint;
     if (filter === 'all') {
       endpoint = '/posts';
-=======
-  document.getElementById('filter-select').addEventListener('change', async (e) => {
-    const filter = e.target.value;
-    postContainer.innerHTML = '';
-
-    let endpoint;
-    if (filter === 'all') {
-      endpoint = '/posts';
-    } else if (filter === 'post') {
-      endpoint = '/posts?type=post';
->>>>>>> Veronica
     } else {
       endpoint = `/${filter}s`;
     }
@@ -51,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-<<<<<<< HEAD
     const rawType = document.getElementById("post-type").value;
     const typeMap = {
       post: "Post",
@@ -61,19 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     const type = typeMap[rawType];
-=======
-    const type = document.getElementById("post-type").value;
->>>>>>> Veronica
     const formData = new FormData();
 
     formData.append("type", type);
     formData.append("content", document.getElementById("post-content").value);
 
-<<<<<<< HEAD
     if (type === "Event") {
-=======
-    if (type === "event") {
->>>>>>> Veronica
       formData.append("event_name", document.getElementById("event-name").value);
       formData.append("event_date", document.getElementById("event-date").value);
       formData.append("location", document.getElementById("event-location").value);
@@ -86,13 +66,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-<<<<<<< HEAD
       const endpoint = (type === "Event") ? "/events" : "/posts";
 
       const res = await fetch(endpoint, {
-=======
-      const res = await fetch("/posts", {
->>>>>>> Veronica
         method: "POST",
         body: formData,
         credentials: "include"
@@ -111,7 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadPosts() {
     try {
-<<<<<<< HEAD
       const [postsRes, eventsRes, pollsRes, newsRes] = await Promise.all([
         fetch("/posts", { credentials: "include" }),
         fetch("/events", { credentials: "include" }),
@@ -130,11 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
       allPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
       allPosts.forEach(post => renderPost(post));
-=======
-      const res = await fetch("/posts", { credentials: "include" });
-      const posts = await res.json();
-      posts.forEach(post => renderPost(post));
->>>>>>> Veronica
     } catch (err) {
       console.error("Failed to load posts:", err);
     }
@@ -163,11 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const username = post.user_id?.username || 'Anonymous';
 
     let html = "";
-<<<<<<< HEAD
     switch (post.type?.toLowerCase()) {
-=======
-    switch (post.type) {
->>>>>>> Veronica
       case "event":
         html = renderEvent(post, username, date, typeLabel); break;
       case "news":
@@ -214,10 +180,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <span class="post-date">${date}</span>
     </div>
     <div class="post-type-label">${typeLabel}</div>
-<<<<<<< HEAD
-=======
-    <p>${post.content}</p>
->>>>>>> Veronica
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
     <div class="post-footer">
       <div class="post-actions-left">
@@ -231,8 +193,4 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   `;
   }
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> Veronica

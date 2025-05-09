@@ -44,8 +44,8 @@ function makePostsRouter() {
     }
   });
 
-  router.get('/me', requireAuth, async (req,res) => {
-    const posts = await Post.find({user_id: req.session.userId}).sort({createdAt: -1});
+  router.get('/me', requireAuth, async (req, res) => {
+    const posts = await Post.find({ user_id: req.session.userId }).sort({ createdAt: -1 });
     res.json(posts);
   });
 
