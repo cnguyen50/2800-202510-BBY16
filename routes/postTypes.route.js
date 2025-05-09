@@ -16,6 +16,7 @@ module.exports = function makeTypedRouter(Model) {
     // CREATE
     router.post('/', upload.single('image'), requireAuth, async (req, res) => {
         try {
+            console.log("BODY:", req.body);
             const image_url = req.file ? `/uploads/${req.file.filename}` : null;
 
             const doc = await Model.create({

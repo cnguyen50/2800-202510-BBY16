@@ -37,41 +37,47 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Submit post from modal
+    // Submit post from modal
   form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+      e.preventDefault();
 
-    const rawType = document.getElementById("post-type").value;
-    const typeMap = {
-      post: "Post",
-      event: "Event",
-      poll: "Poll",
-      news: "News"
-    };
+      const rawType = document.getElementById("post-type").value;
+  
+      const typeMap = {
+        post: "Post",
+        event: "Event",
+        poll: "Poll",
+        news: "News"
+      };
 
-    const type = typeMap[rawType];
-    const formData = new FormData();
+      const type = typeMap[rawType];
+  
+      const formData = new FormData();
 
-    formData.append("type", type);
-    formData.append("content", document.getElementById("post-content").value);
+      formData.append("type", type);
+      formData.append("content", document.getElementById("post-content").value);
 
-    if (type === "Event") {
-      formData.append("event_name", document.getElementById("event-name").value);
-      formData.append("event_date", document.getElementById("event-date").value);
-      formData.append("location", document.getElementById("event-location").value);
-      formData.append("description", document.getElementById("event-description").value);
-    }
+      if (type === "Event") {
+        formData.append("event_name", document.getElementById("event-name").value);
+        formData.append("event_date", document.getElementById("event-date").value);
+        formData.append("location", document.getElementById("event-location").value);
+        formData.append("description", document.getElementById("event-description").value);
+      }
 
-    if (type === "Poll") {
-      const pollText = document.getElementById("poll-text").value;
-      const pollOptions = Array.from(document.querySelectorAll(".poll-option")).map(option => option.value);
-      // const expiresAt = document.getElementById("poll-expiration").value;
+      if (type === 'Poll') {
+        const pollText    = document.getElementById('poll-text').value.trim();
+        const pollOptions = Array.from(document.querySelectorAll('.poll-option'))
+                                .map(o => o.value.trim())
+                                .filter(Boolean);                 // drop empty boxes
 
-      formData.append("text", pollText);
-      // formData.append("options", JSON.stringify(pollOptions));
-      formData.append("options", JSON.stringify(pollOptions.map(label => ({ label }))));
-      // formData.append("expires_at", expiresAt);
-    }
+        formData.append('text', pollText);
+
+        // 👇 send each option as: options[0][label], options[1][label], …
+        pollOptions.forEach((label, i) => {
+          formData.append(`options[${i}][label]`, label);
+        });
+  }
+
 
     const fileInput = document.getElementById("post-image");
     if (fileInput.files.length > 0) {
@@ -110,19 +116,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadPosts() {
     try {
-      const [postsRes, eventsRes, pollsRes, newsRes] = await Promise.all([
+      const [postsRes] = await Promise.all([
         fetch("/posts", { credentials: "include" }),
-        fetch("/events", { credentials: "include" }),
-        fetch("/polls", { credentials: "include" }),
-        fetch("/news", { credentials: "include" })
       ]);
 
       const posts = await postsRes.json();
-      const events = await eventsRes.json();
-      const polls = await pollsRes.json();
-      const news = await newsRes.json();
 
-      const allPosts = [...posts, ...events, ...polls, ...news];
+      const allPosts = [...posts];
 
       // Sort by newest date
       allPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

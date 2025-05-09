@@ -1,97 +1,67 @@
-const express = require('express');
-const { PollPost } = require('../models/post.model.js');
-const requireAuth = require('../middleware/requireAuth.js');
-const mongoose = require('mongoose');
+// routes/polls.js
+const makeTypedRouter = require('../routes/postTypes.route.js');
+const { PollPost }    = require('../models/post.model');
+const requireAuth     = require('../middleware/requireAuth');
+const mongoose        = require('mongoose');
 
-function makePollsRouter() {
-    const router = express.Router();
+const pollsRouter = makeTypedRouter(PollPost);   // ← list/create/update/delete
 
-    // Cast a vote using optionId
-    router.post('/:pollId/vote', requireAuth, async (req, res) => {
-        const { pollId } = req.params;
-        const { optionId } = req.body;
-        const userId = req.session.userId;
+/* --- extra Poll‑specific routes --------------------------------------- */
 
-        // Validate IDs
-        if (!mongoose.Types.ObjectId.isValid(pollId) || !mongoose.Types.ObjectId.isValid(optionId)) {
-            return res.status(400).json({ error: 'Invalid poll or option ID' });
-        }
+// Cast a vote
+pollsRouter.post('/:pollId/vote', requireAuth, async (req, res) => {
+  const { pollId }  = req.params;
+  const { optionId }= req.body;
+  const userId      = req.session.userId;
 
-        try {
-            const poll = await PollPost.findById(pollId);
-            if (!poll || poll.type !== 'Poll') {
-                return res.status(404).json({ error: 'Poll not found' });
-            }
+  if (!mongoose.Types.ObjectId.isValid(pollId) ||
+      !mongoose.Types.ObjectId.isValid(optionId)) {
+    return res.status(400).json({ error: 'Invalid poll or option ID' });
+  }
 
-            // Check for expiration
-            if (poll.expires_at && new Date() > poll.expires_at) {
-                return res.status(400).json({ error: 'Poll has expired' });
-            }
+  const poll = await PollPost.findById(pollId);
+  if (!poll) return res.status(404).json({ error: 'Poll not found' });
 
-            // Check if already voted
-            poll.voted_user_ids = poll.voted_user_ids || [];
-            if (poll.voted_user_ids.includes(userId.toString())) {
-                return res.status(400).json({ error: 'You have already voted' });
-            }
+  if (poll.expires_at && Date.now() > poll.expires_at)
+    return res.status(400).json({ error: 'Poll has expired' });
 
-            // Find and update the selected option
-            const option = poll.options.id(optionId);
-            if (!option) {
-                return res.status(400).json({ error: 'Poll option not found' });
-            }
+  if (poll.voted_user_ids?.includes(String(userId)))
+    return res.status(400).json({ error: 'You already voted' });
 
-            option.votes += 1;
-            poll.voted_user_ids.push(userId.toString());
+  const option = poll.options.id(optionId);
+  if (!option) return res.status(400).json({ error: 'Option not found' });
 
-            await poll.save();
-            res.redirect(`/polls/${pollId}/view`);
+  option.votes += 1;
+  poll.voted_user_ids.push(String(userId));
+  await poll.save();
 
-        } catch (err) {
-            res.status(500).json({ error: 'Server error: ' + err.message });
-        }
-    });
+  res.redirect(`/polls/${pollId}/view`);
+});
 
-    // View results if voted or poll is expired
-    router.get('/:pollId/results', requireAuth, async (req, res) => {
-        const { pollId } = req.params;
-        const userId = req.session.userId;
+// Results
+pollsRouter.get('/:pollId/results', requireAuth, async (req, res) => {
+  const poll = await PollPost.findById(req.params.pollId);
+  if (!poll) return res.status(404).json({ error: 'Poll not found' });
 
-        try {
-            const poll = await PollPost.findById(pollId);
+  const voted   = poll.voted_user_ids?.includes(String(req.session.userId));
+  const expired = Date.now() > poll.expires_at;
 
-            if (!poll || poll.type !== 'Poll') {
-                return res.status(404).json({ error: 'Poll not found' });
-            }
+  if (!voted && !expired)
+    return res.status(403).json({ error: 'Results after voting or expiry' });
 
-            const voted = poll.voted_user_ids?.includes(userId.toString());
-            const expired = new Date() > poll.expires_at;
+  res.json({ question: poll.text, results: poll.options });
+});
 
-            if (!voted && !expired) {
-                return res.status(403).json({ error: 'Results only available after voting or expiration' });
-            }
+// Pretty HTML view (optional)
+pollsRouter.get('/:pollId/view', requireAuth, async (req, res) => {
+  const poll = await PollPost.findById(req.params.pollId);
+  if (!poll) return res.status(404).send('Poll not found');
 
-            res.json({ question: poll.text, results: poll.options });
+  const hasVoted = poll.voted_user_ids?.includes(String(req.session.userId));
+  const expired  = Date.now() > poll.expires_at;
 
-        } catch (err) {
-            res.status(500).json({ error: 'Server error: ' + err.message });
-        }
-    });
+  res.render('poll', { poll, hasVoted, expired });
+});
 
-    router.get('/:pollId/view', requireAuth, async (req, res) => {
-        const { pollId } = req.params;
-        const userId = req.session.userId;
-
-        const poll = await PollPost.findById(pollId);
-        if (!poll || poll.type !== 'Poll') return res.status(404).send('Poll not found');
-
-        const hasVoted = poll.voted_user_ids?.includes(userId.toString());
-        const expired = new Date() > poll.expires_at;
-
-        res.render('poll', { poll, hasVoted, expired });
-    });
-
-
-    return router;
-}
-
-module.exports = makePollsRouter;
+/* ---------------------------------------------------------------------- */
+module.exports = pollsRouter;

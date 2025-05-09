@@ -73,10 +73,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());
 
-    // app.use('/polls', router) mounts router under /polls
-    // create, read, update, delete polls
-    app.use('/polls', makePollsRouter());
-
     // app.use('/comments', router) mounts router under /comments
     // create and list current user comments
     app.use('/comments', makeCommentsRouter());
@@ -84,8 +80,12 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // app.use('/events', router) mounts router under /events
     // create, read, update, delete typed posts
     app.use('/events', makeTypedRouter(EventPost));
-    app.use('/polls', makeTypedRouter(PollPost));
     app.use('/news', makeTypedRouter(NewsPost));
+
+    
+    const pollsRouter = require('./routes/polls.route.js');
+    app.use('/polls', pollsRouter);
+
 
     // app.use(express.static(dir)) serves static files
     // exposes everything inside /public
