@@ -13,6 +13,7 @@ const makeTypedRouter   = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
+const { title } = require('process');
 
 (async () => {
     try {
@@ -64,9 +65,19 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     app.use('/users', makeUsersRouter());
 
     app.get('/map', (req, res) => {
-        res.sendFile(path.join(__dirname, './public/map.html'))
-    })
-    
+      res.render('map', {
+        title: 'Map',
+        headerLinks: [
+          { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
+          { rel: 'stylesheet', href: '/styles/map.css' }
+        ],
+        footerScripts: [
+          { src: 'https://unpkg.com/leaflet/dist/leaflet.js' },
+          { src: '/scripts/map.js' }
+        ]
+      });
+    });
+
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());
@@ -94,14 +105,37 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // app.get(path, handler) sends profile page
     // profile page (uses JS to fetch /current endpoints)
     app.get('/profile', (_req, res) =>
-     res.render('profile')
+     res.render('profile', {
+       title: 'Home',
+          headerLinks: [
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+          ],
+          footerScripts: [
+            { src: '/scripts/profile.js' },
+          ]
+     })
     );
 
     // app.get(path, handler) sends main feed
     // main/home page
-    app.get('/home', (_req, res) =>
-      res.render('main')
-    );
+    app.get('/home', (req, res) =>{
+      if(!req.session.userId) {
+        res.redirect('/login');
+      }
+      else {
+        // Render the main page with the logged-in user
+        res.render('main', {
+          title: 'Home',
+          headerLinks: [
+            { rel: 'stylesheet', href: '/styles/main.css' },
+            { rel: 'stylesheet', href: '/styles/loggedIn.css'}
+          ],
+          footerScripts: [
+            { src: '/scripts/main.js' },
+          ]
+        });
+      }
+    });
 
     // app.use(path, handler) intercepts /login
     // redirects logged-in users, otherwise shows login form
@@ -117,7 +151,15 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
       if(!req.session.userId) {
         res.redirect('/login');
       } else {
-        res.render('logout');
+        res.render('logout', {
+        title: 'Logout',
+        headerLinks: [
+          { rel: 'stylesheet', href: '/styles/loggedIn.css' }
+        ],
+        footerScripts: [
+         
+        ]
+      })
       }
     })
 
