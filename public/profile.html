@@ -1,39 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>My Profile</title>
-    <link rel="stylesheet" href="./styles/styles.css" />
-  </head>
-  <body>
-    <section id="profile">
-      <h1 id="username">Loading…</h1>
-      <p><strong>Email:</strong> <span id="email"></span></p>
-      <p><strong>Neighbourhood:</strong> <span id="neighbourhood"></span></p>
-    </section>
 
-    <div id="profilePicSection">
-      <h2>Profile Picture</h2>
-      <img id="profilePic" src="path/to/default/profile-pic.jpg" alt="Profile Picture" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Page</title>
+  <link rel="stylesheet" href="/styles/styles.css">
+  <script src="/scripts/profile.js" defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #0066cc;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .profile-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background-color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-pic {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-pic img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #ccc;
+      margin-bottom: 1rem;
+    }
+
+    #profilePicInput {
+      margin-top: 0.5rem;
+    }
+
+    form button {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: #0077ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    form button:hover {
+      background-color: #005fcc;
+    }
+
+    #uploadMessage {
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #cc0000;
+    }
+
+    .profile-info {
+      margin-top: 2rem;
+    }
+
+    .profile-info h2 {
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .profile-info p {
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: #888;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Profile</h1>
+  </header>
+
+  <div class="profile-container">
+    <!-- Profile Picture -->
+    <div class="profile-pic">
+      <img id="profilePic" src="/uploads/default.jpg" alt="Profile Picture">
       <form id="profilePicForm" enctype="multipart/form-data">
-        <input type="file" id="profilePicInput" name="profilePic" accept="image/*" />
+        <input type="file" id="profilePicInput" name="profilePic" accept="image/*">
         <button type="submit">Upload</button>
       </form>
-      <div id="uploadMessage"></div>
+      <p id="uploadMessage" style="color: red;"></p>
     </div>
-  </section>
 
-    <section id="comments">
-      <h2>My Comments</h2>
-      <div id="comments-list">Loading comments…</div>
-    </section>
+    <!-- Profile Info -->
+    <div class="profile-info">
+      <h2>User Profile</h2>
+      <p><strong>Username:</strong> <span id="username">Loading...</span></p>
+      <p><strong>Email:</strong> <span id="email">Loading...</span></p>
+      <p><strong>Neighborhood:</strong> <span id="neighbourhood">Loading...</span></p>
+    </div>
+  </div>
 
-    <section id="posts">
-      <h2>My Posts</h2>
-      <div id="posts-list">Loading posts…</div>
+  <footer>
+    <p>&copy; 2025 Community App</p>
+  </footer>
+</body>
 
-    </section>
-
-    <script src="./scripts/profile.js" type="module"></script>
-  </body>
 </html>

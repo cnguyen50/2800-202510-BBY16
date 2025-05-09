@@ -1,10 +1,14 @@
-const {Schema, model} = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-module.exports = model('News', new Schema({
+const NewsSchema = new Schema({
     user_id: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    userProfilePic: {
+        type: String,
+        default: '/uploads/default.jpg'
     },
     title: {
         type: String,
@@ -15,14 +19,16 @@ module.exports = model('News', new Schema({
         required: true
     },
     image_url: {
-        type: String 
+        type: String
     },
     neighborhood: {
-        type: String, 
+        type: String,
         required: true
     },
     created_at: {
         type: Date,
         default: Date.now
     }
-}));
+});
+
+module.exports = model('News', NewsSchema);

@@ -36,7 +36,11 @@ const UserSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-    }
+    },
+    profilePic: {
+      type: String, 
+      default: '/uploads/default.jpg', 
+    },
 },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },

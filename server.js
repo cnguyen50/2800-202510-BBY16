@@ -1,17 +1,18 @@
 // Load .env into process.env
 require('dotenv').config();
 
-const express      = require('express');
-const session      = require('express-session');
+const express = require('express');
+const session = require('express-session');
 const MongoDBStore = require('connect-mongo');
-const path         = require('path');
+const path = require('path');
 
-const { connectDB }          = require('./scripts/db.js');
-const makeAuthRouter     = require('./routes/auth.route.js');
-const makeUsersRouter    = require('./routes/users.route.js');
-const makePostsRouter    = require('./routes/posts.route.js');
+const { connectDB } = require('./scripts/db.js');
+const makeAuthRouter = require('./routes/auth.route.js');
+const makeUsersRouter = require('./routes/users.route.js');
+const makePostsRouter = require('./routes/posts.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
 const makeNewsRouter = require('./routes/news.route.js');
+const profileRoute = require('./routes/profile.route');
 
 (async () => {
   try {
@@ -72,6 +73,12 @@ const makeNewsRouter = require('./routes/news.route.js');
     // app.use(express.static(dir)) serves static files
     // exposes everything inside /public
     app.use(express.static('public'));
+
+    // Serve uploaded profile pictures
+    app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+    // Serve profile route
+    app.use('/profile', profileRoute);
 
     // app.get(path, handler) sends index page
     // landing page
