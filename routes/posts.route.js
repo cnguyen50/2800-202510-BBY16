@@ -1,9 +1,6 @@
 const express = require('express');
-<<<<<<< HEAD
 const multer       = require('multer');
 const upload       = multer({ dest: 'public/uploads/' });
-=======
->>>>>>> Veronica
 const {Post} = require('../models/post.model.js')
 const requireAuth = require('../middleware/requireAuth.js');
 
@@ -28,16 +25,11 @@ function makePostsRouter() {
     console.log("FILE:", req.file);
 
     try {
-<<<<<<< HEAD
       const post = await Post.create({
         ...req.body,
         user_id: req.session.userId,
         image_url: req.file ? `/uploads/${req.file.filename}` : null
       });
-=======
-      const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
-      const post = await Post.create({...req.body, type: 'post', user_id: req.session.userId});
->>>>>>> Veronica
       res.status(201).json(post);
     } catch (err) {
       res.status(400).json({ error: err.message });

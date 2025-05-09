@@ -66,7 +66,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     app.use('/users', makeUsersRouter());
 
     app.get('/map', (req, res) => {
-<<<<<<< HEAD
       res.render('map', {
         title: 'Map',
         headerLinks: [
@@ -80,11 +79,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
       });
     });
 
-=======
-      res.sendFile(path.join(__dirname, './public/map.html'))
-    })
-    
->>>>>>> Leen
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());
@@ -116,7 +110,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // app.get(path, handler) sends profile page
     // profile page (uses JS to fetch /current endpoints)
     app.get('/profile', (_req, res) =>
-<<<<<<< HEAD
      res.render('profile', {
        title: 'Home',
           headerLinks: [
@@ -126,9 +119,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             { src: '/scripts/profile.js' },
           ]
      })
-=======
-      res.render('profile')
->>>>>>> Leen
     );
 
     // app.get(path, handler) sends main feed
