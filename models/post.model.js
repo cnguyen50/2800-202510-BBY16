@@ -39,7 +39,6 @@ const PollPost = Post.discriminator(
   })
 );
 
-
 const NewsPost = Post.discriminator(
   'News',
   new Schema({
