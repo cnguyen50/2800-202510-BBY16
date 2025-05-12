@@ -6,8 +6,6 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongo');
 const path = require('path');
 
-const User = require('./models/user.model');
-
 const { connectDB } = require('./scripts/db.js');
 const makeAuthRouter = require('./routes/auth.route.js');
 const makeUsersRouter = require('./routes/users.route.js');
@@ -90,50 +88,19 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
       res.sendFile(path.join(__dirname, './public/index.html'))
     );
 
-    // app.get(path, handler) sends profile page
-    // profile page (uses JS to fetch /current endpoints)
-    // app.get('/profile', (_req, res) =>
-    //   res.render('profile', {
-    //     title: 'Home',
-    //     headerLinks: [
-    //       { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-    //     ],
-    //     footerScripts: [
-    //       { src: '/scripts/profile.js' },
-    //     ]
-    //   })
-    // );
-
-app.get('/profile', async (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect('/login');
-  }
-
-  try {
-    const user = await User.findById(req.session.userId);
-    if (!user) {
-      return res.redirect('/login');
-    }
-
-    res.render('profile', {
-      title: 'Profile',
-      user,
-      uploadMessage: null, // ✅ define this so EJS doesn't throw
-      headerLinks: [
-        { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-        { rel: 'stylesheet', href: '/styles/profile.css' } 
-      ],
-      footerScripts: [
-        { src: '/scripts/profile.js' },
-      ]
-    });
-
-  } catch (err) {
-    console.error('Error loading profile:', err);
-    res.status(500).send('Internal Server Error');
-  }
-});
-
+    //app.get(path, handler) sends profile page
+    //profile page (uses JS to fetch /current endpoints)
+    app.get('/profile', (_req, res) =>
+      res.render('profile', {
+        title: 'Home',
+        headerLinks: [
+          { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+        ],
+        footerScripts: [
+          { src: '/scripts/profile.js' },
+        ]
+      })
+    );
 
     // app.get(path, handler) sends main feed
     // main/home page
