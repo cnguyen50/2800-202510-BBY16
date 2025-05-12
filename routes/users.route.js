@@ -90,13 +90,8 @@ function makeUsersRouter() {
       await user.save();
 
       res.json({
-        profilePic: profilePicUrl,
-        user: {
-          username: user.username,
-          email: user.email,
-          neighbourhood: user.neighbourhood,
-          profilePic: user.profilePic
-        }
+        profilePic: `/uploads/${req.file.filename}`,
+        user
       });
     } catch (err) {
       console.error('Error uploading profile picture:', err);

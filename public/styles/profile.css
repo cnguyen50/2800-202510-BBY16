@@ -54,9 +54,9 @@ form button:hover {
 }
 
 #uploadMessage {
-    margin-top: 1rem;
+    color: green;
     font-weight: bold;
-    color: #cc0000;
+    margin-top: 10px;
 }
 
 .profile-info {

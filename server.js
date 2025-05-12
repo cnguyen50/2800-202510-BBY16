@@ -4,6 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongo');
+const User = require('./models/user.model.js');
 const path = require('path');
 
 const { connectDB } = require('./scripts/db.js');
@@ -90,17 +91,33 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     //app.get(path, handler) sends profile page
     //profile page (uses JS to fetch /current endpoints)
-    app.get('/profile', (_req, res) =>
-      res.render('profile', {
-        title: 'Home',
-        headerLinks: [
-          { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-        ],
-        footerScripts: [
-          { src: '/scripts/profile.js' },
-        ]
-      })
-    );
+    app.get('/profile', async (req, res) => {
+      if (!req.session.userId) {
+        return res.redirect('/login');  // If user is not logged in, redirect to login
+      }
+
+      try {
+        const user = await User.findById(req.session.userId);  // Fetch user from DB
+        if (!user) {
+          return res.status(404).send('User not found');  // If user is not found in DB
+        }
+
+        res.render('profile', {
+          title: 'Profile',
+          headerLinks: [
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+            { rel: 'stylesheet', href: '/styles/profile.css' }
+          ],
+          footerScripts: [
+            { src: '/scripts/profile.js' },
+          ],
+          user,  // Pass the user object to the EJS template
+        });
+      } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+      }
+    });
 
     // app.get(path, handler) sends main feed
     // main/home page
@@ -143,7 +160,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         res.render('logout', {
           title: 'Logout',
           headerLinks: [
-            { rel: 'stylesheet', href: '/styles/loggedIn.css' }
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
           ],
           footerScripts: [
 
