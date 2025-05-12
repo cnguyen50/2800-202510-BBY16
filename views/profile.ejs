@@ -1,4 +1,5 @@
 <%- include('templates/loggedHeader') %>
+<<<<<<< HEAD
 <main>
     <section id="profile">
         <h1 id="username">Loading…</h1>
@@ -20,3 +21,48 @@
     <script src="./scripts/profile.js" type="module"></script>
 </main>
 <%- include('templates/loggedFooter') %>
+=======
+
+    <main>
+        <div class="profile-container">
+            <!-- Profile Picture -->
+            <div class="profile-pic">
+                <img id="profilePic" src="<%= user.profilePic || '/uploads/default.jpg' %>" alt="Profile Picture">
+                <form id="profilePicForm" action="/profile/upload" method="POST" enctype="multipart/form-data">
+                    <input type="file" id="profilePicInput" name="profilePic" accept="image/*">
+                    <button type="submit">Upload</button>
+                </form>
+                
+                <p id="uploadMessage"></p>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="profile-info">
+                <h2>User Profile</h2>
+                <p><strong>Username:</strong> <span id="username">
+                        <%= user.username %>
+                    </span></p>
+                <p><strong>Email:</strong> <span id="email">
+                        <%= user.email %>
+                    </span></p>
+                <p><strong>Neighborhood:</strong> <span id="neighbourhood">
+                        <%= user.neighbourhood %>
+                    </span></p>
+            </div>
+        </div>
+
+        <section id="comments">
+            <h2>My Comments</h2>
+            <div id="comments-list">Loading comments…</div>
+        </section>
+
+        <section id="posts">
+            <h2>My Posts</h2>
+            <div id="posts-list">Loading posts…</div>
+        </section>
+    </main>
+
+    <script src="/scripts/profile.js" type="module"></script>
+
+    <%- include('templates/loggedFooter') %>
+>>>>>>> Tommy

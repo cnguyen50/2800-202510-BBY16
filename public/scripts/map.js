@@ -7,7 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
         10 //zoom level
     )
 
+<<<<<<< HEAD
       //Load and display tile layers on the map
+=======
+    //Load and display tile layers on the map
+>>>>>>> Tommy
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19
     }).addTo(map);
@@ -42,7 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 //Fetching users static neighbourhood value from login form
                 const meRes = await fetch('/users/me', { credentials: 'include' });
                 const { neighbourhood } = await meRes.json();
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> Tommy
                 //Reverse geocoded to get current neighbourhood with Nominatim as per documentation
                 const nomURL = 'https://nominatim.openstreetmap.org/reverse?' +
                     new URLSearchParams({
@@ -51,7 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         lon: longitude,
                         addressdetails: 1, // need to access the address elementss
                         zoom: 14 // neighbourhood zoom level
+<<<<<<< HEAD
                 });
+=======
+                    });
+>>>>>>> Tommy
 
                 //Fetching neighbourhood info
                 const nomRes = await fetch(nomURL);
@@ -63,7 +75,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 //Update the div with id=location-info
                 document.getElementById('location-info').textContent =
+<<<<<<< HEAD
                 `📍 ${city}, ${region} | Your Neighbourhood: ${neighbourhood} | Your Current Neighbourhood: ${currentNeighbourhood}`;
+=======
+                    `📍 ${city}, ${region} | Your Neighbourhood: ${neighbourhood} | Your Current Neighbourhood: ${currentNeighbourhood}`;
+>>>>>>> Tommy
 
             } catch (err) {
                 console.log('Location info fetch error:', err);
@@ -75,7 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
         (err) => {
             console.log("Error: ", err);
             document.getElementById('location-info').textContent =
+<<<<<<< HEAD
             'Location unavailable';
+=======
+                'Location unavailable';
+>>>>>>> Tommy
         }
     )
 })

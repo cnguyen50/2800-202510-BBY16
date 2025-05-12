@@ -4,6 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongo');
+const User = require('./models/user.model.js');
 const path = require('path');
 
 const { connectDB } = require('./scripts/db.js');
@@ -13,6 +14,7 @@ const makePostsRouter = require('./routes/posts.route.js');
 const makePollsRouter = require('./routes/polls.route.js');
 const makeTypedRouter = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
+const makeNewsRouter = require('./routes/news.route.js');
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
@@ -29,7 +31,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'views'));
-
 
     // app.use(session(options)) adds req.session support
     // stores sessions in MongoDB, 14-day cookie
@@ -71,7 +72,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         headerLinks: [
           { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
           { rel: 'stylesheet', href: '/styles/map.css' },
-          { rel: 'stylesheet', href: '/styles/loggedIn.css'}
+          { rel: 'stylesheet', href: '/styles/loggedIn.css' }
         ],
         footerScripts: [
           { src: 'https://unpkg.com/leaflet/dist/leaflet.js' },
@@ -93,7 +94,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     app.use('/events', makeTypedRouter(EventPost));
     app.use('/news', makeTypedRouter(NewsPost));
 
-    
+
     const pollsRouter = require('./routes/polls.route.js');
     app.use('/polls', pollsRouter);
 
@@ -102,30 +103,49 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // exposes everything inside /public
     app.use(express.static('public'));
 
+    // Serve uploaded profile pictures
+    app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
     // app.get(path, handler) sends index page
     // landing page
     app.get('/', (_req, res) =>
       res.sendFile(path.join(__dirname, './public/index.html'))
     );
 
-    // app.get(path, handler) sends profile page
-    // profile page (uses JS to fetch /current endpoints)
-    app.get('/profile', (_req, res) =>
-     res.render('profile', {
-       title: 'Home',
+    //app.get(path, handler) sends profile page
+    //profile page (uses JS to fetch /current endpoints)
+    app.get('/profile', async (req, res) => {
+      if (!req.session.userId) {
+        return res.redirect('/login');  // If user is not logged in, redirect to login
+      }
+
+      try {
+        const user = await User.findById(req.session.userId);  // Fetch user from DB
+        if (!user) {
+          return res.status(404).send('User not found');  // If user is not found in DB
+        }
+
+        res.render('profile', {
+          title: 'Profile',
           headerLinks: [
             { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+            { rel: 'stylesheet', href: '/styles/profile.css' }
           ],
           footerScripts: [
             { src: '/scripts/profile.js' },
-          ]
-     })
-    );
+          ],
+          user,  // Pass the user object to the EJS template
+        });
+      } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+      }
+    });
 
     // app.get(path, handler) sends main feed
     // main/home page
-    app.get('/home', (req, res) =>{
-      if(!req.session.userId) {
+    app.get('/home', (req, res) => {
+      if (!req.session.userId) {
         res.redirect('/login');
       }
       else {
@@ -134,8 +154,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           title: 'Home',
           headerLinks: [
             { rel: 'stylesheet', href: '/styles/main.css' },
-            { rel: 'stylesheet', href: '/styles/loggedIn.css'},
-          
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+
           ],
           footerScripts: [
             { src: '/scripts/main.js' },
@@ -159,14 +179,14 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         res.redirect('/login');
       } else {
         res.render('logout', {
-        title: 'Logout',
-        headerLinks: [
-          { rel: 'stylesheet', href: '/styles/loggedIn.css' }
-        ],
-        footerScripts: [
-         
-        ]
-      })
+          title: 'Logout',
+          headerLinks: [
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' }
+          ],
+          footerScripts: [
+
+          ]
+        })
       }
     })
 

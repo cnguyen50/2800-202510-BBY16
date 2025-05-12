@@ -1,4 +1,5 @@
 <%- include('templates/loggedHeader') %>
+<<<<<<< HEAD
 <main>
     <!-- Header -->
     <div class="buttons">
@@ -80,3 +81,94 @@
 
 
 
+=======
+    <main>
+        <!-- Header -->
+        <div class="buttons">
+            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#postModal">Create a Post</button>
+        </div>
+
+        <!-- Filter -->
+        <div class="posts">
+            <label for="post-select">Filter by Type:</label>
+            <select id="post-select">
+                <option value="all">All Posts</option>
+                <option value="event">Event</option>
+                <option value="poll">Poll</option>
+                <option value="news">News</option>
+            </select>
+        </div>
+
+
+        <!-- Feed -->
+        <section class="feed">
+            <h2>Community Feed</h2>
+            <div id="post-container"></div>
+        </section>
+
+        <!-- Post Modal -->
+        <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <form id="create-post-form" enctype="multipart/form-data">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="postModalLabel">Create a Post</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <input type="file" class="form-control mb-2" id="post-image" accept="image/*">
+                            <textarea id="post-content" class="form-control mb-2" rows="3"
+                                placeholder="Share your thoughts!"></textarea>
+
+                            <select id="post-type" class="form-select mb-2">
+                                <option value="news">News</option>
+                                <option value="event">Event</option>
+                                <option value="poll">Poll</option>
+                            </select>
+
+                            <div id="news-fields" style="display: none;">
+                                <input type="text" class="form-control mb-2" id="news-headline" placeholder="Headline"
+                                    required>
+                                <textarea class="form-control mb-2" id="news-body" rows="3" placeholder="Body text"
+                                    required></textarea>
+                                <input type="url" class="form-control mb-2" id="news-image-url"
+                                    placeholder="Image URL (optional)">
+                                <input type="text" class="form-control mb-2" id="news-neighborhood"
+                                    placeholder="Neighborhood" required>
+                            </div>
+
+                            <div id="event-fields" style="display: none;">
+                                <input type="text" class="form-control mb-2" id="event-name" placeholder="Event Name">
+                                <input type="date" class="form-control mb-2" id="event-date">
+                                <input type="text" class="form-control mb-2" id="event-location" placeholder="Location">
+                                <textarea class="form-control mb-2" id="event-description" rows="2"
+                                    placeholder="Event Description"></textarea>
+                            </div>
+
+                            <div id="poll-fields" style="display: none;">
+                                <input type="text" class="form-control mb-2" id="poll-text" placeholder="Poll Question">
+                                <input type="text" class="form-control mb-2 poll-option" id="poll-option1"
+                                    placeholder="Option 1">
+                                <input type="text" class="form-control mb-2 poll-option" id="poll-option2"
+                                    placeholder="Option 2">
+                                <input type="text" class="form-control mb-2 poll-option" id="poll-option3"
+                                    placeholder="Option 3">
+                                <input type="text" class="form-control mb-2 poll-option" id="poll-option4"
+                                    placeholder="Option 4">
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Submit Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <%- include('templates/loggedFooter') %>
+>>>>>>> Tommy
