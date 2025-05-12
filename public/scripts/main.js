@@ -6,15 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const type = e.target.value;
     const eventFields = document.getElementById("event-fields");
     const pollFields = document.getElementById("poll-fields");
-<<<<<<< HEAD
-    eventFields.style.display = (type === "event") ? "block" : "none";
-    pollFields.style.display = (type === "poll") ? "block" : "none";
-=======
     const newsFields = document.getElementById("news-fields");
     eventFields.style.display = (type === "event") ? "block" : "none";
     pollFields.style.display = (type === "poll") ? "block" : "none";
     newsFields.style.display = (type === "news") ? "block" : "none";
->>>>>>> Tommy
   });
 
   // Filter
@@ -44,49 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-<<<<<<< HEAD
-    // Submit post from modal
-  form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const rawType = document.getElementById("post-type").value;
-  
-      const typeMap = {
-        post: "Post",
-        event: "Event",
-        poll: "Poll",
-        news: "News"
-      };
-
-      const type = typeMap[rawType];
-  
-      const formData = new FormData();
-
-      formData.append("type", type);
-      formData.append("content", document.getElementById("post-content").value);
-
-      if (type === "Event") {
-        formData.append("event_name", document.getElementById("event-name").value);
-        formData.append("event_date", document.getElementById("event-date").value);
-        formData.append("location", document.getElementById("event-location").value);
-        formData.append("description", document.getElementById("event-description").value);
-      }
-
-      if (type === 'Poll') {
-        const pollText    = document.getElementById('poll-text').value.trim();
-        const pollOptions = Array.from(document.querySelectorAll('.poll-option'))
-                                .map(o => o.value.trim())
-                                .filter(Boolean);                 // drop empty boxes
-
-        formData.append('text', pollText);
-
-        // 👇 send each option as: options[0][label], options[1][label], …
-        pollOptions.forEach((label, i) => {
-          formData.append(`options[${i}][label]`, label);
-        });
-  }
-
-=======
   // Submit post from modal
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -134,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("image_url", document.getElementById("news-image-url").value);
       formData.append("neighborhood", document.getElementById("news-neighborhood").value);
     }
->>>>>>> Tommy
 
     const fileInput = document.getElementById("post-image");
     if (fileInput.files.length > 0) {
@@ -164,10 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       form.reset();
       document.getElementById("event-fields").style.display = "none";
       document.getElementById("poll-fields").style.display = "none";
-<<<<<<< HEAD
-=======
       document.getElementById("news-fields").style.display = "none";
->>>>>>> Tommy
       const modal = bootstrap.Modal.getInstance(document.getElementById("postModal"));
       modal.hide();
     } catch (err) {
@@ -310,9 +258,6 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   `;
   }
-<<<<<<< HEAD
-});
-=======
 });
 
 function renderNews(post, username, date, typeLabel) {
@@ -338,4 +283,3 @@ function renderNews(post, username, date, typeLabel) {
     </div>
   `;
 }
->>>>>>> Tommy

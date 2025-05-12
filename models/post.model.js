@@ -39,26 +39,14 @@ const PollPost = Post.discriminator(
   })
 );
 
-<<<<<<< HEAD
-
-=======
->>>>>>> Tommy
 const NewsPost = Post.discriminator(
   'News',
   new Schema({
     headline : { type: String, required: true },
     body     : { type: String, required: true },
-<<<<<<< HEAD
-    image_url: String
-  })
-);
-
-module.exports = { Post, EventPost, PollPost, NewsPost };
-=======
     image_url   : { type: String },
     neighborhood: { type: String, required: true }
   })
 );
 
 module.exports = { Post, EventPost, PollPost, NewsPost };
->>>>>>> Tommy

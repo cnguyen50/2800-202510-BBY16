@@ -1,7 +1,4 @@
 /node_modules
 *.env
-<<<<<<< HEAD
 package-lock.json
-=======
 /public/uploads/
->>>>>>> Tommy

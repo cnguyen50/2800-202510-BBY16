@@ -1,13 +1,8 @@
-<<<<<<< HEAD
 .sidebar{
-=======
-.sidebar {
->>>>>>> Tommy
     position: fixed;
 }
 
 @media (min-width: 768px) {
-<<<<<<< HEAD
   body{
     display: grid;
     grid-template-columns: 1fr 3fr; /* Two equal columns */
@@ -17,52 +12,20 @@
     footer{
         grid-column: 1 / -1; /* Span all columns */
         grid-row: 2; /* Place in the second row */
-=======
-    body {
-        display: grid;
-        grid-template-columns: 1fr 3fr;
-        /* Two equal columns */
-        grid-template-rows: 5fr 1fr;
-    }
-
-    footer {
-        grid-column: 1 / -1;
-        /* Span all columns */
-        grid-row: 2;
-        /* Place in the second row */
->>>>>>> Tommy
         background-color: #f8f9fa;
         padding: 10px;
         text-align: center;
     }
 
-<<<<<<< HEAD
     main{
         grid-column: 2; /* Span all columns */
         grid-row: 1; /* Place in the first row */
-=======
-    main {
-        grid-column: 2;
-        /* Span all columns */
-        grid-row: 1;
-        /* Place in the first row */
->>>>>>> Tommy
 
     }
 
     aside {
-<<<<<<< HEAD
         grid-column: 1; /* Span all columns */
         grid-row: 1; /* Place in the first row */
     }
 
 }
-=======
-        grid-column: 1;
-        /* Span all columns */
-        grid-row: 1;
-        /* Place in the first row */
-    }
-
-}
->>>>>>> Tommy

@@ -41,16 +41,9 @@ function makeUsersRouter() {
     const user = await User.findById(req.session.userId).select('-password');
     if (!user) return res.status(404).json({ error: 'Not found' });
     res.json(user);
-<<<<<<< HEAD
   })
   
   router.put('/me/location', requireAuth, async (req,res) => {
-=======
-  });
-
-  // PUT update logged-in user's location
-  router.put('/me/location', requireAuth, async (req, res) => {
->>>>>>> Tommy
     const { latitude, longitude } = req.body;
 
     if (typeof latitude !== 'number' || typeof longitude !== 'number') {
@@ -58,15 +51,9 @@ function makeUsersRouter() {
     }
 
     try {
-<<<<<<< HEAD
       //updating with Mongoose
       const updated = await User.findByIdAndUpdate(
         req.session.userId, {
-=======
-      const updated = await User.findByIdAndUpdate(
-        req.session.userId,
-        {
->>>>>>> Tommy
           location: {
             type: 'Point',
             coordinates: [longitude, latitude]
@@ -76,7 +63,6 @@ function makeUsersRouter() {
           new: true,
           select: 'location'
         }
-<<<<<<< HEAD
       )
 
       // Error handle if user isn't found
@@ -90,19 +76,6 @@ function makeUsersRouter() {
       return res.status(500).json({ error: err.message });
     }
   })
-
-=======
-      );
-
-      if (!updated) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-
-      res.json({ location: updated.location });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  });
 
   // POST upload profile picture (Tom's feature)
   router.post('/me/upload', requireAuth, upload.single('profilePic'), async (req, res) => {
@@ -128,7 +101,6 @@ function makeUsersRouter() {
   });
 
   // GET user by ID
->>>>>>> Tommy
   router.get('/:id', async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'Not found' });
