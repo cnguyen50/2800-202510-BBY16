@@ -35,8 +35,6 @@ const UserSchema = new Schema(
       required: true,
       trim: true,
     },
-<<<<<<< HEAD
-
     location: {
       type: {
         type: String,
@@ -49,13 +47,11 @@ const UserSchema = new Schema(
         default: [0,0],
         required: true
       }
-    }
-=======
+    },
     profilePic: {
       type: String, 
       default: '/uploads/default.jpg', 
     },
->>>>>>> Tommy
 },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
