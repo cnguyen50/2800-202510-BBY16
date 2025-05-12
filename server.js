@@ -12,6 +12,7 @@ const makeUsersRouter    = require('./routes/users.route.js');
 const makePostsRouter    = require('./routes/posts.route.js');
 const makeTypedRouter   = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
+const aiRouter         = require('./routes/ai.route.js');
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 const { title } = require('process');
@@ -103,6 +104,8 @@ const { title } = require('process');
         res.sendFile(path.join(__dirname, './public/index.html'))
     );
 
+    app.use('/ai', aiRouter);
+
     // app.get(path, handler) sends profile page
     // profile page (uses JS to fetch /current endpoints)
     app.get('/profile', (_req, res) =>
@@ -163,6 +166,7 @@ const { title } = require('process');
       })
       }
     })
+    
 
     // Start HTTP server on given port
     // default 3000
