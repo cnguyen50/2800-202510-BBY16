@@ -7,7 +7,7 @@ const requireAuth = require('../middleware/requireAuth.js');
 function makeUsersRouter() {
   const router = express.Router();
 
-  // Set up storage for Multer (Profile Picture Upload) -- Tom
+  // Multer storage setup for profile picture uploads (Tom's addition)
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, path.join(__dirname, '../public/uploads'));
@@ -20,11 +20,13 @@ function makeUsersRouter() {
   });
   const upload = multer({ storage: storage });
 
+  // GET all users
   router.get('/', async (_req, res) => {
     const users = await User.find().sort({ createdAt: -1 });
     res.json(users);
   });
 
+  // POST create new user
   router.post('/', async (req, res) => {
     try {
       const user = await User.create(req.body);
@@ -34,19 +36,57 @@ function makeUsersRouter() {
     }
   });
 
-  // POST upload a profile picture - Tom
+  // GET logged-in user's profile
+  router.get('/me', requireAuth, async (req, res) => {
+    const user = await User.findById(req.session.userId).select('-password');
+    if (!user) return res.status(404).json({ error: 'Not found' });
+    res.json(user);
+  });
+
+  // PUT update logged-in user's location
+  router.put('/me/location', requireAuth, async (req, res) => {
+    const { latitude, longitude } = req.body;
+
+    if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+      return res.status(400).json({ error: 'Invalid coords' });
+    }
+
+    try {
+      const updated = await User.findByIdAndUpdate(
+        req.session.userId,
+        {
+          location: {
+            type: 'Point',
+            coordinates: [longitude, latitude]
+          }
+        },
+        {
+          new: true,
+          select: 'location'
+        }
+      );
+
+      if (!updated) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.json({ location: updated.location });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST upload profile picture (Tom's feature)
   router.post('/me/upload', requireAuth, upload.single('profilePic'), async (req, res) => {
     try {
-      const user = await User.findById(req.user._id);
+      const user = await User.findById(req.session.userId);
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      // Update profilePic field
       const profilePicUrl = `/uploads/${req.file.filename}`;
       user.profilePic = profilePicUrl;
 
-      // Save user with updated profile picture
       await user.save();
 
       res.json({
@@ -64,21 +104,14 @@ function makeUsersRouter() {
     }
   });
 
-  router.get('/me', requireAuth, async (req, res) => {
-    try {
-      const user = await User.findById(req.user._id);
-      res.json(user);
-    } catch (err) {
-      res.status(500).json({ message: 'Error fetching user data.' });
-    }
-  });
-
+  // GET user by ID
   router.get('/:id', async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'Not found' });
     res.json(user);
   });
 
+  // PUT update user by ID
   router.put('/:id', async (req, res) => {
     try {
       const user = await User.findByIdAndUpdate(
@@ -93,6 +126,7 @@ function makeUsersRouter() {
     }
   });
 
+  // DELETE user by ID
   router.delete('/:id', async (req, res) => {
     const user = await User.findByIdAndDelete(req.params.id);
     if (!user) return res.status(404).json({ error: 'Not found' });
