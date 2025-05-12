@@ -1,0 +1,81 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #0066cc;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+.profile-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profile-pic {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.profile-pic img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #ccc;
+    margin-bottom: 1rem;
+}
+
+#profilePicInput {
+    margin-top: 0.5rem;
+}
+
+form button {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #0077ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #005fcc;
+}
+
+#uploadMessage {
+    margin-top: 1rem;
+    font-weight: bold;
+    color: #cc0000;
+}
+
+.profile-info {
+    margin-top: 2rem;
+}
+
+.profile-info h2 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.profile-info p {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+footer {
+    text-align: center;
+    padding: 1rem;
+    color: #888;
+    font-size: 0.9rem;
+}

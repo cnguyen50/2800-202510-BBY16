@@ -1,9 +1,24 @@
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
 const User = require('../models/user.model.js');
 const requireAuth = require('../middleware/requireAuth.js');
 
 function makeUsersRouter() {
   const router = express.Router();
+
+  // Set up storage for Multer (Profile Picture Upload) -- Tom
+  const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, path.join(__dirname, '../public/uploads'));
+    },
+    filename: function (req, file, cb) {
+      const ext = path.extname(file.originalname);
+      const filename = `${Date.now()}${ext}`;
+      cb(null, filename);
+    }
+  });
+  const upload = multer({ storage: storage });
 
   router.get('/', async (_req, res) => {
     const users = await User.find().sort({ createdAt: -1 });
@@ -19,9 +34,39 @@ function makeUsersRouter() {
     }
   });
 
+  // POST upload a profile picture - Tom
+  router.post('/me/upload', requireAuth, upload.single('profilePic'), async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Update profilePic field
+      const profilePicUrl = `/uploads/${req.file.filename}`;
+      user.profilePic = profilePicUrl;
+
+      // Save user with updated profile picture
+      await user.save();
+
+      res.json({
+        profilePic: profilePicUrl,
+        user: {
+          username: user.username,
+          email: user.email,
+          neighbourhood: user.neighbourhood,
+          profilePic: user.profilePic
+        }
+      });
+    } catch (err) {
+      console.error('Error uploading profile picture:', err);
+      res.status(500).json({ error: 'Server error while uploading picture' });
+    }
+  });
+
   router.get('/me', requireAuth, async (req, res) => {
     try {
-      const user = await User.findById(req.user._id); 
+      const user = await User.findById(req.user._id);
       res.json(user);
     } catch (err) {
       res.status(500).json({ message: 'Error fetching user data.' });

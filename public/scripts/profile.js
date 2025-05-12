@@ -9,7 +9,7 @@ async function fetchJson(url, options = {}) {
 
 async function getUserData() {
   try {
-    const user = await fetchJson('/profile/me');
+    const user = await fetchJson('/users/me');
     if (user) {
       renderUser(user);
       document.getElementById('profilePic').src = user.profilePic || '/uploads/default.jpg';
@@ -49,7 +49,7 @@ async function uploadProfilePic(event) {
   formData.append('profilePic', fileInput.files[0]);
 
   try {
-    const res = await fetch('/profile/upload', {  // Updated route path here
+    const res = await fetch('/users/me/upload', {  // Updated route path here
       method: 'POST',
       body: formData,
       credentials: 'include',

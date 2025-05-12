@@ -6,13 +6,17 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongo');
 const path = require('path');
 
+const User = require('./models/user.model');
+
 const { connectDB } = require('./scripts/db.js');
 const makeAuthRouter = require('./routes/auth.route.js');
 const makeUsersRouter = require('./routes/users.route.js');
 const makePostsRouter = require('./routes/posts.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
+const makeTypedRouter = require('./routes/postTypes.route.js');
 const makeNewsRouter = require('./routes/news.route.js');
-const profileRoute = require('./routes/profile.route');
+
+const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
 (async () => {
   try {
@@ -24,6 +28,9 @@ const profileRoute = require('./routes/profile.route');
     // app.use(middleware) attaches JSON-body parser to all requests
     // handles application/json
     app.use(express.json());
+
+    app.set('view engine', 'ejs');
+    app.set('views', path.join(__dirname, 'views'));
 
     // app.use(session(options)) adds req.session support
     // stores sessions in MongoDB, 14-day cookie
@@ -68,7 +75,7 @@ const profileRoute = require('./routes/profile.route');
     app.use('/comments', makeCommentsRouter());
 
     // app.use('/news', router) mounts router under /news
-    app.use('/news', makeNewsRouter());
+    app.use('/news', makeNewsRouter(NewsPost));
 
     // app.use(express.static(dir)) serves static files
     // exposes everything inside /public
@@ -76,9 +83,6 @@ const profileRoute = require('./routes/profile.route');
 
     // Serve uploaded profile pictures
     app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
-
-    // Serve profile route
-    app.use('/profile', profileRoute);
 
     // app.get(path, handler) sends index page
     // landing page
@@ -88,25 +92,98 @@ const profileRoute = require('./routes/profile.route');
 
     // app.get(path, handler) sends profile page
     // profile page (uses JS to fetch /current endpoints)
-    app.get('/profile', (_req, res) =>
-      res.sendFile(path.join(__dirname, './public/profile.html'))
-    );
+    // app.get('/profile', (_req, res) =>
+    //   res.render('profile', {
+    //     title: 'Home',
+    //     headerLinks: [
+    //       { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+    //     ],
+    //     footerScripts: [
+    //       { src: '/scripts/profile.js' },
+    //     ]
+    //   })
+    // );
+
+app.get('/profile', async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+
+  try {
+    const user = await User.findById(req.session.userId);
+    if (!user) {
+      return res.redirect('/login');
+    }
+
+    res.render('profile', {
+      title: 'Profile',
+      user,
+      uploadMessage: null, // ✅ define this so EJS doesn't throw
+      headerLinks: [
+        { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+        { rel: 'stylesheet', href: '/styles/profile.css' } 
+      ],
+      footerScripts: [
+        { src: '/scripts/profile.js' },
+      ]
+    });
+
+  } catch (err) {
+    console.error('Error loading profile:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
     // app.get(path, handler) sends main feed
     // main/home page
-    app.get('/home', (_req, res) =>
-      res.sendFile(path.join(__dirname, './public/main.html'))
-    );
+    app.get('/home', (req, res) => {
+      if (!req.session.userId) {
+        res.redirect('/login');
+      }
+      else {
+        // Render the main page with the logged-in user
+        res.render('main', {
+          title: 'Home',
+          headerLinks: [
+            { rel: 'stylesheet', href: '/styles/main.css' },
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+
+          ],
+          footerScripts: [
+            { src: '/scripts/main.js' },
+          ]
+        });
+      }
+    });
 
     // app.use(path, handler) intercepts /login
     // redirects logged-in users, otherwise shows login form
     app.use('/login', (req, res) => {
-      if (req.session.user) {
+      if (req.session.userId) {
         res.redirect('/home');
       } else {
         res.sendFile(path.join(__dirname, './public/login.html'));
       }
     });
+
+    // app.use(path, handler) intercepts /login
+    // redirects logged-in users, otherwise shows login form
+    app.use('/logout', (req, res) => {
+      if (!req.session.userId) {
+        res.redirect('/login');
+      } else {
+        res.render('logout', {
+          title: 'Logout',
+          headerLinks: [
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' }
+          ],
+          footerScripts: [
+
+          ]
+        })
+      }
+    })
 
     // Start HTTP server on given port
     // default 3000
