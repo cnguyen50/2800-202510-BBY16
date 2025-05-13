@@ -22,9 +22,28 @@ const EventPost = Post.discriminator(
     event_date : { type: Date,   required: true },
     location   : { type: String, required: true },
     description: String,
-    image_url: { type: String }
+    image_url: { type: String },
+    coords: {
+      type: { 
+        type: String, 
+        required: true 
+      },
+      coords: {
+        type: { 
+          type: String,
+          enum: ['Point'],
+          default: 'Point',
+        },
+        coordinates: {
+          type: [Number],
+          required: true
+        }
+      }
+    }
   })
 );
+
+EventPost.schema.index({ coords: '2dsphere' })
 
 const PollPost = Post.discriminator(
   'Poll',
