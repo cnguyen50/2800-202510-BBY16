@@ -44,46 +44,57 @@ function makeUsersRouter() {
   })
   
   router.put('/me/location', requireAuth, async (req,res) => {
-    const { neighbourhood, latitude, longitude } = req.body;
+    const { latitude, longitude } = req.body;
 
-    if (
-      (neighbourhood && typeof neighbourhood !== 'string') ||
-      typeof latitude !== 'number' || 
-      typeof longitude !== 'number'
-    ) {
+    if (typeof latitude !== 'number' || typeof longitude !== 'number') {
       return res.status(400).json({ error: 'Invalid coords' });
     }
 
-    // Build update object
-    const update = {
-      location: {
-        type: 'Point',
-        coordinates: [longitude, latitude]
-      },
-      neighbourhood,
-      neighbourhoodLat: latitude,
-      neighbourhoodLng: longitude
-    };
-    
-    if (neighbourhood) {
-      update.neighbourhood = neighbourhood;
-    }
+    try {
+      //updating with Mongoose
+      const updated = await User.findByIdAndUpdate(
+        req.session.userId, {
+          location: {
+            type: 'Point',
+            coordinates: [longitude, latitude]
+          }
+        },
+        {
+          new: true,
+          select: 'location'
+        }
+      )
 
+      // Error handle if user isn't found
+      if (!updated) {
+        return res.status(404).json({ error: 'User not found' })
+      }
+
+      //Return updated location
+      return res.json({ location: updated.location })
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  })
+
+    router.put('/me/neighbourhood', requireAuth, async (req, res) => {
+    const { neighbourhood } = req.body;
+    if (typeof neighbourhood !== 'string') {
+      return res.status(400).json({ error: 'neighbourhood must be a string' });
+    }
     try {
       const user = await User.findByIdAndUpdate(
         req.session.userId,
-        update, {
-          new: true, // return document after updating
-          select: '-password' //exclude password field
-        }
+        { neighbourhood },
+        { new: true, select: '-password' }
       );
       if (!user) return res.status(404).json({ error: 'User not found' });
       res.json(user);
     } catch (err) {
-      console.error('Error updating location:', err);
+      console.error('Error updating neighbourhood:', err);
       res.status(500).json({ error: 'Server error' });
     }
-  })
+  });
 
   // POST upload profile picture (Tom's feature)
   router.post('/me/upload', requireAuth, upload.single('profilePic'), async (req, res) => {

@@ -22,23 +22,16 @@
                 <p><strong>Email:</strong> <span id="email">
                         <%= user.email %>
                     </span></p>
-                <!-- <p><strong>Neighborhood:</strong> <span id="neighbourhood">
-                        <%= user.neighbourhood %>
-                    </span></p> -->
                 <p>
                     <strong>Neighborhood:</strong>
                     <input
                         id="neighbourhoodInput"
                         type="text"
-                        placeholder="Search your neighbourhood…"
+                        placeholder="Your neighbourhood…"
                         value="<%= user.neighbourhood %>"
                     />
                     <button id="saveNeighborhood">Save</button>
                 </p>
-
-                <!-- hidden map for the geocoder control -->
-                <div id="geocode-map" style="height:0; visibility:hidden;"></div>
-
             </div>
         </div>
 
@@ -52,7 +45,5 @@
             <div id="posts-list">Loading posts…</div>
         </section>
     </main>
-
-    <!-- <script src="/scripts/profile.js" type="module"></script> -->
 
     <%- include('templates/loggedFooter') %>
