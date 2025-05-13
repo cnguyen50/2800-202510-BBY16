@@ -128,15 +128,15 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         res.render('profile', {
           title: 'Profile',
           headerLinks: [
+            { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
+            { rel: 'stylesheet', href: 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css' },
             { rel: 'stylesheet', href: '/styles/loggedIn.css' },
             { rel: 'stylesheet', href: '/styles/profile.css' },
-            { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
-            { rel: 'stylesheet', href: 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css' }
           ],
           footerScripts: [
-            { src: '/scripts/profile.js' },
             { src: 'https://unpkg.com/leaflet/dist/leaflet.js' },
-            { src: 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js' }
+            { src: 'https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js' },
+            { src: '/scripts/profile.js', type: 'module' }
           ],
           user,  // Pass the user object to the EJS template
         });

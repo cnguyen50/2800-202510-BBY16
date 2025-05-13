@@ -1,3 +1,5 @@
+let geocoder;
+
 async function fetchJson(url, options = {}) {
   const res = await fetch(url, { credentials: 'include', ...options });
   if (!res.ok) {
@@ -37,8 +39,33 @@ function renderUser(user) {
   }
 }
 
+//Initializes the hidden map and geocoder once.
+function initGeocoder() {
+  const container = document.getElementById('geocode-map');
+  if (!container || container._leaflet_id) return;
+
+  const geoMap = L.map('geocode-map', {
+    zoomControl: false,
+    attributionControl: false
+  });
+
+  geocoder = L.Control.geocoder({
+    defaultMarkGeocode: false,
+    placeholder: 'Search neighbourhood…'
+  })
+    .on('markgeocode', e => {
+      const { name, center } = e.geocode;
+      window.selectedNeighborhood = { name, lat: center.lat, lng: center.lng };
+      document.getElementById('neighbourhoodInput').value = name;
+    })
+    .addTo(geoMap);
+}
+
 // Saves neighbourhood input to server
 async function saveNeighborhood() {
+  if (!geocoder) {
+    return alert('Search not ready, Please wait.');
+  }
   const query = document.getElementById('neighbourhoodInput').value.trim();
   if (!query) {
     alert('Please type a neighbourhood before saving.');
@@ -116,22 +143,7 @@ async function uploadProfilePic(event) {
 
 async function init() {
   //Init hidden map and geocoder
-  const geoMap = L.map('geocode-map');
-  const geocoder = L.Control.geocoder({
-    defaultMarkGeocode: false,
-    placeholder: 'Search neighbourhood…'
-  })
-    .on('markgeocode', e => {
-      // If user clicks on suggested marker on hidden map
-      const { name, center } = e.geocode;
-      window.selectedNeighborhood = {
-        name,
-        lat: center.lat,
-        lng: center.lng
-      };
-      document.getElementById('neighbourhoodInput').value = name;
-    })
-    .addTo(geoMap);
+  initGeocoder();
 
   // Save button
   document.getElementById('saveNeighborhood').addEventListener('click', saveNeighborhood);
@@ -150,7 +162,7 @@ async function init() {
       document.getElementById('profilePic').src = '/uploads/default.jpg';
       document.getElementById('username').textContent = 'Login required';
       document.getElementById('email').textContent = 'N/A';
-      document.getElementById('neighbourhood').textContent = 'N/A';
+      // document.getElementById('neighbourhood').textContent = 'N/A';
       document.getElementById('uploadMessage').textContent = 'Please log in to update your profile.';
     }
 
@@ -166,7 +178,7 @@ async function init() {
     console.error('Error initializing:', err);
     document.getElementById('username').textContent = 'Login required';
     document.getElementById('email').textContent = 'N/A';
-    document.getElementById('neighbourhood').textContent = 'N/A';
+    // document.getElementById('neighbourhood').textContent = 'N/A';
     document.getElementById('profilePic').src = '/uploads/default.jpg';
     document.getElementById('uploadMessage').textContent = 'Error loading user data. Please try again.';
   }
