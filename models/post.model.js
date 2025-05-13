@@ -22,7 +22,13 @@ const EventPost = Post.discriminator(
     event_date : { type: Date,   required: true },
     location   : { type: String, required: true },
     description: String,
-    image_url: { type: String }
+    image_url: { type: String },
+    neighbourhood: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true
+    }
   })
 );
 
@@ -45,7 +51,7 @@ const NewsPost = Post.discriminator(
     headline : { type: String, required: true },
     body     : { type: String, required: true },
     image_url   : { type: String },
-    neighborhood: { type: String, required: true }
+    neighbourhood: { type: String, required: true }
   })
 );
 

@@ -22,16 +22,9 @@
                 <p><strong>Email:</strong> <span id="email">
                         <%= user.email %>
                     </span></p>
-                <p>
-                    <strong>Neighborhood:</strong>
-                    <input
-                        id="neighbourhoodInput"
-                        type="text"
-                        placeholder="Your neighbourhood…"
-                        value="<%= user.neighbourhood %>"
-                    />
-                    <button id="saveNeighborhood">Save</button>
-                </p>
+                <p><strong>Neighborhood:</strong> <span id="neighbourhood">
+                        <%= user.neighbourhood %>
+                    </span></p>
             </div>
         </div>
 
@@ -45,5 +38,7 @@
             <div id="posts-list">Loading posts…</div>
         </section>
     </main>
+
+    <script src="/scripts/profile.js" type="module"></script>
 
     <%- include('templates/loggedFooter') %>
