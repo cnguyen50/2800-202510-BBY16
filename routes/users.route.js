@@ -44,36 +44,40 @@ function makeUsersRouter() {
   })
   
   router.put('/me/location', requireAuth, async (req,res) => {
-    const { latitude, longitude } = req.body;
+    const { neighbourhood, latitude, longitude } = req.body;
 
-    if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+    if (
+      (neighbourhood && typeof neighbourhood !== 'string') ||
+      typeof latitude !== 'number' || 
+      typeof longitude !== 'number'
+    ) {
       return res.status(400).json({ error: 'Invalid coords' });
     }
 
-    try {
-      //updating with Mongoose
-      const updated = await User.findByIdAndUpdate(
-        req.session.userId, {
-          location: {
-            type: 'Point',
-            coordinates: [longitude, latitude]
-          }
-        },
-        {
-          new: true,
-          select: 'location'
-        }
-      )
-
-      // Error handle if user isn't found
-      if (!updated) {
-        return res.status(404).json({ error: 'User not found' })
+    // Build update object
+    const update = {
+      location: {
+        type: 'Point',
+        coordinates: [longitude, latitude]
       }
+    };
+    if (neighbourhood) {
+      update.neighbourhood = neighbourhood;
+    }
 
-      //Return updated location
-      return res.json({ location: updated.location })
+    try {
+      const user = await User.findByIdAndUpdate(
+        req.session.userId,
+        update, {
+          new: true, // return document after updating
+          select: '-password' //exclude password field
+        }
+      );
+      if (!user) return res.status(404).json({ error: 'User not found' });
+      res.json(user);
     } catch (err) {
-      return res.status(500).json({ error: err.message });
+      console.error('Error updating location:', err);
+      res.status(500).json({ error: 'Server error' });
     }
   })
 
