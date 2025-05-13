@@ -177,6 +177,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     div.innerHTML = html;
+
+    // Add comment section
+    const commentHtml = `
+    <div class="comment-section" data-post-id="${post._id}">
+      <form class="comment-form mt-2">
+        <input type="text" class="form-control mb-2" name="comment" placeholder="Write a comment..." required>
+        <button type="submit" class="btn btn-outline-secondary btn-sm">Post</button>
+      </form>
+      <div class="comments-list"></div>
+    </div>
+  `;
+    div.innerHTML += commentHtml;
+    loadComments(post._id, div.querySelector(".comments-list"));
+
     document.getElementById("post-container").appendChild(div);
   }
 
@@ -282,4 +296,16 @@ function renderNews(post, username, date, typeLabel) {
       </div>
     </div>
   `;
+}
+
+async function loadComments(postId, container) {
+  try {
+    const res = await fetch(`/comments/post/${postId}`);
+    const comments = await res.json();
+    container.innerHTML = comments.map(c => `
+      <div class="comment"><strong>@${c.user_id.username}</strong>: ${c.content}</div>
+    `).join("");
+  } catch (err) {
+    console.error("Failed to load comments:", err);
+  }
 }

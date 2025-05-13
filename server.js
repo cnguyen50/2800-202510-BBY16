@@ -159,6 +159,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           ],
           footerScripts: [
             { src: '/scripts/main.js' },
+            { src: '/scripts/comment.js' }
           ]
         });
       }
