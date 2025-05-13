@@ -63,6 +63,7 @@ function initGeocoder() {
 
 // Saves neighbourhood input to server
 async function saveNeighborhood() {
+  console.log('saveNeighborhood called, geocoder=', geocoder);
   if (!geocoder) {
     return alert('Search not ready, Please wait.');
   }
@@ -74,6 +75,7 @@ async function saveNeighborhood() {
 
   //Geocode with the Leaflet control geocoder
   geocoder.options.geocoder.geocode(query, async (results) => {
+      console.log('geocode results:', results);
     if (!results.length) {
       return alert('No matches found for that neighbourhood.');
     }

@@ -59,8 +59,12 @@ function makeUsersRouter() {
       location: {
         type: 'Point',
         coordinates: [longitude, latitude]
-      }
+      },
+      neighbourhood,
+      neighbourhoodLat: latitude,
+      neighbourhoodLng: longitude
     };
+    
     if (neighbourhood) {
       update.neighbourhood = neighbourhood;
     }
