@@ -27,6 +27,34 @@ function renderPosts(list) {
   });
 }
 
+// Function to render comments
+function renderComments(list) {
+  const container = document.getElementById('comments-list');
+  container.innerHTML = '';
+
+  if (!list.length) {
+    container.textContent = 'No comments yet.';
+    return;
+  }
+
+  list.forEach(({ content, created_at, post_id }) => {
+    const div = document.createElement('div');
+    div.className = 'post';
+
+    // Extracting post details to make a readable title
+    const type = post_id?.type?.toLowerCase();
+    const title = post_id?.headline || post_id?.event_name || post_id?.text || 'Unnamed Post';
+
+    div.innerHTML = `
+      <p><strong>Comment:</strong> ${content}</p>
+      <p><strong>On Post:</strong> <span data-post-id="${post_id?._id}" data-post-type="${type}">${title}</span></p>
+      <time>${new Date(created_at).toLocaleString()}</time>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
 function renderUser(user) {
   document.getElementById('username').textContent = user.username || 'N/A';
   document.getElementById('email').textContent = user.email || 'N/A';
@@ -88,6 +116,7 @@ async function init() {
     }
 
     renderPosts(posts); // You could also add rendering for comments here if needed
+    renderComments(comments);
 
     const form = document.getElementById('profilePicForm');
     if (form) {
