@@ -30,7 +30,53 @@ function renderPosts(list) {
 function renderUser(user) {
   document.getElementById('username').textContent = user.username || 'N/A';
   document.getElementById('email').textContent = user.email || 'N/A';
-  document.getElementById('neighbourhood').textContent = user.neighbourhood || 'N/A';
+  // document.getElementById('neighbourhood').textContent = user.neighbourhood || 'N/A';
+  const nbInput = document.getElementById('neighbourhoodInput');
+  if (nbInput) {
+    nbInput.value = user.neighbourhood || '';
+  }
+}
+
+// Saves neighbourhood input to server
+async function saveNeighborhood() {
+  const query = document.getElementById('neighbourhoodInput').value.trim();
+  if (!query) {
+    alert('Please type a neighbourhood before saving.');
+    return;
+  }
+
+  //Geocode with the Leaflet control geocoder
+  geocoder.options.geocoder.geocode(query, async (results) => {
+    if (!results.length) {
+      return alert('No matches found for that neighbourhood.');
+    }
+    const { name, center } = results[0];
+    window.selectedNeighborhood = {
+      name,
+      lat: center.lat,
+      lng: center.lng
+    };
+
+    document.getElementById('neighbourhoodInput').value = name;
+
+    //Send to server
+    try {
+      const updated = await fetchJson('/users/me/neighbourhood', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          neighbourhood: name,
+          neighbourhoodLat: center.lat,
+          neighbourhoodLng: center.lng
+        })
+      });
+      renderUser(updated);
+      alert('Neighbourhood saved!');
+    } catch (err) {
+      console.error('Failed to save neighbourhood:', err);
+      alert('Could not save neighbourhood. Try again.');
+    }
+  });
 }
 
 async function uploadProfilePic(event) {
@@ -69,6 +115,27 @@ async function uploadProfilePic(event) {
 }
 
 async function init() {
+  //Init hidden map and geocoder
+  const geoMap = L.map('geocode-map');
+  const geocoder = L.Control.geocoder({
+    defaultMarkGeocode: false,
+    placeholder: 'Search neighbourhood…'
+  })
+    .on('markgeocode', e => {
+      // If user clicks on suggested marker on hidden map
+      const { name, center } = e.geocode;
+      window.selectedNeighborhood = {
+        name,
+        lat: center.lat,
+        lng: center.lng
+      };
+      document.getElementById('neighbourhoodInput').value = name;
+    })
+    .addTo(geoMap);
+
+  // Save button
+  document.getElementById('saveNeighborhood').addEventListener('click', saveNeighborhood);
+
   try {
     const [user, comments, posts] = await Promise.all([
       fetchJson('/users/me'),
