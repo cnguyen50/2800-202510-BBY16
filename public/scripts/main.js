@@ -2,8 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("create-post-form");
   const postContainer = document.getElementById("post-container");
 
+  let type = "news";
+
   document.getElementById("post-type").addEventListener("change", (e) => {
-    const type = e.target.value;
+    type = e.target.value;
+   
     const eventFields = document.getElementById("event-fields");
     const pollFields = document.getElementById("poll-fields");
     const newsFields = document.getElementById("news-fields");
@@ -85,6 +88,9 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("body", document.getElementById("news-body").value);
       formData.append("image_url", document.getElementById("news-image-url").value);
       formData.append("neighborhood", document.getElementById("news-neighborhood").value);
+
+
+      console.log(formData);
     }
 
     const fileInput = document.getElementById("post-image");
