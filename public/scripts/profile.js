@@ -78,17 +78,11 @@ async function saveNeighborhood() {
       return alert('No matches found for that neighbourhood.');
     }
     const { name, center } = results[0];
-    window.selectedNeighborhood = {
-      name,
-      lat: center.lat,
-      lng: center.lng
-    };
-
     document.getElementById('neighbourhoodInput').value = name;
 
     //Send to server
     try {
-      const updated = await fetchJson('/users/me/neighbourhood', {
+      const updated = await fetchJson('/users/me/location', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -100,7 +94,7 @@ async function saveNeighborhood() {
       renderUser(updated);
       alert('Neighbourhood saved!');
     } catch (err) {
-      console.error('Failed to save neighbourhood:', err);
+      console.log('Failed to save neighbourhood:', err);
       alert('Could not save neighbourhood. Try again.');
     }
   });
