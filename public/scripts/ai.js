@@ -1,7 +1,7 @@
 document.getElementById('ai-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-const spinner = document.getElementById('spinner');
+  const spinner = document.getElementById('spinner');
   const titleHeader = document.getElementById('ai-title');
   const list = document.getElementById('ai-list');
 
@@ -26,7 +26,7 @@ const spinner = document.getElementById('spinner');
     const titleHeader = document.getElementById('ai-title');
     const list = document.getElementById('ai-list');
 
-     titleHeader.textContent = title;
+    titleHeader.textContent = title;
 
     list.innerHTML = ''; // Clear existing list items
     items.forEach(item => {
@@ -35,7 +35,7 @@ const spinner = document.getElementById('spinner');
       list.appendChild(li);
     });
 
-     titleHeader.style.display = 'block';
+    titleHeader.style.display = 'block';
     list.style.display = 'block';
   } catch (err) {
     console.error('Location or AI request failed:', err);
