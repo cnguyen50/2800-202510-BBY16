@@ -69,6 +69,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Location info fetch error:', err);
                 document.getElementById('location-info').textContent = 'Could not load location info';
             }
+
+            //Fetching events in stored neighbourhood
+            try {
+                const resp   = await fetch('/map/data', { credentials: 'include' });
+                if (!resp.ok) throw new Error(resp.statusText);
+                const events = await resp.json();
+
+                // Plot each event as a marker
+                events.forEach(e => {
+                L.marker([e.lat, e.lng])
+                    .addTo(map)
+                    .bindPopup(
+                    `<strong>${e.event_name}</strong><br>` +
+                    `${new Date(e.event_date).toLocaleString()}`
+                    );
+                });
+            } catch (err) {
+                console.error('Could not load neighbourhood events', err);
+            }
         },
 
         //Error callback

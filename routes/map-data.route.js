@@ -27,7 +27,7 @@ router.get('/', requireAuth, async (req, res, next) => {
         //Fetch all EventPosts tagged with that same string
         const events = await EventPost
             .find({ neighbourhood: user.neighbourhood })
-            .select('event_name event_date')
+            .select('event_name event_date event_location')
             .lean();
 
         //Stamp each event with the coords, and send back
@@ -39,7 +39,7 @@ router.get('/', requireAuth, async (req, res, next) => {
         }));
 
         res.json(payload);
-        
+
     } catch (err) {
         next(err);
     }
