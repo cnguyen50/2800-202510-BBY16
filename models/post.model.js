@@ -23,7 +23,6 @@ const EventPost = Post.discriminator(
     location   : { type: String, required: true },
     description: String,
     image_url: { type: String },
-    location_desc: { type: String, required: true },
     neighbourhood: {
       type: String,
       required: true,
