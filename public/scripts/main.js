@@ -12,6 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
     newsFields.style.display = (type === "news") ? "block" : "none";
   });
 
+  const postModal = document.getElementById("postModal");
+  postModal.addEventListener("shown.bs.modal", () => {
+    document.getElementById("post-type").dispatchEvent(new Event("change"));
+  });
+
   // Filter
   document.getElementById('post-select').addEventListener('change', async (e) => {
     const filter = e.target.value;
@@ -26,6 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let endpoint;
     if (filter === 'all') {
       endpoint = '/posts';
+    } else if (filter === 'news') {
+      endpoint = '/news';
     } else {
       endpoint = `/${filter}s`;
     }
@@ -90,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileInput = document.getElementById("post-image");
     if (fileInput.files.length > 0) {
       formData.append("image", fileInput.files[0]);
-    }
+    } 
 
     try {
       // const endpoint = (type === "Event") ? "/events" : "/posts";
@@ -100,6 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
         endpoint = "/polls";
       } else if (type === "Event") {
         endpoint = "/events";
+      } else if (type === "News") {
+        endpoint = "/news";
       } else {
         endpoint = "/posts";
       }
@@ -258,10 +267,9 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   `;
   }
-});
 
-function renderNews(post, username, date, typeLabel) {
-  return `
+  function renderNews(post, username, date, typeLabel) {
+    return `
     <div class="post-header">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
@@ -282,4 +290,5 @@ function renderNews(post, username, date, typeLabel) {
       </div>
     </div>
   `;
-}
+  }
+});

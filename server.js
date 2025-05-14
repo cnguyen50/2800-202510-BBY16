@@ -14,7 +14,7 @@ const makePostsRouter = require('./routes/posts.route.js');
 const makePollsRouter = require('./routes/polls.route.js');
 const makeTypedRouter = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
-const makeNewsRouter = require('./routes/news.route.js');
+//const makeNewsRouter = require('./routes/news.route.js');
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
@@ -93,7 +93,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // create, read, update, delete typed posts
     app.use('/events', makeTypedRouter(EventPost));
     app.use('/news', makeTypedRouter(NewsPost));
-
+    //app.use('/news', makeNewsRouter(NewsPost));
 
     const pollsRouter = require('./routes/polls.route.js');
     app.use('/polls', pollsRouter);
