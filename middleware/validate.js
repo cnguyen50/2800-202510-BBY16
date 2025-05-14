@@ -1,26 +1,18 @@
-const Joi = require('joi');
+// middleware/validateBody.js
+//ai generated
+const validateBody = schema => (req, res, next) => {
+  const { error, value } = schema.validate(req.body, {
+    abortEarly : false,   // return **all** problems
+    stripUnknown: true    // silently drop extraneous keys
+  });
 
-const safeString = Joi.string()
-  .pattern(/[$.]/, { invert: true })
-  .messages({ 'string.pattern.invert': 'Illegal characters ($ or .)' });
+  if (error) {
+    const msg = error.details.map(d => d.message).join(', ');
+    return res.status(400).json({ error: msg });
+  }
 
-module.exports = schema => (req, res, next) => {
-    const {value, error} = schema.validate(req.body, {
-        abortEarly: false,
-        stripUnknown: true
-    });
+  req.body = value;       // use the cleaned, typed values
+  next();
+};
 
-    if(error) {
-        const details = error.details.map(d => ({
-            field: d.path.join('.'),
-            message: d.message
-        }));
-
-        return res.status(400).json({error: 'Validation failed', details});
-    }
-
-    req.validatedBody = value;
-    next();
-}
-
-module.exports.safeString = safeString;
+module.exports = validateBody;

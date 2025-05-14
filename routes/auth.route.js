@@ -1,7 +1,8 @@
 const express = require('express');
 const bcrypt  = require('bcrypt');
 const User    = require('../models/user.model.js');
-
+const { registerSchema, loginSchema } = require('../middleware/validateUser.js');
+const validateBody = require('../middleware/validate.js');
 /*
   makeAuthRouter() returns an Express Router
   each route handles a piece of authentication logic
@@ -11,7 +12,7 @@ function makeAuthRouter() {
 
   // router.post(path, handler) → create new account
   // purpose: register user, reject duplicates, start session
-  router.post('/register', async (req, res) => {
+  router.post('/register', validateBody(registerSchema), async (req, res) => {
     try {
       const { username, password, email, neighbourhood } = req.body;
 
@@ -40,7 +41,7 @@ function makeAuthRouter() {
 
   // router.post(path, handler) → login (auto-register if not found)
   // purpose: sign in existing user or create one on the fly
-  router.post('/login', async (req, res) => {
+  router.post('/login', validateBody(loginSchema), async (req, res) => {
     const { username, password, email, neighbourhood } = req.body;
 
     // User.findOne finds user by username
@@ -53,7 +54,7 @@ function makeAuthRouter() {
     }
 
     if(!user) {
-       const hash = await bcrypt.hash(password, 10);
+      const hash = await bcrypt.hash(password, 10);
       user = await User.create({
         username,
         password: hash,
