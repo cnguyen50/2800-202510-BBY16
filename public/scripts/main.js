@@ -46,6 +46,11 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    //getting neighbourhood from profile
+    const meRes = await fetch('/users/me', { credentials: 'include' });
+    if (!meRes.ok) throw new Error('Not authenticated');
+    const { neighbourhood } = await meRes.json();
+
     const rawType = document.getElementById("post-type").value;
 
     const typeMap = {
@@ -67,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("event_date", document.getElementById("event-date").value);
       formData.append("location", document.getElementById("event-location").value);
       formData.append("description", document.getElementById("event-description").value);
+      formData.append("neighbourhood", neighbourhood);
     }
 
     if (type === 'Poll') {
