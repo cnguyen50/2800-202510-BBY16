@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   el.querySelector('input').disabled = true;   // <- no empty string sent
     });
 
-  /* Was the user redirected here with an error code? */
   const params = new URLSearchParams(location.search);
   const err    = params.get('error');
 
