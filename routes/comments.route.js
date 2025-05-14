@@ -1,6 +1,8 @@
 const express = require('express');
 const Comment    = require('../models/comment.model.js');
 const requireAuth = require('../middleware/requireAuth.js');
+const Post = require('../models/post.model.js');
+const Notification = require('../models/notification.model.js');
 
 function makeCommentsRouter() {
     const router = express.Router();
@@ -11,6 +13,22 @@ function makeCommentsRouter() {
 
         try{
             const comment = await Comment.create({post_id, user_id, content});
+            const post = await Post.findById(post_id).select('user_id');
+
+            if(post && String(post.user_id) !== String(user_id)) {
+                const notification = await Notification.create({
+                    user_id: post.user_id,
+                    type: 'comment',
+                    data: {
+                        post_id,
+                        comment_id: comment._id,
+                        content
+                    }
+                })
+            }
+
+            req.app.options.toString(String(post.user_id)).emit('notification', notif);
+
             res.status(201).json(comment);
         } catch (error) {
             res.status(400).json({error: error.message});

@@ -25,12 +25,33 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     const app = express();
 
-    // app.use(middleware) attaches JSON-body parser to all requests
+        // app.use(middleware) attaches JSON-body parser to all requests
     // handles application/json
     app.use(express.json());
 
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'views'));
+
+    // app.use(middleware) attaches URL-encoded parser
+    // handles form submissions from HTML <form>
+    app.use(express.urlencoded({ extended: true }));
+
+        // app.use(express.static(dir)) serves static files
+    // exposes everything inside /public
+    app.use(express.static('public'));
+
+    const http = require('http').createServer(app);
+    const {Server} = require('socket.io');
+
+    const io = new Server(http, { cors: {origin: '*'} });
+    app.io = io;
+
+    require('./scripts/reminders.js')(io);  
+
+
+    io.on('connection', socket => {
+      socket.on('auth', userId => {socket.join(String(userId))})
+    })
 
     // app.use(session(options)) adds req.session support
     // stores sessions in MongoDB, 14-day cookie
@@ -53,10 +74,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         }
       })
     );
-
-    // app.use(middleware) attaches URL-encoded parser
-    // handles form submissions from HTML <form>
-    app.use(express.urlencoded({ extended: true }));
 
     // app.use('/auth', router) mounts router under /auth
     // routes for login, register, logout, etc.
@@ -98,10 +115,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     const pollsRouter = require('./routes/polls.route.js');
     app.use('/polls', pollsRouter);
 
-
-    // app.use(express.static(dir)) serves static files
-    // exposes everything inside /public
-    app.use(express.static('public'));
 
     // Serve uploaded profile pictures
     app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
@@ -194,7 +207,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // default 3000
     const PORT = process.env.PORT || 3000;
 
-    app.listen(PORT, () => {
+    http.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
 

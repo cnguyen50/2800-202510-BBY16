@@ -20,6 +20,7 @@ const EventPost = Post.discriminator(
   new Schema({
     event_name : { type: String, required: true },
     event_date : { type: Date,   required: true },
+    reminder_sent: {type: Boolean, default: false},
     location   : { type: String, required: true },
     description: String,
     image_url: { type: String }
@@ -30,7 +31,8 @@ const PollPost = Post.discriminator(
   'Poll',
   new Schema({
     text       : { type: String, required: true },
-    expires_at : { type: Date, default: () => Date.now() + 24*60*60*1000 },
+    expires_at : { type: Date, default: () => Date.now() + 62*60*1000 }, // 62 minutes
+    reminder_sent: {type: Boolean, default: false},
     options    : [{
       label : String,
       votes : { type: Number, default: 0 }
