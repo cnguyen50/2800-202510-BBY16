@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose');
+const { link } = require('../routes/polls.route');
 
 module.exports = model('Comment', new Schema({
     post_id: {
@@ -14,7 +15,12 @@ module.exports = model('Comment', new Schema({
     content: {
         type: String,
         required: true
-    }
+    },
+    likes: {
+        type: [Schema.Types.ObjectId],
+        ref: 'User',
+        default: []
+    },
 },
 {
     timestamps: {

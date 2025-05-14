@@ -9,7 +9,7 @@ const { faker }  = require('@faker-js/faker');
 const bcrypt     = require('bcryptjs');               // not used, just mirroring style
 const { connectDB, mongoose } = require('./db.js');   // same singleton
 const User    = require('../models/user.model.js');
-const Post    = require('../models/post.model.js');
+const { Post }   = require('../models/post.model.js');
 const Comment = require('../models/comment.model.js');
 
 (async () => {
@@ -41,6 +41,7 @@ const Comment = require('../models/comment.model.js');
       post_id: faker.helpers.arrayElement(posts)._id,
       content: faker.lorem.sentence({ min: 6, max: 16 }),
       created_at: faker.date.recent(10),  // last 10 days
+      likes: [],  // added for new comments schema with likes
     }));
 
     // bulk insert

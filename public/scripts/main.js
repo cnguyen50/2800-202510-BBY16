@@ -298,14 +298,3 @@ function renderNews(post, username, date, typeLabel) {
   `;
 }
 
-async function loadComments(postId, container) {
-  try {
-    const res = await fetch(`/comments/post/${postId}`);
-    const comments = await res.json();
-    container.innerHTML = comments.map(c => `
-      <div class="comment"><strong>@${c.user_id.username}</strong>: ${c.content}</div>
-    `).join("");
-  } catch (err) {
-    console.error("Failed to load comments:", err);
-  }
-}

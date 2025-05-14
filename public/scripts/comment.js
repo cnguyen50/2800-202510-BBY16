@@ -1,3 +1,4 @@
+// Add event listener for creating a comment on a post and loading them
 document.addEventListener("submit", async (e) => {
     if (e.target.matches(".comment-form")) {
         e.preventDefault();
@@ -23,13 +24,44 @@ document.addEventListener("submit", async (e) => {
     }
 });
 
+// Add event listener for like button on comments
+document.addEventListener("click", async (e) => {
+    if (e.target.matches(".like-btn")) {
+        const commentDiv = e.target.closest(".comment");
+        const commentId = commentDiv?.dataset?.commentId;
+
+        if (!commentId) {
+            console.error("Missing comment ID");
+            return;
+        }
+
+        try {
+            const res = await fetch(`/comments/${commentId}/like`, {
+                method: "POST",
+                credentials: "include"
+            });
+
+            const data = await res.json();
+            e.target.innerHTML = `❤️ ${data.likesCount}`;
+        } catch (err) {
+            console.error("Failed to like comment:", err);
+        }
+    }
+});
+
+// Function to load comments for a specific post
 async function loadComments(postId, container) {
     try {
         const res = await fetch(`/comments/post/${postId}`);
         const comments = await res.json();
         container.innerHTML = comments.map(c => `
-        <div class="comment"><strong>@${c.user_id.username}</strong>: ${c.content}</div>
-        `).join("");
+            <div class="comment" data-comment-id="${c._id}">
+            <strong>@${c.user_id.username}</strong>: ${c.content}
+            <button class="like-btn btn btn-sm btn-outline-primary mt-1">
+                ❤️ ${(c.likes || []).length}
+            </button>
+            </div>
+            `).join("");
     } catch (err) {
         console.error("Failed to load comments:", err);
     }
