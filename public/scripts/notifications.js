@@ -26,12 +26,13 @@ listEl.prepend(li);
 }
 
 function humanText(n) {
-switch (n.type) {
-    case 'comment'       : return '💬 Someone commented on your post';
-    case 'event-reminder': return `⏰ Your event “${n.data.title}” starts in 1 h`;
-    case 'poll-reminder' : return `⏰ Poll “${n.data.title}” closes in 1 h`;
-    default              : return n.type;
-}
+    const who = n.data?.from_username || 'Someone';     
+    switch (n.type) {
+        case 'comment'       : return `💬 ${who} commented on your post`;
+        case 'event-reminder': return `⏰ Your event “${n.data.title}” starts in 1 h`;
+        case 'poll-reminder' : return `⏰ Poll “${n.data.title}” closes in 1 h`;
+        default              : return n.type;
+    }
 }
 
 async function markRead(li, tick) {
