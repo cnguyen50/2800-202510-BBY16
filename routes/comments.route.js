@@ -1,7 +1,7 @@
 const express = require('express');
 const Comment    = require('../models/comment.model.js');
 const requireAuth = require('../middleware/requireAuth.js');
-const Post = require('../models/post.model.js');
+const { Post }= require('../models/post.model.js');
 const Notification = require('../models/notification.model.js');
 
 function makeCommentsRouter() {
@@ -25,9 +25,10 @@ function makeCommentsRouter() {
                         content
                     }
                 })
-            }
 
-            req.app.options.toString(String(post.user_id)).emit('notification', notif);
+                console.log('[emit]', post.user_id.toString(), notification._id.toString());
+                req.app.io.to(String(post.user_id)).emit('notification', notification);
+            }
 
             res.status(201).json(comment);
         } catch (error) {
