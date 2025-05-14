@@ -27,7 +27,7 @@ function makeAuthRouter() {
         username,
         password: hash,
         email,
-        neighbourhood
+        neighbourhood: neighbourhood.toLowerCase().trim()
       });
 
       // req.session.userId stores login in session cookie

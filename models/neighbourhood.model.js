@@ -1,8 +1,27 @@
 const {Schema, model} = require('mongoose');
-module.exports = model('Neighbourhood', new Schema({
+
+const NeighbourhoodSchema = new Schema({
     neighbourhood_name: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        lowercase: true,
+        trim: true
+    },
+    center: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            default: 'Point',
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
     }
-}));
+});
+
+NeighbourhoodSchema.index({ center: '2dsphere' });
+
+module.exports = model('Neighbourhood', NeighbourhoodSchema);
