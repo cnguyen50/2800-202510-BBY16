@@ -1,3 +1,11 @@
+// Fetch current user ID once
+fetch('/users/me')
+    .then(res => res.json())
+    .then(user => {
+        currentUserId = user._id;
+    })
+    .catch(err => console.error("Could not fetch user info:", err));
+
 // Add event listener for creating a comment on a post and loading them
 document.addEventListener("submit", async (e) => {
     if (e.target.matches(".comment-form")) {
@@ -26,7 +34,8 @@ document.addEventListener("submit", async (e) => {
 
 // Add event listener for like button on comments
 document.addEventListener("click", async (e) => {
-    if (e.target.matches(".like-btn")) {
+    if (e.target.closest(".like-btn")) {
+        const button = e.target.closest(".like-btn");
         const commentDiv = e.target.closest(".comment");
         const commentId = commentDiv?.dataset?.commentId;
 
@@ -42,7 +51,9 @@ document.addEventListener("click", async (e) => {
             });
 
             const data = await res.json();
-            e.target.innerHTML = `❤️ ${data.likesCount}`;
+            button.innerHTML = `
+            <i class="bi ${data.liked ? 'bi-heart-fill' : 'bi-heart'}"></i> ${data.likesCount}
+            `;
         } catch (err) {
             console.error("Failed to like comment:", err);
         }
@@ -54,14 +65,17 @@ async function loadComments(postId, container) {
     try {
         const res = await fetch(`/comments/post/${postId}`);
         const comments = await res.json();
-        container.innerHTML = comments.map(c => `
+        container.innerHTML = comments.map(c => {
+            const liked = currentUserId && c.likes.includes(currentUserId);
+            return `
             <div class="comment" data-comment-id="${c._id}">
             <strong>@${c.user_id.username}</strong>: ${c.content}
-            <button class="like-btn btn btn-sm btn-outline-primary mt-1">
-                ❤️ ${(c.likes || []).length}
+            <button class="like-btn btn">
+                <i class="bi ${liked ? 'bi-heart-fill' : 'bi-heart'}"></i> ${c.likes.length}
             </button>
             </div>
-            `).join("");
+        `;
+        }).join("");
     } catch (err) {
         console.error("Failed to load comments:", err);
     }
