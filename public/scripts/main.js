@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("post-type").addEventListener("change", (e) => {
     type = e.target.value;
-   
+
     const eventFields = document.getElementById("event-fields");
     const pollFields = document.getElementById("poll-fields");
     const newsFields = document.getElementById("news-fields");
@@ -36,7 +36,16 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await fetch(endpoint, { credentials: "include" });
       const posts = await res.json();
-      posts.slice(0, 10).forEach(renderPost);
+
+      allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      offset = 0;
+
+      loadMoreBtn.disabled = false;
+      loadMoreBtn.textContent = "Load More";
+      document.getElementById("no-more-msg").style.display = "none";
+
+      // Render first batch
+      loadMorePosts();
     } catch (err) {
       console.error("Filter failed:", err);
     }
@@ -129,26 +138,46 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  async function loadPosts() {
+  // Pagination control variables
+  let offset = 0;                // Number of posts already displayed
+  const limit = 10;              // Number of posts to show per batch
+  let allPosts = [];             // Array to store all fetched posts
+
+  // Get reference to the "Load More" button
+  const loadMoreBtn = document.getElementById("load-more-btn");
+
+  // Fetch all posts from the server and initialize the feed
+  async function fetchAllPosts() {
     try {
-      const [postsRes] = await Promise.all([
-        fetch("/posts", { credentials: "include" }),
-      ]);
+      const res = await fetch("/posts", { credentials: "include" });
+      const posts = await res.json();
 
-      const posts = await postsRes.json();
+      // Sort posts by newest first
+      allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-      const allPosts = [...posts];
-
-      // Sort by newest date
-      allPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-      allPosts.forEach(post => renderPost(post));
+      loadMorePosts();
     } catch (err) {
-      console.error("Failed to load posts:", err);
+      console.error("Failed to fetch posts:", err);
     }
   }
 
-  loadPosts();
+  function loadMorePosts() {
+    const nextPosts = allPosts.slice(offset, offset + limit);
+    nextPosts.forEach(renderPost);
+    offset += limit;
+
+    // Disable button if no more posts
+    if (offset >= allPosts.length) {
+      loadMoreBtn.disabled = true;
+      loadMoreBtn.textContent = "No more posts";
+      document.getElementById("no-more-msg").style.display = "block";
+    }
+  }
+  // Listen for "Load More" button clicks
+  loadMoreBtn.addEventListener("click", loadMorePosts);
+
+  fetchAllPosts();
+
 
   // Renderers by type
   function renderPost(post) {

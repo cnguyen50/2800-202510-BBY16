@@ -12,7 +12,7 @@ function makePostsRouter() {
     const query = type ? { type } : {}; // ← no filter = return all types
   
     try {
-      const posts = await Post.find(query).sort({ createdAt: -1 }).limit(10).populate('user_id', 'username');
+      const posts = await Post.find(query).sort({ createdAt: -1 }).populate('user_id', 'username');
       res.json(posts);
     } catch (err) {
       console.error("GET /posts error:", err);
