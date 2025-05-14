@@ -64,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("event_date", document.getElementById("event-date").value);
       formData.append("location", document.getElementById("event-location").value);
       formData.append("description", document.getElementById("event-description").value);
-      formData.append("neighbourhood",   neighbourhood);
     }
 
     if (type === 'Poll') {

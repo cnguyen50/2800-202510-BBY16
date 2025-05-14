@@ -23,12 +23,25 @@ const EventPost = Post.discriminator(
     location   : { type: String, required: true },
     description: String,
     image_url: { type: String },
-    neighbourhood: {
-      type: String,
-      required: true,
-      lowercase: true,
-      trim: true
+    location_desc: { type: String, required: true },
+    // actual coordinates for map pins
+    location: {
+      type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point',
+      },
+      coordinates: {
+        type: [Number],    // [ lng, lat ]
+        required: true
+      }
     }
+    // neighbourhood: {
+    //   type: String,
+    //   required: true,
+    //   lowercase: true,
+    //   trim: true
+    // }
   })
 );
 

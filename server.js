@@ -81,9 +81,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
       });
     });
 
-    // JSON API: events in my profile’s neighbourhood
-    app.use('/map/data', require('./routes/map-data.route.js'));
-
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());
