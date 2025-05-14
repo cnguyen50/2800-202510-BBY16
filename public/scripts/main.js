@@ -6,8 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const type = e.target.value;
     const eventFields = document.getElementById("event-fields");
     const pollFields = document.getElementById("poll-fields");
+    const newsFields = document.getElementById("news-fields");
     eventFields.style.display = (type === "event") ? "block" : "none";
     pollFields.style.display = (type === "poll") ? "block" : "none";
+    newsFields.style.display = (type === "news") ? "block" : "none";
   });
 
   // Filter
@@ -37,47 +39,52 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-    // Submit post from modal
+  // Submit post from modal
   form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    e.preventDefault();
 
-      const rawType = document.getElementById("post-type").value;
-  
-      const typeMap = {
-        post: "Post",
-        event: "Event",
-        poll: "Poll",
-        news: "News"
-      };
+    const rawType = document.getElementById("post-type").value;
 
-      const type = typeMap[rawType];
-  
-      const formData = new FormData();
+    const typeMap = {
+      event: "Event",
+      poll: "Poll",
+      news: "News"
+    };
 
-      formData.append("type", type);
-      formData.append("content", document.getElementById("post-content").value);
+    const type = typeMap[rawType];
 
-      if (type === "Event") {
-        formData.append("event_name", document.getElementById("event-name").value);
-        formData.append("event_date", document.getElementById("event-date").value);
-        formData.append("location", document.getElementById("event-location").value);
-        formData.append("description", document.getElementById("event-description").value);
-      }
+    const formData = new FormData();
 
-      if (type === 'Poll') {
-        const pollText    = document.getElementById('poll-text').value.trim();
-        const pollOptions = Array.from(document.querySelectorAll('.poll-option'))
-                                .map(o => o.value.trim())
-                                .filter(Boolean);                 // drop empty boxes
+    formData.append("type", type);
+    formData.append("content", document.getElementById("post-content").value);
 
-        formData.append('text', pollText);
+    if (type === "Event") {
+      formData.append("event_name", document.getElementById("event-name").value);
+      formData.append("event_date", document.getElementById("event-date").value);
+      formData.append("location", document.getElementById("event-location").value);
+      formData.append("description", document.getElementById("event-description").value);
+    }
 
-        // 👇 send each option as: options[0][label], options[1][label], …
-        pollOptions.forEach((label, i) => {
-          formData.append(`options[${i}][label]`, label);
-        });
-  }
+    if (type === 'Poll') {
+      const pollText = document.getElementById('poll-text').value.trim();
+      const pollOptions = Array.from(document.querySelectorAll('.poll-option'))
+        .map(o => o.value.trim())
+        .filter(Boolean);                 // drop empty boxes
 
+      formData.append('text', pollText);
+
+      // 👇 send each option as: options[0][label], options[1][label], …
+      pollOptions.forEach((label, i) => {
+        formData.append(`options[${i}][label]`, label);
+      });
+    }
+
+    if (type === "News") {
+      formData.append("headline", document.getElementById("news-headline").value);
+      formData.append("body", document.getElementById("news-body").value);
+      formData.append("image_url", document.getElementById("news-image-url").value);
+      formData.append("neighborhood", document.getElementById("news-neighborhood").value);
+    }
 
     const fileInput = document.getElementById("post-image");
     if (fileInput.files.length > 0) {
@@ -88,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // const endpoint = (type === "Event") ? "/events" : "/posts";
 
       let endpoint;
+      console.log(endpoint);
       if (type === "Poll") {
         endpoint = "/polls";
       } else if (type === "Event") {
@@ -107,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
       form.reset();
       document.getElementById("event-fields").style.display = "none";
       document.getElementById("poll-fields").style.display = "none";
+      document.getElementById("news-fields").style.display = "none";
       const modal = bootstrap.Modal.getInstance(document.getElementById("postModal"));
       modal.hide();
     } catch (err) {
@@ -250,3 +259,27 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   }
 });
+
+function renderNews(post, username, date, typeLabel) {
+  return `
+    <div class="post-header">
+      <strong>@${username}</strong>
+      <span class="post-date">${date}</span>
+    </div>
+    <div class="post-type-label">${typeLabel}</div>
+    <h5>${post.headline}</h5>
+    <p>${post.body}</p>
+    ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
+    <p><strong>Neighborhood:</strong> ${post.neighborhood || 'N/A'}</p>
+    <div class="post-footer">
+      <div class="post-actions-left">
+        <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
+        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
+        <span><i class="bi bi-share-fill"></i></span>
+      </div>
+      <div class="post-bookmark">
+        <span><i class="bi bi-bookmark-fill"></i></span>
+      </div>
+    </div>
+  `;
+}

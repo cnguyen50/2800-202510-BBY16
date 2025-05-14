@@ -20,22 +20,6 @@ function makePostsRouter() {
     }
   });
 
-  router.post('/', upload.single('image'), async (req, res) => {
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
-
-    try {
-      const post = await Post.create({
-        ...req.body,
-        user_id: req.session.userId,
-        image_url: req.file ? `/uploads/${req.file.filename}` : null
-      });
-      res.status(201).json(post);
-    } catch (err) {
-      res.status(400).json({ error: err.message });
-    }
-  });
-
   router.get('/me', requireAuth, async (req, res) => {
     const posts = await Post.find({ user_id: req.session.userId }).sort({ createdAt: -1 });
     res.json(posts);
