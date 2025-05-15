@@ -24,6 +24,8 @@ body {
   text-align: center;
 }
 
+.error { color:#d93025; margin:8px 0 4px; font-size:.9rem; }
+
 .form-group {
   margin-bottom: 1rem;
 }

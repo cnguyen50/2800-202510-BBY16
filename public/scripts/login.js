@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     el.hidden  = false;
     el.querySelector('input').disabled = false;
     });
-    errorBox.textContent = 'User not found – please add your e‑mail and neighbourhood to create an account.';
+    errorBox.innerHTML = "User not found – please add your e‑mail and neighbourhood to create an account. Or <a href='/login'>Try Again</a>";
     errorBox.hidden = false;
   }
   if (err === 'BAD_PASSWORD') {
