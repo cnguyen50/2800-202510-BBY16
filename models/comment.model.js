@@ -1,4 +1,5 @@
 const {Schema, model} = require('mongoose');
+const { link } = require('../routes/polls.route');
 
 // helper: reject $ and . in strings (mongo‑operator injection)
 const noDollarDot = v => !/[$.]/.test(v);
@@ -22,7 +23,12 @@ module.exports = model('Comment', new Schema({
             message: 'Comment must be between 1 and 1000 characters',
             noDollarDot
         }
-    }
+    },
+    likes: {
+        type: [Schema.Types.ObjectId],
+        ref: 'User',
+        default: []
+    },
 },
 {
     timestamps: {
