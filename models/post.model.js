@@ -28,7 +28,9 @@ const EventPost = Post.discriminator(
       required: true,
       lowercase: true,
       trim: true
-    }
+    },
+    lat: { type: Number, required: true },
+    lng: { type: Number, required: true }
   })
 );
 
