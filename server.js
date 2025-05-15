@@ -83,7 +83,10 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         ]
       });
     });
-
+    
+    // JSON API: events in my neighbourhood for map pins
+    app.use('/map/data', makeMapDataRouter());
+    
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());
@@ -98,8 +101,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // Useing this since seperated event.route.js
     app.use('/events', makeEventsRouter());
 
-    // JSON API: events in my neighbourhood for map pins
-    app.use('/map/data', makeMapDataRouter());
 
 
     app.use('/news', makeTypedRouter(NewsPost));
