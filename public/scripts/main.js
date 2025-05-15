@@ -51,6 +51,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Toggle filter window
+  document.getElementById('filterTrigger').addEventListener('click', () => {
+    const filterBox = document.getElementById('filterOptions');
+    filterBox.style.display = (filterBox.style.display === 'none') ? 'block' : 'none';
+  });
+
+  // Filter option buttons
+  document.querySelectorAll('.filter-option').forEach(button => {
+    button.addEventListener('click', () => {
+      const value = button.getAttribute('data-value');
+      const select = document.getElementById('post-select');
+      select.value = value;
+      select.dispatchEvent(new Event('change')); // triggers your main.js logic
+
+      // Close filter window
+      document.getElementById('filterOptions').style.display = 'none';
+
+      // Optional: update the trigger button text
+      document.getElementById('filterTrigger').textContent = button.textContent;
+    });
+  });
+
+
   // Submit post from modal
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
