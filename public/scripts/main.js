@@ -245,8 +245,16 @@ document.addEventListener("DOMContentLoaded", () => {
         html = renderDefault(post, username, date, typeLabel); break;
     }
 
+    // Add delete button before rendering
+    html += `
+      <div class="text-end mt-2">
+        <button class="btn btn-danger btn-sm delete-post" data-id="${post._id}">Delete</button>
+      </div>
+    `;
+
     div.innerHTML = html;
     document.getElementById("post-container").appendChild(div);
+
   }
 
   function renderEvent(post, username, date, typeLabel) {
@@ -352,3 +360,24 @@ function renderNews(post, username, date, typeLabel) {
     </div>
   `;
 }
+
+// Added a delete button to all the posts
+document.addEventListener('click', async (e) => {
+  if (e.target.classList.contains('delete-post')) {
+    const postId = e.target.getAttribute('data-id');
+    if (!confirm('Are you sure you want to delete this post?')) return;
+
+    try {
+      await fetch(`/posts/${postId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      // Remove post from DOM
+      e.target.closest('.post-card').remove();
+    } catch (err) {
+      console.error('Failed to delete post:', err);
+      alert('Could not delete post.');
+    }
+  }
+});
+
