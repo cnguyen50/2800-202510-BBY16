@@ -148,9 +148,13 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     // app.get(path, handler) sends index page
     // landing page
-    app.get('/', (_req, res) =>
+    app.get('/', (req, res) =>{
+      if(req.session.userId) {
+        res.redirect('/home');
+      } else {
       res.sendFile(path.join(__dirname, './public/index.html'))
-    );
+      }
+    });
 
     //app.get(path, handler) sends profile page
     //profile page (uses JS to fetch /current endpoints)
