@@ -1,23 +1,36 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("create-post-form");
   const postContainer = document.getElementById("post-container");
+  const svgIcons = document.querySelectorAll(".svg-icon");
 
+  svgIcons.forEach(icon => {
+    icon.style.top = Math.floor(Math.random() * 90) + "vh";   // Random vertical position
+    icon.style.left = Math.floor(Math.random() * 90) + "vw";  // Random horizontal position
+    icon.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`; // Random rotation
+  });
+  
+  // Set the default post type to "news"
   let type = "news";
 
+  // Add a change event listener to the dropdown/select element for post type
   document.getElementById("post-type").addEventListener("change", (e) => {
     type = e.target.value;
-   
+
+    // Get the form sections for each type of post
     const eventFields = document.getElementById("event-fields");
     const pollFields = document.getElementById("poll-fields");
     const newsFields = document.getElementById("news-fields");
+
+    // Show only the fields related to the selected post type and hide others
     eventFields.style.display = (type === "event") ? "block" : "none";
     pollFields.style.display = (type === "poll") ? "block" : "none";
     newsFields.style.display = (type === "news") ? "block" : "none";
   });
 
-  // Filter
+  // Add event listener to the main post filter dropdown
   document.getElementById('post-select').addEventListener('change', async (e) => {
     const filter = e.target.value;
+    // Clear the current post container so new filtered posts can be rendered
     postContainer.innerHTML = '';
 
     const typeMap = {
@@ -36,10 +49,47 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await fetch(endpoint, { credentials: "include" });
       const posts = await res.json();
-      posts.slice(0, 10).forEach(renderPost);
+
+      // Sort posts by creation date (newest first)
+      allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      // Reset offset (for pagination/load more logic)
+      offset = 0;
+
+      // Reset "Load More" button to visible and enabled state
+      loadMoreBtn.disabled = false;
+      loadMoreBtn.textContent = "Load More";
+      // Hide the "no more posts" message
+      document.getElementById("no-more-msg").style.display = "none";
+
+      // Render first batch
+      loadMorePosts();
     } catch (err) {
       console.error("Filter failed:", err);
     }
+  });
+
+  // Add click event listener to the filter trigger button to show/hide the filter menu)
+  document.getElementById('filterTrigger').addEventListener('click', () => {
+    const filterBox = document.getElementById('filterOptions');
+    filterBox.style.display = (filterBox.style.display === 'none') ? 'block' : 'none';
+  });
+
+  // Add click event listeners to all filter option buttons inside the filter box
+  document.querySelectorAll('.filter-option').forEach(button => {
+    button.addEventListener('click', () => {
+      // Get the value associated with the clicked filter button (from data-value attribute)
+      const value = button.getAttribute('data-value');
+      // Set the value of the main select element
+      const select = document.getElementById('post-select');
+      select.value = value;
+      select.dispatchEvent(new Event('change')); // triggers main.js logic
+
+      // Close filter window
+      document.getElementById('filterOptions').style.display = 'none';
+
+      // Optional: update the trigger button text
+      document.getElementById('filterTrigger').textContent = button.textContent;
+    });
   });
 
   // Submit post from modal
@@ -122,33 +172,53 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("event-fields").style.display = "none";
       document.getElementById("poll-fields").style.display = "none";
       document.getElementById("news-fields").style.display = "none";
-      const modal = bootstrap.Modal.getInstance(document.getElementById("postModal"));
+      const postModal = new bootstrap.Modal(document.getElementById('postModal'));
       modal.hide();
     } catch (err) {
       console.error("Error creating post:", err);
     }
   });
 
-  async function loadPosts() {
+  // Pagination control variables
+  let offset = 0;                // Number of posts already displayed
+  const limit = 10;              // Number of posts to show per batch
+  let allPosts = [];             // Array to store all fetched posts
+
+  // Get reference to the "Load More" button
+  const loadMoreBtn = document.getElementById("load-more-btn");
+
+  // Fetch all posts from the server and initialize the feed
+  async function fetchAllPosts() {
     try {
-      const [postsRes] = await Promise.all([
-        fetch("/posts", { credentials: "include" }),
-      ]);
+      const res = await fetch("/posts", { credentials: "include" });
+      const posts = await res.json();
 
-      const posts = await postsRes.json();
+      // Sort posts by newest first
+      allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-      const allPosts = [...posts];
-
-      // Sort by newest date
-      allPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-      allPosts.forEach(post => renderPost(post));
+      loadMorePosts();
     } catch (err) {
-      console.error("Failed to load posts:", err);
+      console.error("Failed to fetch posts:", err);
     }
   }
 
-  loadPosts();
+  function loadMorePosts() {
+    const nextPosts = allPosts.slice(offset, offset + limit);
+    nextPosts.forEach(renderPost);
+    offset += limit;
+
+    // Disable button if no more posts
+    if (offset >= allPosts.length) {
+      loadMoreBtn.disabled = true;
+      loadMoreBtn.textContent = "No more posts";
+      document.getElementById("no-more-msg").style.display = "block";
+    }
+  }
+  // Listen for "Load More" button clicks
+  loadMoreBtn.addEventListener("click", loadMorePosts);
+
+  fetchAllPosts();
+
 
   // Renderers by type
   function renderPost(post) {
@@ -182,8 +252,16 @@ document.addEventListener("DOMContentLoaded", () => {
         html = renderDefault(post, username, date, typeLabel); break;
     }
 
+    // Add delete button before rendering
+    html += `
+      <div class="text-end mt-2">
+        <button class="btn btn-danger btn-sm delete-post" data-id="${post._id}">Delete</button>
+      </div>
+    `;
+
     div.innerHTML = html;
     document.getElementById("post-container").appendChild(div);
+
   }
 
   function renderEvent(post, username, date, typeLabel) {
@@ -289,3 +367,24 @@ function renderNews(post, username, date, typeLabel) {
     </div>
   `;
 }
+
+// Added a delete button to all the posts
+document.addEventListener('click', async (e) => {
+  if (e.target.classList.contains('delete-post')) {
+    const postId = e.target.getAttribute('data-id');
+    if (!confirm('Are you sure you want to delete this post?')) return;
+
+    try {
+      await fetch(`/posts/${postId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      // Remove post from DOM
+      e.target.closest('.post-card').remove();
+    } catch (err) {
+      console.error('Failed to delete post:', err);
+      alert('Could not delete post.');
+    }
+  }
+});
+

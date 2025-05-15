@@ -6,6 +6,7 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongo');
 const User = require('./models/user.model.js');
 const path = require('path');
+const fs = require('fs'); 
 
 const { connectDB } = require('./scripts/db.js');
 const makeAuthRouter = require('./routes/auth.route.js');
@@ -189,20 +190,35 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
       }
       else {
         // Render the main page with the logged-in user
-        res.render('main', {
-          title: 'Home',
-          headerLinks: [
-            { rel: 'stylesheet', href: '/styles/main.css' },
-            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+        // Display random SVGs
+        const svgDir = path.join(__dirname, './public/img/svg/');
+        fs.readdir(svgDir, (err, files) => {
+          if (err) return res.status(500).send("Failed to load SVGs");
 
-          ],
-          footerScripts: [
-            { src: '/scripts/main.js' },
-            { src: '/scripts/comment.js' }
-          ]
-        });
+          // Filter only .svg files
+          const svgs = files.filter(file => file.endsWith('.svg'));
+
+          // Shuffle and pick 5–10 SVGs
+          const shuffled = svgs.sort(() => 0.5 - Math.random());
+          const count = Math.floor(Math.random() * 6) + 5; // 5 to 10
+          const selectedSvgs = shuffled.slice(0, count);
+
+          res.render('main', {
+            title: 'Home',
+            headerLinks: [
+              { rel: 'stylesheet', href: '/styles/main.css' },
+              { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+
+            ],
+            footerScripts: [
+              { src: '/scripts/main.js' },
+              { src: '/scripts/comment.js' }
+            ],
+            svgs: selectedSvgs
+          });
       }
-    });
+    )}
+  });
 
     // app.use(path, handler) intercepts /login
     // redirects logged-in users, otherwise shows login form

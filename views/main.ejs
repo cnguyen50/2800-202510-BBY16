@@ -2,25 +2,43 @@
     <main>
         <!-- Header -->
         <div class="buttons">
-            <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#postModal">Create a Post</button>
+            <button class="btn custom-btn-green" data-bs-toggle="modal" data-bs-target="#postModal">
+                CREATE POSTS</button>
         </div>
 
-        <!-- Filter -->
-        <div class="posts">
-            <label for="post-select">Filter by Type:</label>
-            <select id="post-select">
-                <option value="all">All Posts</option>
-                <option value="event">Event</option>
-                <option value="poll">Poll</option>
-                <option value="news">News</option>
-            </select>
+        <div class="svg-background">
+            <% svgs.forEach(file=> { %>
+                <img src="/img/svg/<%= file %>" class="svg-icon" />
+                <% }) %>
         </div>
 
+        <!-- Fake filter button for better mobile display -->
+        <button id="filterTrigger" class="btn custom-btn-purple">FILTER POSTS</button>
+
+        <!-- Modal-style options -->
+        <div id="filterOptions" class="filter-popup" style="display: none;">
+            <button class="filter-option" data-value="all">All Posts</button>
+            <button class="filter-option" data-value="event">Event</button>
+            <button class="filter-option" data-value="poll">Poll</button>
+            <button class="filter-option" data-value="news">News</button>
+        </div>
+
+        <!-- Hidden select to trigger your JS -->
+        <select id="post-select" style="display: none;">
+            <option value="all">All Posts</option>
+            <option value="event">Event</option>
+            <option value="poll">Poll</option>
+            <option value="news">News</option>
+        </select>
 
         <!-- Feed -->
         <section class="feed">
             <h2>Community Feed</h2>
             <div id="post-container"></div>
+            <div class="text-center my-4">
+                <button id="load-more-btn" class="btn btn-primary">Load More</button>
+                <p id="no-more-msg" class="mt-2 text-muted" style="display: none;">All posts loaded.</p>
+            </div>
         </section>
 
         <!-- Post Modal -->
@@ -46,11 +64,12 @@
 
                             <div id="news-fields">
                                 <input type="text" class="form-control mb-2" id="news-headline" placeholder="Headline">
-                                <textarea class="form-control mb-2" id="news-body" rows="3" placeholder="Body text"></textarea>
+                                <textarea class="form-control mb-2" id="news-body" rows="3"
+                                    placeholder="Body text"></textarea>
                                 <input type="url" class="form-control mb-2" id="news-image-url"
                                     placeholder="Image URL (optional)">
                                 <input type="text" class="form-control mb-2" id="news-neighborhood"
-                                    placeholder="Neighborhood" >
+                                    placeholder="Neighborhood">
                             </div>
 
                             <div id="event-fields" style="display: none;">
@@ -84,5 +103,4 @@
         </div>
 
     </main>
-
     <%- include('templates/loggedFooter') %>
