@@ -25,16 +25,24 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     const app = express();
 
-    // app.use(middleware) attaches JSON-body parser to all requests
+        // app.use(middleware) attaches JSON-body parser to all requests
     // handles application/json
     app.use(express.json());
 
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'views'));
 
+    // app.use(middleware) attaches URL-encoded parser
+    // handles form submissions from HTML <form>
+    app.use(express.urlencoded({ extended: true }));
+
+        // app.use(express.static(dir)) serves static files
+    // exposes everything inside /public
+    app.use(express.static('public'));
+
     // app.use(session(options)) adds req.session support
     // stores sessions in MongoDB, 14-day cookie
-    app.use(
+    const sessionMiddleware =
       session({
         name: 'sessionId',
         secret: process.env.SESSION_SECRET,
@@ -42,6 +50,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         saveUninitialized: false,
         store: MongoDBStore.create({
           client,
+          dbName: process.env.DB_NAME,
           collectionName: 'sessions',
           ttl: 14 * 24 * 60 * 60
         }),
@@ -51,12 +60,31 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           // secure: process.env.NODE_ENV === 'production',
           maxAge: 14 * 24 * 60 * 60 * 1000
         }
-      })
-    );
+      });
 
-    // app.use(middleware) attaches URL-encoded parser
-    // handles form submissions from HTML <form>
-    app.use(express.urlencoded({ extended: true }));
+    app.use(sessionMiddleware);
+  
+    const http = require('http').createServer(app);
+    const {Server} = require('socket.io');
+
+    const io = new Server(http, { cors: {origin: '*'} });
+    app.io = io;
+
+    require('./scripts/reminders.js')(io);  
+    
+    io.use((socket, next) => {
+      sessionMiddleware(socket.request, {}, next);
+    })
+
+    io.on('connection', (socket) => {
+      const uid = socket.request.session.userId;
+      if(uid) {
+        socket.join(String(uid));
+        console.log('[socket-join]', uid);
+      } else {
+        console.log('[socket-join]', 'anonymous');
+      }
+    })
 
     // app.use('/auth', router) mounts router under /auth
     // routes for login, register, logout, etc.
@@ -94,17 +122,28 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     app.use('/events', makeTypedRouter(EventPost));
     app.use('/news', makeTypedRouter(NewsPost));
 
+    app.get('/notifications', (req, res) => {
+      res.render('notifications', {
+        userId: req.session.userId,
+         headerLinks: [
+          { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+          { rel: 'stylesheet', href: '/styles/notifications.css' }
+        ],
+        footerScripts: [
+          { src: '/scripts/notifications.js' }
+        ]
+      });
+    });
+
 
     const pollsRouter = require('./routes/polls.route.js');
     app.use('/polls', pollsRouter);
 
 
-    // app.use(express.static(dir)) serves static files
-    // exposes everything inside /public
-    app.use(express.static('public'));
-
     // Serve uploaded profile pictures
     app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
+    app.use('/api/notifications', require('./routes/notifications.api.js'));
 
     // app.get(path, handler) sends index page
     // landing page
@@ -195,7 +234,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // default 3000
     const PORT = process.env.PORT || 3000;
 
-    app.listen(PORT, () => {
+    http.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
 
