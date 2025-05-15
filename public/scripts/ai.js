@@ -17,7 +17,9 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
       body: JSON.stringify({ latitude: location.latitude, longitude: location.longitude, neighbourhood: location.neighbourhood, city: location.city })
     });
 
+
     const data = await res.json();
+    console.log(data);
     const { title, items } = formatResponse(data.message);
 
     console.log(title);

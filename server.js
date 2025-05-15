@@ -15,11 +15,8 @@ const makePostsRouter = require('./routes/posts.route.js');
 const makePollsRouter = require('./routes/polls.route.js');
 const makeTypedRouter = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
-<<<<<<< HEAD
 const makeNewsRouter = require('./routes/news.route.js');
-=======
 const aiRouter         = require('./routes/ai.route.js');
->>>>>>> ai
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
@@ -214,6 +211,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             headerLinks: [
               { rel: 'stylesheet', href: '/styles/main.css' },
               { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+              {rel: 'stylesheet', href: '/styles/ai.css' }
 
             ],
             footerScripts: [
