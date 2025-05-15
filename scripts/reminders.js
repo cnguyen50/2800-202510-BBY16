@@ -4,7 +4,7 @@ const Notification = require('../models/notification.model.js');
 const RSVP = require('../models/rsvp.model.js');
 
 module.exports = function startReminders(io) {
-    cron.schedule('* * * * *', async () => {
+    cron.schedule('*/2 * * * *', async () => {
         console.log('[cron-tick]', new Date().toISOString(), 'checking for reminders');
         const now = Date.now();
         const windowLow = new Date(now + 59*60*1000);
