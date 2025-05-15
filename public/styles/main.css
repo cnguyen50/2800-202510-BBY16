@@ -14,11 +14,27 @@ main {
 }
 
 /* Modal template */
-.modal-content {
-    z-index: 9999;
+#postModal {
+  display: none;
+}
+
+.modal-backdrop {
+    z-index: 1040;
+}
+
+.modal {
+    display: block !important;
+    opacity: 1 !important;
+    z-index: 1050;
+}
+
+.modal.fade.show {
+    display: block !important;
+    z-index: 1060;
 }
 
 .modal-content {
+    z-index: 1060 !important;
     border-radius: 20px;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
 }
@@ -27,6 +43,11 @@ main {
     transition: all 0.3s ease-in-out;
 }
 
+.modal-dialog {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Buttons */
 .custom-btn-green {
     border: 2px solid var(--green-clr);
     background: transparent;
