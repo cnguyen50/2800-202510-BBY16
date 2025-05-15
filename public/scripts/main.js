@@ -2,22 +2,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("create-post-form");
   const postContainer = document.getElementById("post-container");
 
+  // Set the default post type to "news"
   let type = "news";
 
+  // Add a change event listener to the dropdown/select element for post type
   document.getElementById("post-type").addEventListener("change", (e) => {
     type = e.target.value;
 
+    // Get the form sections for each type of post
     const eventFields = document.getElementById("event-fields");
     const pollFields = document.getElementById("poll-fields");
     const newsFields = document.getElementById("news-fields");
+
+    // Show only the fields related to the selected post type and hide others
     eventFields.style.display = (type === "event") ? "block" : "none";
     pollFields.style.display = (type === "poll") ? "block" : "none";
     newsFields.style.display = (type === "news") ? "block" : "none";
   });
 
-  // Filter
+  // Add event listener to the main post filter dropdown
   document.getElementById('post-select').addEventListener('change', async (e) => {
     const filter = e.target.value;
+    // Clear the current post container so new filtered posts can be rendered
     postContainer.innerHTML = '';
 
     const typeMap = {
@@ -37,11 +43,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch(endpoint, { credentials: "include" });
       const posts = await res.json();
 
+      // Sort posts by creation date (newest first)
       allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      // Reset offset (for pagination/load more logic)
       offset = 0;
 
+      // Reset "Load More" button to visible and enabled state
       loadMoreBtn.disabled = false;
       loadMoreBtn.textContent = "Load More";
+      // Hide the "no more posts" message
       document.getElementById("no-more-msg").style.display = "none";
 
       // Render first batch
@@ -51,19 +61,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Toggle filter window
+  // Add click event listener to the filter trigger button to show/hide the filter menu)
   document.getElementById('filterTrigger').addEventListener('click', () => {
     const filterBox = document.getElementById('filterOptions');
     filterBox.style.display = (filterBox.style.display === 'none') ? 'block' : 'none';
   });
 
-  // Filter option buttons
+  // Add click event listeners to all filter option buttons inside the filter box
   document.querySelectorAll('.filter-option').forEach(button => {
     button.addEventListener('click', () => {
+      // Get the value associated with the clicked filter button (from data-value attribute)
       const value = button.getAttribute('data-value');
+      // Set the value of the main select element
       const select = document.getElementById('post-select');
       select.value = value;
-      select.dispatchEvent(new Event('change')); // triggers your main.js logic
+      select.dispatchEvent(new Event('change')); // triggers main.js logic
 
       // Close filter window
       document.getElementById('filterOptions').style.display = 'none';
@@ -72,7 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('filterTrigger').textContent = button.textContent;
     });
   });
-
 
   // Submit post from modal
   form.addEventListener("submit", async (e) => {

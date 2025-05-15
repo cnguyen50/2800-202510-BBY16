@@ -3,11 +3,17 @@
         <!-- Header -->
         <div class="buttons">
             <button class="btn custom-btn-green" data-bs-toggle="modal" data-bs-target="#postModal">
-                Create a Post</button>
+                CREATE POSTS</button>
+        </div>
+
+        <div class="svg-background">
+            <% svgs.forEach(file=> { %>
+                <img src="/img/svg/<%= file %>" class="svg-icon" />
+                <% }) %>
         </div>
 
         <!-- Fake filter button for better mobile display -->
-        <button id="filterTrigger" class="btn custom-btn-white">Filter Posts</button>
+        <button id="filterTrigger" class="btn custom-btn-purple">FILTER POSTS</button>
 
         <!-- Modal-style options -->
         <div id="filterOptions" class="filter-popup" style="display: none;">
@@ -97,5 +103,16 @@
         </div>
 
     </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const svgIcons = document.querySelectorAll(".svg-icon");
+
+            svgIcons.forEach(icon => {
+                icon.style.top = Math.floor(Math.random() * 90) + "vh";   // Random vertical position
+                icon.style.left = Math.floor(Math.random() * 90) + "vw";  // Random horizontal position
+                icon.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`; // Random rotation
+            });
+        });
+    </script>
 
     <%- include('templates/loggedFooter') %>
