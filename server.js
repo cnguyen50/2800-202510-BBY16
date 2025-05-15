@@ -15,6 +15,8 @@ const makePollsRouter = require('./routes/polls.route.js');
 const makeTypedRouter = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
 const makeNewsRouter = require('./routes/news.route.js');
+const makeEventsRouter = require('./routes/events.route.js');
+
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
@@ -91,7 +93,10 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     // app.use('/events', router) mounts router under /events
     // create, read, update, delete typed posts
-    app.use('/events', makeTypedRouter(EventPost));
+    //app.use('/events', makeTypedRouter(EventPost));
+    // Useing this since seperated event.route.js
+    app.use('/events', makeEventsRouter());
+
     app.use('/news', makeTypedRouter(NewsPost));
 
 
