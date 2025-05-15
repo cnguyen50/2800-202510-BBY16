@@ -173,12 +173,13 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             ],
             footerScripts: [
               { src: '/scripts/main.js' },
+              { src: '/scripts/comment.js' }
             ],
             svgs: selectedSvgs
           });
-        });
       }
-    });
+    )}
+  });
 
     // app.use(path, handler) intercepts /login
     // redirects logged-in users, otherwise shows login form
