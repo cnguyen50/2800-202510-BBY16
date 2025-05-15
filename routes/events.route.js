@@ -26,16 +26,32 @@ function makeEventsRouter() {
             const image_url = req.file ? `/uploads/${req.file.filename}` : null;
 
             // Geocode the free‑text location
-            const nomURL  = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(location)}`;
-            const nomRes  = await fetch(nomURL, { headers:{ 'User-Agent':'MyApp/1.0' } });
-            const nomData = await nomRes.json();
-            if (!nomData.length) throw new Error(`Couldn’t geocode "${location}"`);
-            const lat = parseFloat(nomData[0].lat);
-            const lng = parseFloat(nomData[0].lon);
+            const nomParams = new URLSearchParams({
+                format:       'jsonv2',
+                limit:        '1',
+                q:            location,
+                countrycodes: 'ca',
+                viewbox:      '-123.224,49.316,-123.022,49.227',
+                bounded:      '1',
+                addressdetails: '1'
+            });
+            const nomURL  = `https://nominatim.openstreetmap.org/search?${nomParams}`;
+            // const nomRes  = await fetch(nomURL);
+            // const nomData = await nomRes.json();
+            // if (!nomData.length) throw new Error(`Couldn’t geocode "${location}"`);
+            // const lat = parseFloat(nomData[0].lat);
+            // const lng = parseFloat(nomData[0].lon);
+
+            // read the coords user selected
+            const lat = parseFloat(req.body.lat);
+            const lng = parseFloat(req.body.lng);
+            if (isNaN(lat) || isNaN(lng)) {
+                return res.status(400).json({ error: 'Please select a valid address from the suggestions.' });
+            }
 
             // Create and respond
             const event = await EventPost.create({
-                user_id     : req.session.userId,
+                user_id : req.session.userId,
                 event_name,
                 event_date : new Date(event_date),
                 location,

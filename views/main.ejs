@@ -56,8 +56,17 @@
                             <div id="event-fields" style="display: none;">
                                 <input type="text" class="form-control mb-2" id="event-name" placeholder="Event Name">
                                 <input type="date" class="form-control mb-2" id="event-date">
-                                <input type="text" class="form-control mb-2" id="event-location" placeholder="Location">
-                                <input type="hidden" name="neighbourhood" id="event-neighbourhood">
+                                <!-- <input type="text" class="form-control mb-2" id="event-location" placeholder="Location">
+                                <input type="hidden" name="neighbourhood" id="event-neighbourhood"> -->
+
+                                <!-- location + suggestions -->
+                                <input type="text" class="form-control mb-2" id="event-location" placeholder="Location (start typing…)">
+                                <ul id="loc-suggestions" class="suggestions list-group"></ul>
+                                
+                                <!-- hidden fields to carry the chosen coords -->
+                                <input type="hidden" id="event-lat" name="lat">
+                                <input type="hidden" id="event-lng" name="lng">
+                                
                                 <textarea class="form-control mb-2" id="event-description" rows="2"
                                     placeholder="Event Description"></textarea>
                             </div>

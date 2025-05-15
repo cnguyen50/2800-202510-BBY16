@@ -1,12 +1,60 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("create-post-form");
   const postContainer = document.getElementById("post-container");
-
   let type = "news";
+
+    // Autocomplete elements
+  const locInput = document.getElementById("event-location");
+  const suggList = document.getElementById("loc-suggestions");
+  const latField = document.getElementById("event-lat");
+  const lngField = document.getElementById("event-lng");
+  let debounceTimer;
+
+  // ─── Autocomplete for event-location ───
+  locInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    const q = locInput.value.trim();
+
+    if (!q) {
+      suggList.innerHTML = "";
+      return;
+    }
+
+    debounceTimer = setTimeout(async () => {
+      const params = new URLSearchParams({
+        format:       "jsonv2",
+        q,
+        limit:        "5",
+        countrycodes: "ca",
+      });
+
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
+        const list = await res.json();
+        suggList.innerHTML = list.map(place =>
+          `<li data-lat="${place.lat}" data-lon="${place.lon}" class="list-group-item list-group-item-action">
+            ${place.display_name}
+          </li>`
+        ).join("");
+        
+      } catch (err) {
+        console.error("Autocomplete error:", err);
+      }
+    }, 300);
+  });
+
+  suggList.addEventListener("click", (e) => {
+    if (e.target.tagName === "LI") {
+      locInput.value = e.target.textContent;
+      latField.value = e.target.dataset.lat;
+      lngField.value = e.target.dataset.lon;
+      suggList.innerHTML = "";
+    }
+  });
 
   document.getElementById("post-type").addEventListener("change", (e) => {
     type = e.target.value;
-   
+
     const eventFields = document.getElementById("event-fields");
     const pollFields = document.getElementById("poll-fields");
     const newsFields = document.getElementById("news-fields");
@@ -70,9 +118,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (type === "Event") {
       formData.append("event_name", document.getElementById("event-name").value);
       formData.append("event_date", document.getElementById("event-date").value);
-      formData.append("location", document.getElementById("event-location").value);
+      // formData.append("location", document.getElementById("event-location").value);
       formData.append("description", document.getElementById("event-description").value);
       formData.append("neighbourhood", neighbourhood);
+      formData.append("location", locInput.value);
+      formData.append("lat", latField.value);
+      formData.append("lng", lngField.value);
     }
 
     if (type === 'Poll') {
