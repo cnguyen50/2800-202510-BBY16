@@ -49,10 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const rawType = document.getElementById("post-type").value;
 
     const typeMap = {
-<<<<<<< HEAD
-      post: "Post",
-=======
->>>>>>> auth
       event: "Event",
       poll: "Poll",
       news: "News"
@@ -91,12 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("body", document.getElementById("news-body").value);
       formData.append("image_url", document.getElementById("news-image-url").value);
       formData.append("neighborhood", document.getElementById("news-neighborhood").value);
-<<<<<<< HEAD
 
 
       console.log(formData);
-=======
->>>>>>> auth
     }
 
     const fileInput = document.getElementById("post-image");
@@ -190,20 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     div.innerHTML = html;
-
-    // Add comment section
-    const commentHtml = `
-    <div class="comment-section" data-post-id="${post._id}">
-      <form class="comment-form mt-2">
-        <input type="text" class="form-control mb-2" name="comment" placeholder="Write a comment..." required>
-        <button type="submit" class="btn btn-outline-secondary btn-sm">Post</button>
-      </form>
-      <div class="comments-list"></div>
-    </div>
-  `;
-    div.innerHTML += commentHtml;
-    loadComments(post._id, div.querySelector(".comments-list"));
-
     document.getElementById("post-container").appendChild(div);
   }
 
@@ -310,4 +289,3 @@ function renderNews(post, username, date, typeLabel) {
     </div>
   `;
 }
-

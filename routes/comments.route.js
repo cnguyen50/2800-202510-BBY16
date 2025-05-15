@@ -5,13 +5,8 @@ const requireAuth = require('../middleware/requireAuth.js');
 function makeCommentsRouter() {
     const router = express.Router();
 
-<<<<<<< HEAD
-    router.post('/', requireAuth,  async (req,res) => {
-        const {post_id, content} = req.body;
-=======
     router.post('/', requireAuth, async (req, res) => {
         const { post_id, content } = req.body;
->>>>>>> 8ed74553301c8202cd8637ca45bc0d12bdecd1f9
         const user_id = req.session.userId;
 
         try {
