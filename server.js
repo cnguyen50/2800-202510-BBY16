@@ -15,7 +15,11 @@ const makePostsRouter = require('./routes/posts.route.js');
 const makePollsRouter = require('./routes/polls.route.js');
 const makeTypedRouter = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
+<<<<<<< HEAD
 const makeNewsRouter = require('./routes/news.route.js');
+=======
+const aiRouter         = require('./routes/ai.route.js');
+>>>>>>> ai
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
@@ -152,7 +156,9 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
       res.sendFile(path.join(__dirname, './public/index.html'))
     );
 
-    //app.get(path, handler) sends profile page
+    app.use('/ai', aiRouter);
+
+   //app.get(path, handler) sends profile page
     //profile page (uses JS to fetch /current endpoints)
     app.get('/profile', async (req, res) => {
       if (!req.session.userId) {
@@ -245,6 +251,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         })
       }
     })
+    
 
     // Start HTTP server on given port
     // default 3000
