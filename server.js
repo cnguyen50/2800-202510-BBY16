@@ -19,6 +19,7 @@ const makeNewsRouter = require('./routes/news.route.js');
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
+
 (async () => {
   try {
     // connectDB() returns { db, client }

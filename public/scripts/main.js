@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+  let currentUserId;
   const form = document.getElementById("create-post-form");
   const postContainer = document.getElementById("post-container");
   const svgIcons = document.querySelectorAll(".svg-icon");
@@ -48,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const res = await fetch(endpoint, { credentials: "include" });
+
       const posts = await res.json();
 
       // Sort posts by creation date (newest first)
@@ -193,6 +196,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/posts", { credentials: "include" });
       const posts = await res.json();
 
+      const res2 = await fetch('/users/me', { credentials: "include" });
+      const user = await res2.json();
+      currentUserId = user._id;
       // Sort posts by newest first
       allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -204,7 +210,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadMorePosts() {
     const nextPosts = allPosts.slice(offset, offset + limit);
-    nextPosts.forEach(renderPost);
+    nextPosts.forEach(post => {
+
+      renderPost(post, currentUserId)
+    });
     offset += limit;
 
     // Disable button if no more posts
@@ -214,14 +223,14 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("no-more-msg").style.display = "block";
     }
   }
-  // Listen for "Load More" button clicks
-  loadMoreBtn.addEventListener("click", loadMorePosts);
+
+ loadMoreBtn.addEventListener("click", () => loadMorePosts(currentUserId));
 
   fetchAllPosts();
 
 
   // Renderers by type
-  function renderPost(post) {
+  function renderPost(post, currentUserId) {
     const div = document.createElement("div");
     div.classList.add("post-card", `post-${post.type}`);
 
@@ -239,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const username = post.user_id?.username || 'Anonymous';
-
+   
     let html = "";
     switch (post.type?.toLowerCase()) {
       case "event":
@@ -252,12 +261,15 @@ document.addEventListener("DOMContentLoaded", () => {
         html = renderDefault(post, username, date, typeLabel); break;
     }
 
-    // Add delete button before rendering
-    html += `
-      <div class="text-end mt-2">
-        <button class="btn btn-danger btn-sm delete-post" data-id="${post._id}">Delete</button>
-      </div>
-    `;
+    if(post.user_id?._id === currentUserId) {
+       console.log(post.user_id._id);
+    console.log(currentUserId);
+      html += `
+        <div class="text-end mt-2">
+          <button class="btn btn-danger btn-sm delete-post" data-id="${post._id}">Delete</button>
+        </div>
+      `;
+    }
 
     div.innerHTML = html;
     document.getElementById("post-container").appendChild(div);
@@ -368,8 +380,9 @@ function renderNews(post, username, date, typeLabel) {
   `;
 }
 
-// Added a delete button to all the posts
-document.addEventListener('click', async (e) => {
+const postContainer = document.getElementById('post-container');
+
+postContainer.addEventListener('click', async (e) => {
   if (e.target.classList.contains('delete-post')) {
     const postId = e.target.getAttribute('data-id');
     if (!confirm('Are you sure you want to delete this post?')) return;
@@ -379,7 +392,8 @@ document.addEventListener('click', async (e) => {
         method: 'DELETE',
         credentials: 'include'
       });
-      // Remove post from DOM
+
+      // Remove the post element from the DOM
       e.target.closest('.post-card').remove();
     } catch (err) {
       console.error('Failed to delete post:', err);
@@ -387,4 +401,5 @@ document.addEventListener('click', async (e) => {
     }
   }
 });
+
 
