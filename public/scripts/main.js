@@ -263,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(post.user_id?._id === currentUserId) {
       html += `
         <div class="text-end mt-2">
-          <button class="btn btn-danger btn-sm delete-post" data-id="${post._id}">Delete</button>
+          <button class="btn delete-post" data-id="${post._id}">Delete</button>
         </div>
       `;
     }

@@ -1,5 +1,7 @@
 h2 {
     font-weight: bold;
+    text-align: center;
+    color: var(--text-clr);
 }
 
 body {
@@ -96,6 +98,18 @@ main {
     border: 2px solid var(--red-clr);
     background-color: var(--red-clr);
     border-radius: 25px;
+}
+
+#load-more-btn {
+    border: 2px solid var(--blue-clr);
+    background-color: var(--blue-clr);
+    border-radius: 25px;
+    padding: 8px 14px;
+    cursor: pointer;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.3s ease;
 }
 
 /* Filter */

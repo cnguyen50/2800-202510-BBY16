@@ -57,11 +57,12 @@ canvas {
 }
 
 .dropdown-toggle {
-  border: 2px solid var(--icon-clr);
+  border: 2px solid var(--text-clr);
   background: transparent;
   border-radius: 25px;
   padding: 8px 14px;
   cursor: pointer;
+  color: var(--text-clr);
   font-size: 14px;
   font-weight: bold;
 }
