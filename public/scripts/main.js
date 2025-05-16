@@ -1,7 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  const form       = document.getElementById("create-post-form");
+  const locInput   = document.getElementById("event-location");
+  const suggList   = document.getElementById("loc-suggestions");
+  const latField   = document.getElementById("event-lat");
+  const lngField   = document.getElementById("event-lng");
+
   let currentUserId;
-  const form = document.getElementById("create-post-form");
   const postContainer = document.getElementById("post-container");
   const svgIcons = document.querySelectorAll(".svg-icon");
 
@@ -16,55 +21,39 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("post-type").addEventListener("change", (e) => {
     type = e.target.value;
 
-    // Get the form sections for each type of post
-  let type = "news";
+    let debounceTimer;
 
-    // Autocomplete elements
-  const locInput = document.getElementById("event-location");
-  const suggList = document.getElementById("loc-suggestions");
-  const latField = document.getElementById("event-lat");
-  const lngField = document.getElementById("event-lng");
-  let debounceTimer;
+    // ─── Autocomplete for event-location ───
+    locInput.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      const q = locInput.value.trim();
 
-  //helper function to shorten location data
-  function shortLocation(loc) {
-  const parts = loc.split(',').map(s => s.trim());
-    return parts.length >= 3
-      ? `${parts[0]}, ${parts[2]}`
-      : loc;
-  }
-
-  // ─── Autocomplete for event-location ───
-  locInput.addEventListener("input", () => {
-    clearTimeout(debounceTimer);
-    const q = locInput.value.trim();
-
-    if (!q) {
-      suggList.innerHTML = "";
-      return;
-    }
-
-    debounceTimer = setTimeout(async () => {
-      const params = new URLSearchParams({
-        format: "jsonv2",
-        q,
-        limit: "5",
-        countrycodes: "ca",
-      });
-
-      try {
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
-        const list = await res.json();
-        suggList.innerHTML = list.map(place =>
-          `<li data-lat="${place.lat}" data-lon="${place.lon}">
-            ${place.display_name.trim()}
-          </li>`
-        ).join("");
-
-      } catch (err) {
-        console.error("Autocomplete error:", err);
+      if (!q) {
+        suggList.innerHTML = "";
+        return;
       }
-    }, 300);
+
+      debounceTimer = setTimeout(async () => {
+        const params = new URLSearchParams({
+          format: "jsonv2",
+          q,
+          limit: "5",
+          countrycodes: "ca",
+        });
+
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
+          const list = await res.json();
+          suggList.innerHTML = list.map(place =>
+            `<li data-lat="${place.lat}" data-lon="${place.lon}">
+              ${place.display_name.trim()}
+            </li>`
+          ).join("");
+
+        } catch (err) {
+          console.error("Autocomplete error:", err);
+        }
+      }, 300);
   });
 
   suggList.addEventListener("click", (e) => {
@@ -73,9 +62,19 @@ document.addEventListener("DOMContentLoaded", () => {
       latField.value = e.target.dataset.lat;
       lngField.value = e.target.dataset.lon;
       suggList.innerHTML = "";
+
+      console.log("Selected location:", locInput.value);
     }
   });
 })
+
+  //helper function to shorten location data
+  function shortLocation(loc) {
+  const parts = loc.split(',').map(s => s.trim());
+    return parts.length >= 3
+      ? `${parts[0]}, ${parts[2]}`
+      : loc;
+  }
 
   document.getElementById("post-type").addEventListener("change", (e) => {
     type = e.target.value;
@@ -176,13 +175,11 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("content", document.getElementById("post-content").value);
 
 
-    if (type === "Event") {
+    if (type === "event") {
       formData.append("event_name", document.getElementById("event-name").value);
       const day = document.getElementById('event-date').value;  // '2025-05-20'
       formData.append('event_date', day ? `${day}T23:59` : ''); // → '2025-05-20T23:59'
       // formData.append("location", document.getElementById("event-location").value);
-      formData.append("description", document.getElementById("event-description").value);
-      formData.append("event_date", document.getElementById("event-date").value);
       formData.append("description", document.getElementById("event-description").value);
       formData.append("neighbourhood", neighbourhood);
       formData.append("location", locInput.value);
