@@ -32,8 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
         const list = await res.json();
         suggList.innerHTML = list.map(place =>
-          `<li data-lat="${place.lat}" data-lon="${place.lon}" class="list-group-item list-group-item-action">
-            ${place.display_name}
+          `<li data-lat="${place.lat}" data-lon="${place.lon}">
+            ${place.display_name.trim()}
           </li>`
         ).join("");
 
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   suggList.addEventListener("click", (e) => {
     if (e.target.tagName === "LI") {
-      locInput.value = e.target.textContent;
+      locInput.value = e.target.textContent.trim();
       latField.value = e.target.dataset.lat;
       lngField.value = e.target.dataset.lon;
       suggList.innerHTML = "";
