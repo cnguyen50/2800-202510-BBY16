@@ -12,11 +12,9 @@ const { connectDB } = require('./scripts/db.js');
 const makeAuthRouter = require('./routes/auth.route.js');
 const makeUsersRouter = require('./routes/users.route.js');
 const makePostsRouter = require('./routes/posts.route.js');
-const makePollsRouter = require('./routes/polls.route.js');
 const makeTypedRouter = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
 const aiRouter = require('./routes/ai.route.js');
-const makeNewsRouter = require('./routes/news.route.js');
 const makeEventsRouter = require('./routes/events.route.js');
 const makeMapDataRouter = require('./routes/map-data.route.js');
 
