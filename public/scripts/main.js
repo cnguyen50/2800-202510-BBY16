@@ -8,9 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     icon.style.left = Math.floor(Math.random() * 90) + "vw";  // Random horizontal position
     icon.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`; // Random rotation
   });
-  
-  // Set the default post type to "news"
-  let type = "news";
+
 
   // Add a change event listener to the dropdown/select element for post type
   document.getElementById("post-type").addEventListener("change", (e) => {
@@ -96,50 +94,30 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const rawType = document.getElementById("post-type").value;
+    const type = document.getElementById("post-type").value;
 
-    const typeMap = {
-      event: "Event",
-      poll: "Poll",
-      news: "News"
-    };
+    formData.append("type", type); // keep lowercase
 
-    const type = typeMap[rawType];
-
-    const formData = new FormData();
-
-    formData.append("type", type);
-    formData.append("content", document.getElementById("post-content").value);
-
-    if (type === "Event") {
+    if (type === "event") {
       formData.append("event_name", document.getElementById("event-name").value);
       formData.append("event_date", document.getElementById("event-date").value);
       formData.append("location", document.getElementById("event-location").value);
       formData.append("description", document.getElementById("event-description").value);
-    }
-
-    if (type === 'Poll') {
+    } else if (type === "poll") {
       const pollText = document.getElementById('poll-text').value.trim();
       const pollOptions = Array.from(document.querySelectorAll('.poll-option'))
         .map(o => o.value.trim())
-        .filter(Boolean);                 // drop empty boxes
+        .filter(Boolean);
 
       formData.append('text', pollText);
-
-      // 👇 send each option as: options[0][label], options[1][label], …
       pollOptions.forEach((label, i) => {
         formData.append(`options[${i}][label]`, label);
       });
-    }
-
-    if (type === "News") {
+    } else if (type === "news") {
       formData.append("headline", document.getElementById("news-headline").value);
       formData.append("body", document.getElementById("news-body").value);
       formData.append("image_url", document.getElementById("news-image-url").value);
       formData.append("neighborhood", document.getElementById("news-neighborhood").value);
-
-
-      console.log(formData);
     }
 
     const fileInput = document.getElementById("post-image");
@@ -147,14 +125,18 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("image", fileInput.files[0]);
     }
 
+    console.log("Post type:", type);
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
     try {
       // const endpoint = (type === "Event") ? "/events" : "/posts";
 
       let endpoint;
-      console.log(endpoint);
-      if (type === "Poll") {
+      if (type === "poll") {
         endpoint = "/polls";
-      } else if (type === "Event") {
+      } else if (type === "event") {
         endpoint = "/events";
       } else {
         endpoint = "/posts";
@@ -172,8 +154,8 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("event-fields").style.display = "none";
       document.getElementById("poll-fields").style.display = "none";
       document.getElementById("news-fields").style.display = "none";
-      const postModal = new bootstrap.Modal(document.getElementById('postModal'));
-      modal.hide();
+      const postModal = bootstrap.Modal.getInstance(document.getElementById('postModal'));
+      if (postModal) postModal.hide();
     } catch (err) {
       console.error("Error creating post:", err);
     }
@@ -255,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Add delete button before rendering
     html += `
       <div class="text-end mt-2">
-        <button class="btn btn-danger btn-sm delete-post" data-id="${post._id}">Delete</button>
+        <button class="btn delete-post" data-id="${post._id}">Delete</button>
       </div>
     `;
 
@@ -387,4 +369,3 @@ document.addEventListener('click', async (e) => {
     }
   }
 });
-
