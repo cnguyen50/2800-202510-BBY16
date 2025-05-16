@@ -2,8 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("create-post-form");
   const postContainer = document.getElementById("post-container");
 
+  let type = "news";
+
   document.getElementById("post-type").addEventListener("change", (e) => {
-    const type = e.target.value;
+    type = e.target.value;
+    
     const eventFields = document.getElementById("event-fields");
     const pollFields = document.getElementById("poll-fields");
     const newsFields = document.getElementById("news-fields");
@@ -97,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileInput = document.getElementById("post-image");
     if (fileInput.files.length > 0) {
       formData.append("image", fileInput.files[0]);
-    } 
+    }
 
     try {
       // const endpoint = (type === "Event") ? "/events" : "/posts";
@@ -107,8 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
         endpoint = "/polls";
       } else if (type === "Event") {
         endpoint = "/events";
-      } else if (type === "News") {
-        endpoint = "/news";
       } else {
         endpoint = "/posts";
       }

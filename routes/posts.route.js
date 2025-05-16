@@ -24,36 +24,14 @@ function makePostsRouter() {
     console.log("BODY:", req.body);
     console.log("FILE:", req.file);
 
-    //   try {
-    //     const post = await Post.create({
-    //       ...req.body,
-    //       user_id: req.session.userId,
-    //       image_url: req.file ? `/uploads/${req.file.filename}` : null
-    //     });
-    //     res.status(201).json(post);
-    //   } catch (err) {
-    //     res.status(400).json({ error: err.message });
-    //   }
-    // });
-
     try {
-      let finalImageUrl = null;
-
-      if (req.file) {
-        finalImageUrl = `/uploads/${req.file.filename}`;
-      } else if (req.body.image_url && req.body.image_url.trim() !== '') {
-        finalImageUrl = req.body.image_url.trim();
-      }
-
       const post = await Post.create({
         ...req.body,
         user_id: req.session.userId,
-        image_url: finalImageUrl
+        image_url: req.file ? `/uploads/${req.file.filename}` : null
       });
-
       res.status(201).json(post);
     } catch (err) {
-      console.error("POST /posts error:", err);
       res.status(400).json({ error: err.message });
     }
   });
@@ -62,6 +40,24 @@ function makePostsRouter() {
     const posts = await Post.find({ user_id: req.session.userId }).sort({ createdAt: -1 });
     res.json(posts);
   });
+
+  router.get('/:id/view', async (req, res) => {
+    try {
+      const post = await Post.findById(req.params.id).populate('user_id', 'username');
+      if (!post) return res.status(404).send('Post not found');
+
+      res.render('post', {
+        post,
+        title: post.title || 'Post Details',  // pass a title for the page
+        headerLinks: [],
+        footerScripts: []
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server error');
+    }
+  });
+
 
   router.get('/:id', async (req, res) => {
     const post = await Post.findById(req.params.id);

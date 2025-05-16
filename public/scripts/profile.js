@@ -7,20 +7,105 @@ async function fetchJson(url, options = {}) {
   return res.json();
 }
 
-function renderPosts(list) {
+function renderPosts(list, filterType = 'all') {
   const container = document.getElementById('posts-list');
-  container.innerHTML = ''; // clear “Loading…”
+  container.innerHTML = '';
 
-  if (!list.length) {
-    container.textContent = 'No posts yet.';
+  const filtered = list.filter(post => {
+    if (filterType === 'all') return true;
+    return post.type.toLowerCase() === filterType;
+  });
+
+  if (!filtered.length) {
+    container.textContent = 'No posts to display.';
     return;
   }
 
-  list.forEach(({ type, createdAt }) => {
+  filtered.forEach(post => {
     const div = document.createElement('div');
     div.className = 'post';
+    div.style.cursor = 'pointer';
+
+    const formattedDate = new Date(post.createdAt).toLocaleDateString('en-US', {
+      weekday: 'short', month: 'short', day: 'numeric'
+    });
+
+    let postTitle = '';
+    let postBody = '';
+
+    const type = post.type?.toLowerCase();
+
+    if (type === 'event') {
+      const eventDate = post.event_date ? new Date(post.event_date).toLocaleDateString('en-US') : 'No date';
+      postTitle = post.event_name || 'Untitled Event';
+      postBody = `
+    <h4>${postTitle} — ${eventDate}</h4>
+    <p><strong>Location:</strong> ${post.location || 'No location provided'}</p>
+    <p>${post.description || 'No additional description.'}</p>
+  `;
+    } else if (type === 'poll') {
+      postTitle = post.text || 'Untitled Poll';
+      postBody = `<p>${post.text || 'No description.'}</p>`;
+      if (post.options?.length) {
+        postBody += `
+      <ul>
+        ${post.options.map(opt => `<li>${opt.label} (${opt.votes} votes)</li>`).join('')}
+      </ul>`;
+      }
+    } else if (type === 'news') {
+      postTitle = post.headline || 'Untitled News';
+      postBody = `<p>${post.body || 'No content.'}</p>`;
+    } else {
+      postTitle = post.title || 'Untitled';
+      postBody = `<p>${post.content || 'No content available.'}</p>`;
+    }
+
+
     div.innerHTML = `
-      <p>${type}</p>
+    <div class="post-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <p><strong>${post.type}</strong> • ${formattedDate}</p>
+        <h4 style="margin: 0;">${postTitle}</h4>
+      </div>
+      <span class="dropdown-arrow" style="font-size: 24px; user-select: none;">&#9660;</span>
+    </div>
+    <div class="post-preview" style="display: none; margin-top: 10px;">
+      ${postBody}
+      ${post.image_url ? `<img src="${post.image_url}" alt="Post image" style="max-width: 100%; height: auto;" />` : ''}
+    </div>
+  `;
+
+    const dropdown = div.querySelector('.dropdown-arrow');
+    const preview = div.querySelector('.post-preview');
+    dropdown.addEventListener('click', e => {
+      e.stopPropagation();
+      const show = preview.style.display === 'none';
+      preview.style.display = show ? 'block' : 'none';
+      dropdown.innerHTML = show ? '&#9650;' : '&#9660;';
+    });
+
+    div.addEventListener('click', () => {
+      window.location.href = `/posts/${post._id}/view`;
+    });
+
+    container.appendChild(div);
+  });
+}
+
+function renderComments(comments) {
+  const container = document.getElementById('posts-list');
+  container.innerHTML = '';
+
+  if (!comments.length) {
+    container.textContent = 'No comments yet.';
+    return;
+  }
+
+  comments.forEach(({ content, createdAt }) => {
+    const div = document.createElement('div');
+    div.className = 'comment';
+    div.innerHTML = `
+      <p>${content}</p>
       <time>${new Date(createdAt).toLocaleString()}</time>
     `;
     container.appendChild(div);
@@ -57,7 +142,6 @@ async function uploadProfilePic(event) {
     const data = await res.json();
     const imageUrl = data.profilePic;
 
-    // Force image reload by appending timestamp
     document.getElementById('profilePic').src = imageUrl + '?t=' + new Date().getTime();
     document.getElementById('uploadMessage').textContent = 'Profile picture updated successfully!';
 
@@ -87,14 +171,40 @@ async function init() {
       document.getElementById('uploadMessage').textContent = 'Please log in to update your profile.';
     }
 
-    renderPosts(posts); // You could also add rendering for comments here if needed
+    allPosts = posts;
+    allComments = comments;
+    renderPosts(allPosts); // Default view
 
     const form = document.getElementById('profilePicForm');
     if (form) {
       form.addEventListener('submit', uploadProfilePic);
-    } else {
-      console.error('Profile picture form not found in the DOM.');
     }
+
+    const fileInput = document.getElementById('profilePicInput');
+    if (fileInput) {
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+          form.dispatchEvent(new Event('submit', { cancelable: true }));
+        }
+      });
+    }
+
+    // Tab filtering logic
+    const tabButtons = document.querySelectorAll('.tab');
+    tabButtons.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tab.classList.add('active');
+
+        const type = tab.dataset.type;
+        if (type === 'comment') {
+          renderComments(allComments);
+        } else {
+          renderPosts(allPosts, type);
+        }
+      });
+    });
+
   } catch (err) {
     console.error('Error initializing:', err);
     document.getElementById('username').textContent = 'Login required';
@@ -106,4 +216,3 @@ async function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
-
