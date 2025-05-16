@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         10 //zoom level
     )
 
-      //Load and display tile layers on the map
+    //Load and display tile layers on the map
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19
     }).addTo(map);
@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('location-info').textContent = 'Geolocation not supported';
         return;
     }
+    
+    //Custom BootStrap icon for user's location
+    const userIcon = L.divIcon({
+    className: "",
+    html: `<i class="bi bi-geo-alt-fill text-danger" style="font-size: 2rem;"></i>`,
+    iconAnchor: [16, 32]
+    });
 
     //Requesting user's position
     navigator.geolocation.getCurrentPosition(
@@ -28,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             map.setView([latitude, longitude], 15);
 
             //Drop a pin on user's current location with a popup
-            L.marker([latitude, longitude])
+            L.marker([latitude, longitude], {icon: userIcon})
                 .addTo(map)
                 .bindPopup("📍 You're Here!!")
                 .openPopup();
@@ -68,6 +75,46 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (err) {
                 console.log('Location info fetch error:', err);
                 document.getElementById('location-info').textContent = 'Could not load location info';
+            }
+
+            //Fetch and render neighbourhood events
+            try {
+                const mapDataRes = await fetch('/map/data', { credentials: 'include' });
+                if (!mapDataRes.ok) throw new Error(await mapDataRes.text());
+                const events = await mapDataRes.json();
+
+
+                events.forEach(e => {
+                    if (typeof e.lat === 'number' && typeof e.lng === 'number') {
+                        // parsing date
+                        const date = new Date(e.event_date);
+
+                        // Parsed location to be shorter
+                        const parts = e.location.split(',').map(s => s.trim());
+                        const foramttedLoc = parts.length >= 3
+                            ? `${parts[0]}, ${parts[2]}`
+                            : e.location;
+
+                        const formattedDate = date.toLocaleDateString('en-CA', {
+                            month: 'long',
+                            day:   'numeric',
+                            year:  'numeric'
+                        });
+
+                        const eventInfoHTML = `
+                            <strong>${e.event_name}</strong><br>
+                            <span>${foramttedLoc}</span><br>
+                            <span>${formattedDate}</span><br>
+                            <em>${e.description || ''}</em>
+                        `
+
+                        L.marker([e.lat, e.lng])
+                        .addTo(map)
+                        .bindPopup(eventInfoHTML);
+                    }
+                });
+            } catch (err) {
+                console.error('Could not load neighbourhood events', err);
             }
         },
 

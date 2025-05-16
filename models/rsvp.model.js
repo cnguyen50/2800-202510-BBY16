@@ -1,3 +1,5 @@
+const { Schema, model } = require('mongoose');
+
 module.exports = model('RSVP', new Schema({
     event_id: {
         type: Schema.Types.ObjectId,

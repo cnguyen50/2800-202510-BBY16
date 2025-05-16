@@ -1,7 +1,8 @@
 const express = require('express');
 const bcrypt  = require('bcrypt');
 const User    = require('../models/user.model.js');
-
+const { registerSchema, loginSchema } = require('../middleware/validateUser.js');
+const validateBody = require('../middleware/validate.js');
 /*
   makeAuthRouter() returns an Express Router
   each route handles a piece of authentication logic
@@ -11,7 +12,7 @@ function makeAuthRouter() {
 
   // router.post(path, handler) → create new account
   // purpose: register user, reject duplicates, start session
-  router.post('/register', async (req, res) => {
+  router.post('/register', validateBody(registerSchema), async (req, res) => {
     try {
       const { username, password, email, neighbourhood } = req.body;
 
@@ -27,11 +28,12 @@ function makeAuthRouter() {
         username,
         password: hash,
         email,
-        neighbourhood
+        neighbourhood: neighbourhood.toLowerCase().trim()
       });
 
       // req.session.userId stores login in session cookie
       req.session.userId = user._id;
+      req.session.neighbourhood = neighbourhood;
       res.status(201).json({ _id: user._id, username, email, neighbourhood });
     } catch (err) {
       res.status(400).json({ error: err.message });
@@ -40,38 +42,50 @@ function makeAuthRouter() {
 
   // router.post(path, handler) → login (auto-register if not found)
   // purpose: sign in existing user or create one on the fly
-  router.post('/login', async (req, res) => {
+  router.post('/login', validateBody(loginSchema), async (req, res) => {
     const { username, password, email, neighbourhood } = req.body;
 
     // User.findOne finds user by username
     let user = await User.findOne({ username });
 
     // if not found, create new account
-    if (!user) {
-      try {
-        const hash = await bcrypt.hash(password, 10);
+    if (!user && (!email || !neighbourhood)) {
 
-        user = await User.create({
-          username,
-          password: hash,
-          email,
-          neighbourhood
-        });
-      } catch (err) {
-        return res.status(400).json({ error: 'Registration failed: ' + err.message });
-      }
+        return res.redirect(303, '/login?error=USER_NOT_FOUND');
     }
+
+    if(!user && email && neighbourhood) {
+      // User.create creates new user
+      const hash = await bcrypt.hash(password, 10);
+
+      user = await User.create({
+        username,
+        password: hash,
+        email,
+        neighbourhood: neighbourhood.toLowerCase().trim()
+      });
+    }    
 
     if(user) {
       // bcrypt.compare(plain, hash) checks password against hash
       const match = await bcrypt.compare(password, user.password);
       if (!match) return res.status(401).json({ error: 'Invalid credentials' });
       req.session.userId = user._id;
+      req.session.neighbourhood = neighbourhood;
+
+      //cache in session for quick access
+      req.session.userNeighbourhood = user.neighbourhood;
 
       res.redirect('/profile');
     } else {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok) return res.redirect(303, '/login?error=BAD_PASSWORD');
+
+    req.session.userId = user._id;
+    res.redirect('/profile');
   
   });
 
@@ -82,7 +96,7 @@ function makeAuthRouter() {
         res.clearCookie('sessionId');
         res.redirect('/');
       });
-     
+    
     } else {
     res.redirect('/');
     }

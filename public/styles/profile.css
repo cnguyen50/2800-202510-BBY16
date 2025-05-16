@@ -1,0 +1,202 @@
+/* === Responsive Design === */
+@media (max-width: 768px) {
+    .profile-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-right {
+        text-align: center;
+    }
+
+    .profile-right p {
+        margin: 0.5rem 0;
+    }
+}
+
+/* === Container for the whole profile section === */
+.profile-container {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    justify-content: center;
+    margin: 2rem auto;
+    padding: 2rem;
+    max-width: 1000px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+}
+
+/* === Profile Picture Section === */
+.profile-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    min-width: 220px;
+    position: relative;
+}
+
+/* === Circular Profile Image === */
+.profile-img-wrapper {
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+    overflow: visible;
+    flex-shrink: 0;
+    /* Prevent shrinking in flex layout */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    /* fallback background */
+}
+
+.profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    border: 2px solid #181f27;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* === Camera Icon Overlay === */
+.camera-icon-label {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border-radius: 50%;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+    z-index: 2;
+}
+
+.camera-icon-label:hover {
+    background-color: #0056b3;
+}
+
+.camera-icon-label i {
+    font-size: 1rem;
+}
+
+/* === Hide File Input === */
+#profilePicInput {
+    display: none;
+}
+
+/* === Upload Message === */
+.upload-message {
+    font-size: 0.9rem;
+    color: green;
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+/* === User Info Section === */
+.profile-right {
+    flex: 2;
+    min-width: 260px;
+}
+
+.profile-right p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+/* === Section Titles === */
+main>h2,
+section>h2 {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: 600;
+}
+
+/* === Posts and Comments Containers === */
+#posts,
+#comments {
+    margin: 2rem auto;
+    max-width: 800px;
+    background: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+#posts-list .post,
+#comments-list .comment {
+    padding: 0.8rem;
+    border-bottom: 1px solid #ddd;
+}
+
+#posts-list .post:last-child,
+#comments-list .comment:last-child {
+    border-bottom: none;
+}
+
+/* === Tabs Container === */
+.tabs-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.tabs {
+    display: flex;
+    gap: 1rem;
+    background-color: #f0f0f0;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.tab {
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.tab:hover {
+    background-color: #e0e0e0;
+}
+
+.tab.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* === Filtered Posts Area === */
+#filtered-content {
+    margin: 2rem auto;
+    max-width: 800px;
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.post {
+    transition: background-color 0.2s ease;
+}
+
+.post:hover {
+    background-color: #f5f5f5;
+}

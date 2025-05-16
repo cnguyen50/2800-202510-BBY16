@@ -1,0 +1,71 @@
+<%- include('templates/loggedHeader') %>
+
+<style>
+    .post-wrapper {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 80px;
+        /* Space for fixed top bar */
+        background-color: #f9f9f9;
+    }
+</style>
+    <main class="post-detail">
+        <h1>
+            <%= post.headline || post.title || 'Untitled' %>
+        </h1>
+        <p><strong>Type:</strong>
+            <%= post.type %>
+        </p>
+        <p><strong>By:</strong>
+            <%= post.user_id?.username || 'Unknown' %>
+        </p>
+        <p><strong>Date:</strong>
+            <%= new Date(post.createdAt).toLocaleString() %>
+        </p>
+
+        <% if(post.type.toLowerCase()==='news' ) { %>
+            <p>
+                <%= post.body %>
+            </p>
+            <% } else if(post.type.toLowerCase()==='poll' ) { %>
+                <p>
+                    <%= post.text %>
+                </p>
+                <% if(post.options?.length) { %>
+                    <ul>
+                        <% post.options.forEach(opt=> { %>
+                            <li>
+                                <%= opt.label %> — <%= opt.votes %> votes
+                            </li>
+                            <% }) %>
+                    </ul>
+                    <% } %>
+                        <% } else if(post.type.toLowerCase()==='event' ) { %>
+                            <p><strong>Event Name:</strong>
+                                <%= post.event_name %>
+                            </p>
+                            <p><strong>Date:</strong>
+                                <%= post.event_date ? new Date(post.event_date).toLocaleDateString() : 'No date' %>
+                            </p>
+                            <p><strong>Location:</strong>
+                                <%= post.location || 'No location provided' %>
+                            </p>
+                            <p>
+                                <%= post.description || '' %>
+                            </p>
+                            <% } else { %>
+                                <p>
+                                    <%= post.body || post.content || 'No content available.' %>
+                                </p>
+                                <% } %>
+
+                                    <% if(post.image_url) { %>
+                                        <img src="<%= post.image_url %>" alt="Post image" />
+                                        <% } %>
+
+                                            <a href="/profile">← Back to Profile</a>
+    </main>
+
+<%- include('templates/loggedFooter') %>
