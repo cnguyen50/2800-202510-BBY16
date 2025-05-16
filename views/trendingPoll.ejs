@@ -3,9 +3,26 @@
     <main class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h2>Trending Polls</h2>
+            <div class="svg-background">
+                <% svgs.forEach(file=> { %>
+                    <img src="/img/svg/<%= file %>" class="svg-icon" />
+                    <% }) %>
+            </div>
+
             <div>
-                <button class="btn btn-sm btn-outline-primary me-1 filter-btn" data-filter="all">All</button>
-                <button class="btn btn-sm btn-outline-primary filter-btn" data-filter="near">Near</button>
+                <button class="btn filter-btn-all" data-filter="all">All</button>
+                <button class="btn filter-btn-near" data-filter="near">Near</button>
+            </div>
+            <div class="btn-group">
+                <button class="btn dropdown-toggle" type="button" id="chartTypeDropdown" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Chart Type
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="chartTypeDropdown">
+                    <li><a class="dropdown-item global-chart-type" data-type="bar" href="#">Bar</a></li>
+                    <li><a class="dropdown-item global-chart-type" data-type="pie" href="#">Pie</a></li>
+                    <li><a class="dropdown-item global-chart-type" data-type="doughnut" href="#">Doughnut</a></li>
+                </ul>
             </div>
         </div>
 

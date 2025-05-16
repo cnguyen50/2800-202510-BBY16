@@ -1,14 +1,22 @@
 let chartInstances = {};
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (!window.loadedPosts) return;
+    if (!window.loadedPosts) return;
 
-  window.loadedPosts.forEach(poll => {
-    const canvas = document.getElementById(`chart-${poll._id}`);
-    if (canvas) {
-      renderPollChart(poll._id, getDefaultChartType(poll._id));
-    }
-  });
+    window.loadedPosts.forEach(poll => {
+        const canvas = document.getElementById(`chart-${poll._id}`);
+        if (canvas) {
+            renderPollChart(poll._id, getDefaultChartType(poll._id));
+        }
+    });
+
+    const svgIcons = document.querySelectorAll(".svg-icon");
+
+    svgIcons.forEach(icon => {
+        icon.style.top = Math.floor(Math.random() * 90) + "vh";   // Random vertical position
+        icon.style.left = Math.floor(Math.random() * 90) + "vw";  // Random horizontal position
+        icon.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`; // Random rotation
+    });
 });
 
 document.addEventListener("click", (e) => {
@@ -31,6 +39,23 @@ document.addEventListener("click", (e) => {
         const postId = chartId.split("chart-")[1];
         renderPollChart(postId, type);
     }
+
+    const globalChartButtons = document.querySelectorAll('.global-chart-type');
+
+    globalChartButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const selectedType = btn.dataset.type;
+
+            // Update all chart canvases with selected chart type
+            window.loadedPosts.forEach(poll => {
+                renderPollChart(poll._id, selectedType);
+            });
+
+            // Update dropdown label if desired
+            document.getElementById('chartTypeDropdown').textContent = `Chart: ${selectedType}`;
+        });
+    });
 });
 
 function getDefaultChartType(postId) {
@@ -61,7 +86,7 @@ function renderPollChart(postId, type = "bar") {
             datasets: [{
                 label: '# of Votes',
                 data,
-                backgroundColor: ['#f48fb1', '#ce93d8', '#81d4fa', '#ffab91']
+                backgroundColor: ['#AEBFF3', '#FAF0A5', '#BEE5B4', '#FAD8E2']
             }]
         },
         options: {
@@ -83,3 +108,4 @@ function renderPollChart(postId, type = "bar") {
         }
     });
 }
+

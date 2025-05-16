@@ -141,6 +141,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     const pollsRouter = require('./routes/polls.route.js');
     app.use('/polls', pollsRouter);
+
     app.get('/trendingpoll', async (req, res) => {
       if (!req.session.userId) return res.redirect('/login');
 
@@ -154,17 +155,28 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         .sort((a, b) => b.totalVotes - a.totalVotes)
         .slice(0, 6); // show 6 trending
 
-      res.render('trendingpoll', {
-        title: 'Trending Polls',
-        polls: sorted,
-        headerLinks: [
-          { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-          { rel: 'stylesheet', href: '/styles/trendingpoll.css' }
-        ],
-        footerScripts: [
-          { src: 'https://cdn.jsdelivr.net/npm/chart.js' },
-          { src: '/scripts/pollChart.js' }
-        ]
+      const svgDir = path.join(__dirname, './public/img/svg/');
+      fs.readdir(svgDir, (err, files) => {
+        if (err) return res.status(500).send("Failed to load SVGs");
+
+        const svgs = files.filter(file => file.endsWith('.svg'));
+        const shuffled = svgs.sort(() => 0.5 - Math.random());
+        const count = Math.floor(Math.random() * 6) + 5; // 5–10
+        const selectedSvgs = shuffled.slice(0, count);
+
+        res.render('trendingpoll', {
+          title: 'Trending Polls',
+          polls: sorted,
+          headerLinks: [
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+            { rel: 'stylesheet', href: '/styles/trendingPoll.css' }
+          ],
+          footerScripts: [
+            { src: 'https://cdn.jsdelivr.net/npm/chart.js' },
+            { src: '/scripts/pollChart.js' }
+          ],
+          svgs: selectedSvgs // ✅ pass SVGs to your EJS
+        });
       });
     });
 

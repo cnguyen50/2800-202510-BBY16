@@ -1,8 +1,92 @@
-/* public/styles/trendingpoll.css */
-.card-title {
+body {
+  font-family: 'Satoshi', sans-serif;
+  background-color: var(--background-clr);
+  color: var(--text-clr);
+}
+
+h2 {
   font-weight: bold;
 }
 
+/* Chart */
 canvas {
   max-width: 100%;
+}
+
+#chartTypeDropdown {
+  min-width: 120px;
+}
+
+.card {
+  opacity: 0.9;
+}
+
+/* Buttons */
+.filter-btn-all {
+  border: 2px solid var(--green-clr);
+  background: transparent;
+  border-radius: 25px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  color: black;
+}
+
+.filter-btn-all:hover {
+  color: black;
+  transform: translateY(-1px);
+  box-shadow: 0px 6px 15px var(--btn-shadow);
+}
+
+.filter-btn-near {
+  border: 2px solid var(--purple-clr);
+  background-color: var(--purple-clr);
+  border-radius: 25px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.filter-btn-near:hover {
+  color: black;
+  transform: translateY(-1px);
+  box-shadow: 0px 6px 15px var(--btn-shadow);
+}
+
+.dropdown-toggle {
+  border: 2px solid var(--icon-clr);
+  background: transparent;
+  border-radius: 25px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.filter-btn-all:hover {
+  color: black;
+  transform: translateY(-1px);
+  box-shadow: 0px 6px 15px var(--btn-shadow);
+}
+
+/* SVGs */
+.svg-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* makes them unclickable */
+    z-index: -1; /* behind everything */
+    overflow: hidden;
+}
+
+.svg-icon {
+    position: absolute;
+    opacity: 0.25; /* transparent like a background */
+    width: 250px;
+    height: auto;
 }
