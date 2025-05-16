@@ -95,15 +95,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+
   // Submit post from modal
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+      const formData = new FormData();
     const type = document.getElementById("post-type").value;
 
-    formData.append("type", type); // keep lowercase
-
     formData.append("content", document.getElementById("post-content").value);
+
 
     if (type === "Event") {
 
@@ -124,19 +125,18 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } else if (type === "news") {
       formData.append("headline", document.getElementById("news-headline").value);
+      console.log(document.getElementById("news-headline").value);
       formData.append("body", document.getElementById("news-body").value);
+      console.log(document.getElementById("news-body").value);
       formData.append("image_url", document.getElementById("news-image-url").value);
       formData.append("neighborhood", document.getElementById("news-neighborhood").value);
     }
 
+    console.log("Form data before image append:", formData.get('content'), formData.get('body'), formData.get('neighborhood'));
+
     const fileInput = document.getElementById("post-image");
     if (fileInput.files.length > 0) {
       formData.append("image", fileInput.files[0]);
-    }
-
-    console.log("Post type:", type);
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
     }
 
     try {
@@ -147,15 +147,20 @@ document.addEventListener("DOMContentLoaded", () => {
         endpoint = "/polls";
       } else if (type === "event") {
         endpoint = "/events";
-      } else {
-        endpoint = "/posts";
+      } else if (type === "news") {
+        endpoint = "/news";
       }
+
+      console.log(endpoint);
+      console.log(type);
 
       const res = await fetch(endpoint, {
         method: "POST",
         body: formData,
         credentials: "include"
       });
+
+      
 
       if (!res.ok) {
         const err = await res.json();
