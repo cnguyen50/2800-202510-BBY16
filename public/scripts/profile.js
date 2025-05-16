@@ -89,8 +89,9 @@ function renderPosts(list, filterType = 'all') {
 
     container.appendChild(div);
   });
-}
+ }
 
+// Function to render comments
 function renderComments(list) {
   const container = document.getElementById('comments-list');
   container.innerHTML = '';
@@ -172,6 +173,7 @@ async function init() {
     ]);
 
     if (user) {
+      console.log('User:', user);
       renderUser(user);
       document.getElementById('profilePic').src = user.profilePic || '/uploads/default.jpg';
     } else {
@@ -192,6 +194,7 @@ async function init() {
     if (form) {
       form.addEventListener('submit', uploadProfilePic);
     }
+    console.log('Form found and event listener added');
 
     const fileInput = document.getElementById('profilePicInput');
     if (fileInput) {
@@ -201,6 +204,7 @@ async function init() {
         }
       });
     }
+    console.log('File input found and event listener added');
 
     // Tab filtering logic & toggle containers
     const tabButtons = document.querySelectorAll('.tab');
@@ -225,6 +229,7 @@ async function init() {
         }
       });
     });
+    console.log('Tab buttons found and event listeners added');
 
   } catch (err) {
     console.error('Error initializing:', err);
