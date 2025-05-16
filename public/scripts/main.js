@@ -115,8 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("content", document.getElementById("post-content").value);
 
     if (type === "Event") {
-      console.log(Date.now());
-      console.log(new Date(document.getElementById("event-date").value).getTime());
+
       formData.append("event_name", document.getElementById("event-name").value);
       const day = document.getElementById('event-date').value;  // '2025-05-20'
       formData.append('event_date', day ? `${day}T23:59` : ''); // → '2025-05-20T23:59'
