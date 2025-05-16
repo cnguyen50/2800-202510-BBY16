@@ -13,7 +13,7 @@ function renderPosts(list, filterType = 'all') {
 
   const filtered = list.filter(post => {
     if (filterType === 'all') return true;
-    return post.type.toLowerCase() === filterType;
+    return post.type?.toLowerCase() === filterType;
   });
 
   if (!filtered.length) {
@@ -39,18 +39,18 @@ function renderPosts(list, filterType = 'all') {
       const eventDate = post.event_date ? new Date(post.event_date).toLocaleDateString('en-US') : 'No date';
       postTitle = post.event_name || 'Untitled Event';
       postBody = `
-    <h4>${postTitle} — ${eventDate}</h4>
-    <p><strong>Location:</strong> ${post.location || 'No location provided'}</p>
-    <p>${post.description || 'No additional description.'}</p>
-  `;
+        <h4>${postTitle} — ${eventDate}</h4>
+        <p><strong>Location:</strong> ${post.location || 'No location provided'}</p>
+        <p>${post.description || 'No additional description.'}</p>
+      `;
     } else if (type === 'poll') {
       postTitle = post.text || 'Untitled Poll';
       postBody = `<p>${post.text || 'No description.'}</p>`;
       if (post.options?.length) {
         postBody += `
-      <ul>
-        ${post.options.map(opt => `<li>${opt.label} (${opt.votes} votes)</li>`).join('')}
-      </ul>`;
+          <ul>
+            ${post.options.map(opt => `<li>${opt.label} (${opt.votes} votes)</li>`).join('')}
+          </ul>`;
       }
     } else if (type === 'news') {
       postTitle = post.headline || 'Untitled News';
@@ -60,20 +60,19 @@ function renderPosts(list, filterType = 'all') {
       postBody = `<p>${post.content || 'No content available.'}</p>`;
     }
 
-
     div.innerHTML = `
-    <div class="post-header" style="display: flex; justify-content: space-between; align-items: center;">
-      <div>
-        <p><strong>${post.type}</strong> • ${formattedDate}</p>
-        <h4 style="margin: 0;">${postTitle}</h4>
+      <div class="post-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <p><strong>${post.type}</strong> • ${formattedDate}</p>
+          <h4 style="margin: 0;">${postTitle}</h4>
+        </div>
+        <span class="dropdown-arrow" style="font-size: 24px; user-select: none;">&#9660;</span>
       </div>
-      <span class="dropdown-arrow" style="font-size: 24px; user-select: none;">&#9660;</span>
-    </div>
-    <div class="post-preview" style="display: none; margin-top: 10px;">
-      ${postBody}
-      ${post.image_url ? `<img src="${post.image_url}" alt="Post image" style="max-width: 100%; height: auto;" />` : ''}
-    </div>
-  `;
+      <div class="post-preview" style="display: none; margin-top: 10px;">
+        ${postBody}
+        ${post.image_url ? `<img src="${post.image_url}" alt="Post image" style="max-width: 100%; height: auto;" />` : ''}
+      </div>
+    `;
 
     const dropdown = div.querySelector('.dropdown-arrow');
     const preview = div.querySelector('.post-preview');
@@ -92,26 +91,6 @@ function renderPosts(list, filterType = 'all') {
   });
  }
 
-// function renderComments(comments) {
-//   const container = document.getElementById('posts-list');
-//   container.innerHTML = '';
-
-//   if (!comments.length) {
-//     container.textContent = 'No comments yet.';
-//     return;
-//   }
-
-//   comments.forEach(({ content, createdAt }) => {
-//     const div = document.createElement('div');
-//     div.className = 'comment';
-//     div.innerHTML = `
-//       <p>${content}</p>
-//       <time>${new Date(createdAt).toLocaleString()}</time>
-//     `;
-//     container.appendChild(div);
-//   });
-// }
-
 // Function to render comments
 function renderComments(list) {
   const container = document.getElementById('comments-list');
@@ -124,15 +103,17 @@ function renderComments(list) {
 
   list.forEach(({ content, created_at, post_id }) => {
     const div = document.createElement('div');
-    div.className = 'post';
+    div.className = 'comment';
 
-    // Extracting post details to make a readable title
-    const type = post_id?.type?.toLowerCase();
-    const title = post_id?.headline || post_id?.event_name || post_id?.text || 'Unnamed Post';
+    // Defensive fallback for post title
+    let postTitle = 'Unnamed Post';
+    if (post_id) {
+      postTitle = post_id.headline || post_id.event_name || post_id.text || 'Unnamed Post';
+    }
 
     div.innerHTML = `
       <p><strong>Comment:</strong> ${content}</p>
-      <p><strong>On Post:</strong> <span data-post-id="${post_id?._id}" data-post-type="${type}">${title}</span></p>
+      <p><strong>On Post:</strong> ${postTitle}</p>
       <time>${new Date(created_at).toLocaleString()}</time>
     `;
 
@@ -180,6 +161,9 @@ async function uploadProfilePic(event) {
   }
 }
 
+let allPosts = [];
+let allComments = [];
+
 async function init() {
   try {
     const [user, comments, posts] = await Promise.all([
@@ -200,10 +184,11 @@ async function init() {
       document.getElementById('uploadMessage').textContent = 'Please log in to update your profile.';
     }
 
-    renderPosts(posts); // You could also add rendering for comments here if needed
-    console.log('Posts rendered:', posts);
-    renderComments(comments);
-    console.log('Comments rendered:', comments);
+    allPosts = posts || [];
+    allComments = comments || [];
+
+    renderPosts(allPosts);
+    renderComments(allComments);
 
     const form = document.getElementById('profilePicForm');
     if (form) {
@@ -221,7 +206,7 @@ async function init() {
     }
     console.log('File input found and event listener added');
 
-    // Tab filtering logic
+    // Tab filtering logic & toggle containers
     const tabButtons = document.querySelectorAll('.tab');
     tabButtons.forEach(tab => {
       tab.addEventListener('click', () => {
@@ -229,10 +214,18 @@ async function init() {
         tab.classList.add('active');
 
         const type = tab.dataset.type;
+
+        const postsContainer = document.getElementById('posts-list');
+        const commentsContainer = document.getElementById('comments-list');
+
         if (type === 'comment') {
-          renderComments(comments);
+          postsContainer.style.display = 'none';
+          commentsContainer.style.display = 'block';
+          renderComments(allComments);
         } else {
-          renderPosts(posts, type);
+          commentsContainer.style.display = 'none';
+          postsContainer.style.display = 'block';
+          renderPosts(allPosts, type);
         }
       });
     });
