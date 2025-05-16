@@ -54,6 +54,19 @@ function makeAuthRouter() {
         return res.redirect(303, '/login?error=USER_NOT_FOUND');
     }
 
+    if(!user && email && neighbourhood) {
+      // User.create creates new user
+       const hash = await bcrypt.hash(password, 10);
+
+      user = await User.create({
+        username,
+        password: hash,
+        email,
+        neighbourhood
+      });
+
+    }
+
     if(user) {
       // bcrypt.compare(plain, hash) checks password against hash
       const match = await bcrypt.compare(password, user.password);
