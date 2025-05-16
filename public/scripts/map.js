@@ -17,6 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('location-info').textContent = 'Geolocation not supported';
         return;
     }
+    // 1) Make two div‑icons at the top of your map.js
+    const userIcon = L.divIcon({
+    className: "",   // we’ll style entirely via the <i> tag
+    html: `<i class="bi bi-geo-alt-fill text-danger" style="font-size: 2rem;"></i>`,
+    iconAnchor: [16, 32]  // tweak so the tip of the icon points at the lat/lng
+    });
 
     //Requesting user's position
     navigator.geolocation.getCurrentPosition(
@@ -28,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             map.setView([latitude, longitude], 15);
 
             //Drop a pin on user's current location with a popup
-            L.marker([latitude, longitude])
+            L.marker([latitude, longitude], {icon: userIcon})
                 .addTo(map)
                 .bindPopup("📍 You're Here!!")
                 .openPopup();
@@ -79,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 events.forEach(e => {
                     if (typeof e.lat === 'number' && typeof e.lng === 'number') {
-                        
+
                         const eventInfoHTML = `
                             <strong>${e.event_name}</strong><br>
                             <p>${e.location}</p><br>
