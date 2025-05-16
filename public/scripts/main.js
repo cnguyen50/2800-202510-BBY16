@@ -115,8 +115,11 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("content", document.getElementById("post-content").value);
 
     if (type === "Event") {
+      console.log(Date.now());
+      console.log(new Date(document.getElementById("event-date").value).getTime());
       formData.append("event_name", document.getElementById("event-name").value);
-      formData.append("event_date", document.getElementById("event-date").value);
+      const day = document.getElementById('event-date').value;  // '2025-05-20'
+      formData.append('event_date', day ? `${day}T23:59` : ''); // → '2025-05-20T23:59'
       formData.append("location", document.getElementById("event-location").value);
       formData.append("description", document.getElementById("event-description").value);
     }
@@ -169,14 +172,20 @@ document.addEventListener("DOMContentLoaded", () => {
         credentials: "include"
       });
 
-      const newPost = await res.json();
-      renderPost(newPost);
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Unknown server error');
+    }
+
+    const newPost = await res.json();
+    renderPost(newPost, currentUserId);
+
       form.reset();
       document.getElementById("event-fields").style.display = "none";
       document.getElementById("poll-fields").style.display = "none";
       document.getElementById("news-fields").style.display = "none";
       const postModal = new bootstrap.Modal(document.getElementById('postModal'));
-      modal.hide();
+      postModal.hide();
     } catch (err) {
       console.error("Error creating post:", err);
     }
@@ -199,6 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res2 = await fetch('/users/me', { credentials: "include" });
       const user = await res2.json();
       currentUserId = user._id;
+      console.log(currentUserId);
       // Sort posts by newest first
       allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -210,6 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadMorePosts() {
     const nextPosts = allPosts.slice(offset, offset + limit);
+    console.log(currentUserId);
     nextPosts.forEach(post => {
 
       renderPost(post, currentUserId)
@@ -224,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
- loadMoreBtn.addEventListener("click", () => loadMorePosts(currentUserId));
+  loadMoreBtn.addEventListener("click", () => loadMorePosts(currentUserId));
 
   fetchAllPosts();
 
@@ -261,9 +272,9 @@ document.addEventListener("DOMContentLoaded", () => {
         html = renderDefault(post, username, date, typeLabel); break;
     }
 
-    if(post.user_id?._id === currentUserId) {
-       console.log(post.user_id._id);
     console.log(currentUserId);
+
+    if(post.user_id?._id === currentUserId) {
       html += `
         <div class="text-end mt-2">
           <button class="btn btn-danger btn-sm delete-post" data-id="${post._id}">Delete</button>
