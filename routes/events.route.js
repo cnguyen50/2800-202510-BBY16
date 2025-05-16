@@ -25,19 +25,6 @@ function makeEventsRouter() {
             const { event_name, event_date, location, description, neighbourhood } = req.body;
             const image_url = req.file ? `/uploads/${req.file.filename}` : null;
 
-            // Geocode the free‑text location
-            const nomParams = new URLSearchParams({
-                format:       'jsonv2',
-                limit:        '1',
-                q:            location,
-                countrycodes: 'ca',
-                viewbox:      '-123.224,49.316,-123.022,49.227',
-                bounded:      '1',
-                addressdetails: '1'
-            });
-            
-            const nomURL  = `https://nominatim.openstreetmap.org/search?${nomParams}`;
-
             // read the coords user selected
             const lat = parseFloat(req.body.lat);
             const lng = parseFloat(req.body.lng);
