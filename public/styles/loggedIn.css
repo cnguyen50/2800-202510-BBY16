@@ -5,7 +5,7 @@
 @media (min-width: 768px) {
   body{
     display: grid;
-    grid-template-columns: 1fr 3fr; /* Two equal columns */
+    grid-template-columns: 260px 3fr; /* Two equal columns */
     grid-template-rows: 5fr 1fr;
     }
 
