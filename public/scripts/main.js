@@ -42,6 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let endpoint;
     if (filter === 'all') {
       endpoint = '/posts';
+    } else if (filter === 'news') {
+      endpoint = '/news';
     } else {
       endpoint = `/${filter}s`;
     }
@@ -155,13 +157,13 @@ document.addEventListener("DOMContentLoaded", () => {
         credentials: "include"
       });
 
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || 'Unknown server error');
-    }
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Unknown server error');
+      }
 
-    const newPost = await res.json();
-    renderPost(newPost, currentUserId);
+      const newPost = await res.json();
+      renderPost(newPost, currentUserId);
 
       form.reset();
       document.getElementById("event-fields").style.display = "none";
@@ -245,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const username = post.user_id?.username || 'Anonymous';
-   
+
     let html = "";
     switch (post.type?.toLowerCase()) {
       case "event":
@@ -260,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log(currentUserId);
 
-    if(post.user_id?._id === currentUserId) {
+    if (post.user_id?._id === currentUserId) {
       html += `
         <div class="text-end mt-2">
           <button class="btn delete-post" data-id="${post._id}">Delete</button>
@@ -281,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
     div.innerHTML += commentHtml;
     loadComments(post._id, div.querySelector(".comments-list"));
-    
+
     document.getElementById("post-container").appendChild(div);
 
   }
@@ -377,10 +379,9 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   `;
   }
-});
 
-function renderNews(post, username, date, typeLabel) {
-  return `
+  function renderNews(post, username, date, typeLabel) {
+    return `
     <div class="post-header">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
@@ -401,26 +402,25 @@ function renderNews(post, username, date, typeLabel) {
       </div>
     </div>
   `;
-}
-
-const postContainer = document.getElementById('post-container');
-
-postContainer.addEventListener('click', async (e) => {
-  if (e.target.classList.contains('delete-post')) {
-    const postId = e.target.getAttribute('data-id');
-    if (!confirm('Are you sure you want to delete this post?')) return;
-
-    try {
-      await fetch(`/posts/${postId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-
-      // Remove the post element from the DOM
-      e.target.closest('.post-card').remove();
-    } catch (err) {
-      console.error('Failed to delete post:', err);
-      alert('Could not delete post.');
-    }
   }
+
+  postContainer.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('delete-post')) {
+      const postId = e.target.getAttribute('data-id');
+      if (!confirm('Are you sure you want to delete this post?')) return;
+
+      try {
+        await fetch(`/posts/${postId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+
+        // Remove the post element from the DOM
+        e.target.closest('.post-card').remove();
+      } catch (err) {
+        console.error('Failed to delete post:', err);
+        alert('Could not delete post.');
+      }
+    }
+  })
 });
