@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
       suggList.innerHTML = "";
     }
   });
+})
 
   document.getElementById("post-type").addEventListener("change", (e) => {
     type = e.target.value;
