@@ -77,6 +77,25 @@ function makeUsersRouter() {
     }
   })
 
+    router.put('/me/neighbourhood', requireAuth, async (req, res) => {
+    const { neighbourhood } = req.body;
+    if (typeof neighbourhood !== 'string') {
+      return res.status(400).json({ error: 'neighbourhood must be a string' });
+    }
+    try {
+      const user = await User.findByIdAndUpdate(
+        req.session.userId,
+        { neighbourhood },
+        { new: true, select: '-password' }
+      );
+      if (!user) return res.status(404).json({ error: 'User not found' });
+      res.json(user);
+    } catch (err) {
+      console.error('Error updating neighbourhood:', err);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+
   // POST upload profile picture (Tom's feature)
   router.post('/me/upload', requireAuth, upload.single('profilePic'), async (req, res) => {
     try {

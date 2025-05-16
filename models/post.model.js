@@ -33,7 +33,15 @@ const EventPost = Post.discriminator(
     },
     location   : { type: String, required: true, minlength: 2, maxlength: 200, validate: noDollarDot },
     description: { type: String, maxlength: 2000, validate: noDollarDot },
-    image_url  : { type: String }                    // inherits URL regex above if you like
+    image_url  : { type: String },                    // inherits URL regex above if you like
+    neighbourhood: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true
+    },
+    lat: { type: Number, required: true },
+    lng: { type: Number, required: true }
   })
 );
 
@@ -60,7 +68,7 @@ const NewsPost = Post.discriminator(
     headline  : { type: String, required: true, minlength: 3, maxlength: 200, validate: noDollarDot },
     body      : { type: String, required: true, validate: noDollarDot },
     image_url   : { type: String },
-    neighborhood: { type: String, required: true }
+    neighbourhood: { type: String, required: true }
   })
 );
 

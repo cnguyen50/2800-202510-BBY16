@@ -28,7 +28,7 @@ function makeAuthRouter() {
         username,
         password: hash,
         email,
-        neighbourhood
+        neighbourhood: neighbourhood.toLowerCase().trim()
       });
 
       // req.session.userId stores login in session cookie
@@ -56,16 +56,15 @@ function makeAuthRouter() {
 
     if(!user && email && neighbourhood) {
       // User.create creates new user
-       const hash = await bcrypt.hash(password, 10);
+      const hash = await bcrypt.hash(password, 10);
 
       user = await User.create({
         username,
         password: hash,
         email,
-        neighbourhood
+        neighbourhood: neighbourhood.toLowerCase().trim()
       });
-
-    }
+    }    
 
     if(user) {
       // bcrypt.compare(plain, hash) checks password against hash
@@ -73,6 +72,9 @@ function makeAuthRouter() {
       if (!match) return res.status(401).json({ error: 'Invalid credentials' });
       req.session.userId = user._id;
       req.session.neighbourhood = neighbourhood;
+
+      //cache in session for quick access
+      req.session.userNeighbourhood = user.neighbourhood;
 
       res.redirect('/profile');
     } else {
@@ -94,7 +96,7 @@ function makeAuthRouter() {
         res.clearCookie('sessionId');
         res.redirect('/');
       });
-     
+    
     } else {
     res.redirect('/');
     }

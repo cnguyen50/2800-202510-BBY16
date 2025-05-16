@@ -33,6 +33,7 @@ const UserSchema = new Schema(
     neighbourhood: {
       type: String,
       required: true,
+      lowercase: true,
       trim: true,
     },
     location: {

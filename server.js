@@ -16,6 +16,10 @@ const makePollsRouter = require('./routes/polls.route.js');
 const makeTypedRouter = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
 const aiRouter = require('./routes/ai.route.js');
+const makeNewsRouter = require('./routes/news.route.js');
+const makeEventsRouter = require('./routes/events.route.js');
+const makeMapDataRouter = require('./routes/map-data.route.js');
+
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
@@ -100,6 +104,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
       res.render('map', {
         title: 'Map',
         headerLinks: [
+          { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css' },
           { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
           { rel: 'stylesheet', href: '/styles/map.css' },
           { rel: 'stylesheet', href: '/styles/loggedIn.css' }
@@ -110,7 +115,10 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         ]
       });
     });
-
+    
+    // JSON API: events in my neighbourhood for map pins
+    app.use('/map/data', makeMapDataRouter());
+    
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());
@@ -121,7 +129,12 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     // app.use('/events', router) mounts router under /events
     // create, read, update, delete typed posts
-    app.use('/events', makeTypedRouter(EventPost));
+    //app.use('/events', makeTypedRouter(EventPost));
+    // Useing this since seperated event.route.js
+    app.use('/events', makeEventsRouter());
+
+
+
     app.use('/news', makeTypedRouter(NewsPost));
 
     app.get('/notifications', (req, res) => {
@@ -217,7 +230,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             { rel: 'stylesheet', href: '/styles/profile.css' }
           ],
           footerScripts: [
-            { src: '/scripts/profile.js' },
+            { src: '/scripts/profile.js', type: 'module' },
             { src: '/scripts/comment.js' },
             { src: '/scripts/pollChart.js' }
           ],

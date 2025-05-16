@@ -17,6 +17,68 @@ document.addEventListener("DOMContentLoaded", () => {
     type = e.target.value;
 
     // Get the form sections for each type of post
+  let type = "news";
+
+    // Autocomplete elements
+  const locInput = document.getElementById("event-location");
+  const suggList = document.getElementById("loc-suggestions");
+  const latField = document.getElementById("event-lat");
+  const lngField = document.getElementById("event-lng");
+  let debounceTimer;
+
+  //helper function to shorten location data
+  function shortLocation(loc) {
+  const parts = loc.split(',').map(s => s.trim());
+    return parts.length >= 3
+      ? `${parts[0]}, ${parts[2]}`
+      : loc;
+  }
+
+  // ─── Autocomplete for event-location ───
+  locInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    const q = locInput.value.trim();
+
+    if (!q) {
+      suggList.innerHTML = "";
+      return;
+    }
+
+    debounceTimer = setTimeout(async () => {
+      const params = new URLSearchParams({
+        format: "jsonv2",
+        q,
+        limit: "5",
+        countrycodes: "ca",
+      });
+
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
+        const list = await res.json();
+        suggList.innerHTML = list.map(place =>
+          `<li data-lat="${place.lat}" data-lon="${place.lon}">
+            ${place.display_name.trim()}
+          </li>`
+        ).join("");
+
+      } catch (err) {
+        console.error("Autocomplete error:", err);
+      }
+    }, 300);
+  });
+
+  suggList.addEventListener("click", (e) => {
+    if (e.target.tagName === "LI") {
+      locInput.value = e.target.textContent.trim();
+      latField.value = e.target.dataset.lat;
+      lngField.value = e.target.dataset.lon;
+      suggList.innerHTML = "";
+    }
+  });
+
+  document.getElementById("post-type").addEventListener("change", (e) => {
+    type = e.target.value;
+
     const eventFields = document.getElementById("event-fields");
     const pollFields = document.getElementById("poll-fields");
     const newsFields = document.getElementById("news-fields");
@@ -100,29 +162,43 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-      const formData = new FormData();
+    const formData = new FormData();
     const type = document.getElementById("post-type").value;
+
+    //getting neighbourhood from profile
+    const meRes = await fetch('/users/me', { credentials: 'include' });
+    if (!meRes.ok) throw new Error('Not authenticated');
+    const { neighbourhood } = await meRes.json();
+
+    const rawType = document.getElementById("post-type").value;
 
     formData.append("content", document.getElementById("post-content").value);
 
 
     if (type === "Event") {
-
       formData.append("event_name", document.getElementById("event-name").value);
       const day = document.getElementById('event-date').value;  // '2025-05-20'
       formData.append('event_date', day ? `${day}T23:59` : ''); // → '2025-05-20T23:59'
-      formData.append("location", document.getElementById("event-location").value);
+      // formData.append("location", document.getElementById("event-location").value);
       formData.append("description", document.getElementById("event-description").value);
+      formData.append("event_date", document.getElementById("event-date").value);
+      formData.append("description", document.getElementById("event-description").value);
+      formData.append("neighbourhood", neighbourhood);
+      formData.append("location", locInput.value);
+      formData.append("lat", latField.value);
+      formData.append("lng", lngField.value);
+
     } else if (type === "poll") {
       const pollText = document.getElementById('poll-text').value.trim();
       const pollOptions = Array.from(document.querySelectorAll('.poll-option'))
         .map(o => o.value.trim())
         .filter(Boolean);
-
+      
       formData.append('text', pollText);
       pollOptions.forEach((label, i) => {
         formData.append(`options[${i}][label]`, label);
       });
+
     } else if (type === "news") {
       formData.append("headline", document.getElementById("news-headline").value);
       console.log(document.getElementById("news-headline").value);
@@ -301,7 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
     <div class="post-type-label">${typeLabel}</div>
     <p><strong>${post.event_name}</strong> — <em>${new Date(post.event_date).toLocaleDateString()}</em></p>
-    <p><strong>Location:</strong> ${post.location}</p>
+    <p><strong>Location:</strong> ${shortLocation(post.location)}</p>
     <p>${post.description}</p>
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
     <div class="post-footer">
