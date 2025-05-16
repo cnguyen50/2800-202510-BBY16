@@ -90,27 +90,27 @@ function renderPosts(list, filterType = 'all') {
 
     container.appendChild(div);
   });
-}
+ }
 
-function renderComments(comments) {
-  const container = document.getElementById('posts-list');
-  container.innerHTML = '';
+// function renderComments(comments) {
+//   const container = document.getElementById('posts-list');
+//   container.innerHTML = '';
 
-  if (!comments.length) {
-    container.textContent = 'No comments yet.';
-    return;
-  }
+//   if (!comments.length) {
+//     container.textContent = 'No comments yet.';
+//     return;
+//   }
 
-  comments.forEach(({ content, createdAt }) => {
-    const div = document.createElement('div');
-    div.className = 'comment';
-    div.innerHTML = `
-      <p>${content}</p>
-      <time>${new Date(createdAt).toLocaleString()}</time>
-    `;
-    container.appendChild(div);
-  });
-}
+//   comments.forEach(({ content, createdAt }) => {
+//     const div = document.createElement('div');
+//     div.className = 'comment';
+//     div.innerHTML = `
+//       <p>${content}</p>
+//       <time>${new Date(createdAt).toLocaleString()}</time>
+//     `;
+//     container.appendChild(div);
+//   });
+// }
 
 // Function to render comments
 function renderComments(list) {
@@ -189,7 +189,7 @@ async function init() {
     ]);
 
     if (user) {
-      console.log('User data:', user);
+      console.log('User:', user);
       renderUser(user);
       document.getElementById('profilePic').src = user.profilePic || '/uploads/default.jpg';
     } else {
@@ -201,12 +201,15 @@ async function init() {
     }
 
     renderPosts(posts); // You could also add rendering for comments here if needed
+    console.log('Posts rendered:', posts);
     renderComments(comments);
+    console.log('Comments rendered:', comments);
 
     const form = document.getElementById('profilePicForm');
     if (form) {
       form.addEventListener('submit', uploadProfilePic);
     }
+    console.log('Form found and event listener added');
 
     const fileInput = document.getElementById('profilePicInput');
     if (fileInput) {
@@ -216,6 +219,7 @@ async function init() {
         }
       });
     }
+    console.log('File input found and event listener added');
 
     // Tab filtering logic
     const tabButtons = document.querySelectorAll('.tab');
@@ -226,12 +230,13 @@ async function init() {
 
         const type = tab.dataset.type;
         if (type === 'comment') {
-          renderComments(allComments);
+          renderComments(comments);
         } else {
-          renderPosts(allPosts, type);
+          renderPosts(posts, type);
         }
       });
     });
+    console.log('Tab buttons found and event listeners added');
 
   } catch (err) {
     console.error('Error initializing:', err);
