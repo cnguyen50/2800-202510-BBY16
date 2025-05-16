@@ -85,9 +85,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 events.forEach(e => {
                     if (typeof e.lat === 'number' && typeof e.lng === 'number') {
+                        // parsing date
+                        const date = new Date(e.event_date);
 
+                        const formattedDate = date.toLocaleDateString('en-CA', {
+                            month: 'long',
+                            day:   'numeric',
+                            year:  'numeric'
+                        });
+                        
                         const eventInfoHTML = `
                             <strong>${e.event_name}</strong><br>
+                            <small>${formattedDate}</small><br>
                             <p>${e.location}</p><br>
                             <em>${e.description || ''}</em>
                         `
