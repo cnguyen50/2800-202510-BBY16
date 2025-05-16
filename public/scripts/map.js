@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const parts = e.location.split(',').map(s => s.trim());
                         const foramttedLoc = parts.length >= 3
                             ? `${parts[0]}, ${parts[2]}`
-                            : e.location;  // fallback if fewer than 3 parts
+                            : e.location;
 
                         const formattedDate = date.toLocaleDateString('en-CA', {
                             month: 'long',
@@ -102,8 +102,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         const eventInfoHTML = `
                             <strong>${e.event_name}</strong><br>
-                            <small>${formattedDate}</small><br>
-                            <p>${foramttedLoc}</p><br>
+                            <span>${foramttedLoc}</span><br>
+                            <span>${formattedDate}</span><br>
                             <em>${e.description || ''}</em>
                         `
 
