@@ -22,9 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     debounceTimer = setTimeout(async () => {
       const params = new URLSearchParams({
-        format:       "jsonv2",
+        format: "jsonv2",
         q,
-        limit:        "5",
+        limit: "5",
         countrycodes: "ca",
       });
 
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ${place.display_name}
           </li>`
         ).join("");
-        
+
       } catch (err) {
         console.error("Autocomplete error:", err);
       }
@@ -118,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (type === "Event") {
       formData.append("event_name", document.getElementById("event-name").value);
       formData.append("event_date", document.getElementById("event-date").value);
-      // formData.append("location", document.getElementById("event-location").value);
       formData.append("description", document.getElementById("event-description").value);
       formData.append("neighbourhood", neighbourhood);
       formData.append("location", locInput.value);
