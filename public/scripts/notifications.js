@@ -47,7 +47,7 @@ try {
 /* ---------- bootstrap ---------- */
 fetch('/api/notifications')
 .then(r => r.json())
-.then(arr => arr.forEach(render));
+.then(arr => arr.sort((a,b) => new Date(a.created_at) - new Date(b.created_at)).forEach(render));
 
 /* ---------- realtime ---------- */
 socket.on('notification', n => render(n));

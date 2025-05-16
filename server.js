@@ -16,8 +16,10 @@ const makePollsRouter = require('./routes/polls.route.js');
 const makeTypedRouter = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
 const makeNewsRouter = require('./routes/news.route.js');
+const aiRouter         = require('./routes/ai.route.js');
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
+
 
 (async () => {
   try {
@@ -126,7 +128,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     app.get('/notifications', (req, res) => {
       res.render('notifications', {
         userId: req.session.userId,
-         headerLinks: [
+        headerLinks: [
           { rel: 'stylesheet', href: '/styles/loggedIn.css' },
           { rel: 'stylesheet', href: '/styles/notifications.css' }
         ],
@@ -148,11 +150,17 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     // app.get(path, handler) sends index page
     // landing page
-    app.get('/', (_req, res) =>
+    app.get('/', (req, res) =>{
+      if(req.session.userId) {
+        res.redirect('/home');
+      } else {
       res.sendFile(path.join(__dirname, './public/index.html'))
-    );
+      }
+    });
 
-    //app.get(path, handler) sends profile page
+    app.use('/ai', aiRouter);
+
+   //app.get(path, handler) sends profile page
     //profile page (uses JS to fetch /current endpoints)
     app.get('/profile', async (req, res) => {
       if (!req.session.userId) {
@@ -173,6 +181,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           ],
           footerScripts: [
             { src: '/scripts/profile.js' },
+            { src: '/scripts/comment.js' },
+            { src: '/scripts/pollChart.js' }
           ],
           user,  // Pass the user object to the EJS template
         });
@@ -208,11 +218,14 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             headerLinks: [
               { rel: 'stylesheet', href: '/styles/main.css' },
               { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+              {rel: 'stylesheet', href: '/styles/ai.css' },
+              
 
             ],
             footerScripts: [
               { src: '/scripts/main.js' },
-              { src: '/scripts/comment.js' }
+              { src: '/scripts/comment.js' },
+              { src: '/scripts/pollChart.js' }
             ],
             svgs: selectedSvgs
           });
@@ -245,6 +258,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         })
       }
     })
+    
 
     // Start HTTP server on given port
     // default 3000

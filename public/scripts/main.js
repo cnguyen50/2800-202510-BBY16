@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+  let currentUserId;
   const form = document.getElementById("create-post-form");
   const postContainer = document.getElementById("post-container");
   const svgIcons = document.querySelectorAll(".svg-icon");
@@ -46,6 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const res = await fetch(endpoint, { credentials: "include" });
+
       const posts = await res.json();
 
       // Sort posts by creation date (newest first)
@@ -98,9 +101,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     formData.append("type", type); // keep lowercase
 
-    if (type === "event") {
+    formData.append("content", document.getElementById("post-content").value);
+
+    if (type === "Event") {
+
       formData.append("event_name", document.getElementById("event-name").value);
-      formData.append("event_date", document.getElementById("event-date").value);
+      const day = document.getElementById('event-date').value;  // '2025-05-20'
+      formData.append('event_date', day ? `${day}T23:59` : ''); // → '2025-05-20T23:59'
       formData.append("location", document.getElementById("event-location").value);
       formData.append("description", document.getElementById("event-description").value);
     } else if (type === "poll") {
@@ -148,14 +155,20 @@ document.addEventListener("DOMContentLoaded", () => {
         credentials: "include"
       });
 
-      const newPost = await res.json();
-      renderPost(newPost);
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Unknown server error');
+    }
+
+    const newPost = await res.json();
+    renderPost(newPost, currentUserId);
+
       form.reset();
       document.getElementById("event-fields").style.display = "none";
       document.getElementById("poll-fields").style.display = "none";
       document.getElementById("news-fields").style.display = "none";
-      const postModal = bootstrap.Modal.getInstance(document.getElementById('postModal'));
-      if (postModal) postModal.hide();
+      const postModal = new bootstrap.Modal(document.getElementById('postModal'));
+      postModal.hide();
     } catch (err) {
       console.error("Error creating post:", err);
     }
@@ -175,8 +188,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/posts", { credentials: "include" });
       const posts = await res.json();
 
+      const res2 = await fetch('/users/me', { credentials: "include" });
+      const user = await res2.json();
+      currentUserId = user._id;
+      console.log(currentUserId);
       // Sort posts by newest first
       allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      // make allPosts available globally for charts to access
+      window.loadedPosts = posts;
 
       loadMorePosts();
     } catch (err) {
@@ -186,7 +206,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadMorePosts() {
     const nextPosts = allPosts.slice(offset, offset + limit);
-    nextPosts.forEach(renderPost);
+    console.log(currentUserId);
+    nextPosts.forEach(post => {
+
+      renderPost(post, currentUserId)
+    });
     offset += limit;
 
     // Disable button if no more posts
@@ -196,14 +220,14 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("no-more-msg").style.display = "block";
     }
   }
-  // Listen for "Load More" button clicks
-  loadMoreBtn.addEventListener("click", loadMorePosts);
+
+  loadMoreBtn.addEventListener("click", () => loadMorePosts(currentUserId));
 
   fetchAllPosts();
 
 
   // Renderers by type
-  function renderPost(post) {
+  function renderPost(post, currentUserId) {
     const div = document.createElement("div");
     div.classList.add("post-card", `post-${post.type}`);
 
@@ -221,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const username = post.user_id?.username || 'Anonymous';
-
+   
     let html = "";
     switch (post.type?.toLowerCase()) {
       case "event":
@@ -234,14 +258,30 @@ document.addEventListener("DOMContentLoaded", () => {
         html = renderDefault(post, username, date, typeLabel); break;
     }
 
-    // Add delete button before rendering
-    html += `
-      <div class="text-end mt-2">
-        <button class="btn delete-post" data-id="${post._id}">Delete</button>
-      </div>
-    `;
+    console.log(currentUserId);
+
+    if(post.user_id?._id === currentUserId) {
+      html += `
+        <div class="text-end mt-2">
+          <button class="btn btn-danger btn-sm delete-post" data-id="${post._id}">Delete</button>
+        </div>
+      `;
+    }
 
     div.innerHTML = html;
+
+    const commentHtml = `
+    <div class="comment-section" data-post-id="${post._id}">
+      <form class="comment-form mt-2">
+        <input type="text" class="form-control mb-2" name="comment" placeholder="Write a comment..." required>
+        <button type="submit" class="btn btn-outline-secondary btn-sm">Post</button>
+      </form>
+      <div class="comments-list"></div>
+    </div>
+  `;
+    div.innerHTML += commentHtml;
+    loadComments(post._id, div.querySelector(".comments-list"));
+    
     document.getElementById("post-container").appendChild(div);
 
   }
@@ -279,6 +319,8 @@ document.addEventListener("DOMContentLoaded", () => {
       </li>
     `).join('');
 
+    const chartId = `chart-${post._id}`;
+
     return `
       <div class="post-header">
         <strong>@${username}</strong>
@@ -289,7 +331,18 @@ document.addEventListener("DOMContentLoaded", () => {
       <ul class="list-unstyled ps-3">
         ${optionsHtml}
       </ul>
+
+      <button class="btn btn-sm btn-outline-primary toggle-chart" data-post-id="${post._id}">Show Chart</button>
+      <div class="chart-controls d-none" data-controls-id="${post._id}">
+      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="bar" data-chart-id="${chartId}">Bar</button>
+      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="pie" data-chart-id="${chartId}">Pie</button>
+      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="doughnut" data-chart-id="${chartId}">Doughnut</button>
+      </div>
+
+      <canvas id="${chartId}" class="mt-3 d-none" height="250"></canvas>
+
       <a href="/polls/${post._id}/view" class="btn btn-outline-primary btn-sm">Vote or View Results</a>
+
       <div class="post-footer">
         <div class="post-actions-left">
           <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
@@ -350,8 +403,9 @@ function renderNews(post, username, date, typeLabel) {
   `;
 }
 
-// Added a delete button to all the posts
-document.addEventListener('click', async (e) => {
+const postContainer = document.getElementById('post-container');
+
+postContainer.addEventListener('click', async (e) => {
   if (e.target.classList.contains('delete-post')) {
     const postId = e.target.getAttribute('data-id');
     if (!confirm('Are you sure you want to delete this post?')) return;
@@ -361,7 +415,8 @@ document.addEventListener('click', async (e) => {
         method: 'DELETE',
         credentials: 'include'
       });
-      // Remove post from DOM
+
+      // Remove the post element from the DOM
       e.target.closest('.post-card').remove();
     } catch (err) {
       console.error('Failed to delete post:', err);
