@@ -260,6 +260,19 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     div.innerHTML = html;
+
+    const commentHtml = `
+    <div class="comment-section" data-post-id="${post._id}">
+      <form class="comment-form mt-2">
+        <input type="text" class="form-control mb-2" name="comment" placeholder="Write a comment..." required>
+        <button type="submit" class="btn btn-outline-secondary btn-sm">Post</button>
+      </form>
+      <div class="comments-list"></div>
+    </div>
+  `;
+    div.innerHTML += commentHtml;
+    loadComments(post._id, div.querySelector(".comments-list"));
+    
     document.getElementById("post-container").appendChild(div);
 
   }

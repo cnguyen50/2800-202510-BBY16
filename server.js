@@ -211,7 +211,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             headerLinks: [
               { rel: 'stylesheet', href: '/styles/main.css' },
               { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-              {rel: 'stylesheet', href: '/styles/ai.css' }
+              {rel: 'stylesheet', href: '/styles/ai.css' },
+              
 
             ],
             footerScripts: [
