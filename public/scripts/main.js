@@ -136,6 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
       ]);
 
       const posts = await postsRes.json();
+      window.loadedPosts = posts;
 
       const allPosts = [...posts];
 
@@ -233,6 +234,8 @@ document.addEventListener("DOMContentLoaded", () => {
       </li>
     `).join('');
 
+    const chartId = `chart-${post._id}`;
+
     return `
       <div class="post-header">
         <strong>@${username}</strong>
@@ -243,7 +246,18 @@ document.addEventListener("DOMContentLoaded", () => {
       <ul class="list-unstyled ps-3">
         ${optionsHtml}
       </ul>
+
+      <button class="btn btn-sm btn-outline-primary toggle-chart" data-post-id="${post._id}">Show Chart</button>
+      <div class="chart-controls d-none" data-controls-id="${post._id}">
+      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="bar" data-chart-id="${chartId}">Bar</button>
+      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="pie" data-chart-id="${chartId}">Pie</button>
+      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="doughnut" data-chart-id="${chartId}">Doughnut</button>
+      </div>
+
+      <canvas id="${chartId}" class="mt-3 d-none" height="250"></canvas>
+
       <a href="/polls/${post._id}/view" class="btn btn-outline-primary btn-sm">Vote or View Results</a>
+
       <div class="post-footer">
         <div class="post-actions-left">
           <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>

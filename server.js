@@ -133,6 +133,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           ],
           footerScripts: [
             { src: '/scripts/profile.js' },
+            { src: '/scripts/comment.js' },
+            { src: '/scripts/pollChart.js' }
           ],
           user,  // Pass the user object to the EJS template
         });
@@ -159,7 +161,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           ],
           footerScripts: [
             { src: '/scripts/main.js' },
-            { src: '/scripts/comment.js' }
+            { src: '/scripts/comment.js' },
+            { src: '/scripts/pollChart.js' }
           ]
         });
       }

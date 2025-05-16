@@ -41,6 +41,19 @@ body {
   color: #a61e4d; /* darker pink on hover */
 }
 
+/* Chart Styling */
+canvas {
+  display: block;
+  max-width: 100%;
+  width: 300px;
+  height: auto;
+  margin: 0 auto;
+}
+.chart-controls {
+  margin-top: 0.5rem;
+}
+
+
 /* modal */
 .modal-content {
   border-radius: 20px;
