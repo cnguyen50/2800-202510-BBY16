@@ -1,0 +1,43 @@
+<%- include('templates/loggedHeader') %>
+
+    <main class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Trending Polls</h2>
+            <div>
+                <button class="btn btn-sm btn-outline-primary me-1 filter-btn" data-filter="all">All</button>
+                <button class="btn btn-sm btn-outline-primary filter-btn" data-filter="near">Near</button>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+            <% polls.forEach(poll=> { %>
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <%= poll.text %>
+                            </h5>
+                            <ul class="list-unstyled small mb-3">
+                                <% poll.options.forEach(opt=> { %>
+                                    <li>
+                                        <%= opt.label %>: <%= opt.votes %> votes
+                                    </li>
+                                    <% }) %>
+                            </ul>
+                            <div class="text-center">
+                                <canvas id="chart-<%= poll._id %>" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+    </main>
+    <script id="poll-data" type="application/json">
+  <%- JSON.stringify(polls) %>
+</script>
+
+    <script>
+        window.loadedPosts = JSON.parse(document.getElementById('poll-data').textContent);
+    </script>
+    <%- include('templates/loggedFooter') %>

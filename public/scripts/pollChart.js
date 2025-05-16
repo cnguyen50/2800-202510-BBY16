@@ -1,5 +1,16 @@
 let chartInstances = {};
 
+document.addEventListener("DOMContentLoaded", () => {
+  if (!window.loadedPosts) return;
+
+  window.loadedPosts.forEach(poll => {
+    const canvas = document.getElementById(`chart-${poll._id}`);
+    if (canvas) {
+      renderPollChart(poll._id, getDefaultChartType(poll._id));
+    }
+  });
+});
+
 document.addEventListener("click", (e) => {
     if (e.target.classList.contains("toggle-chart")) {
         const postId = e.target.dataset.postId;

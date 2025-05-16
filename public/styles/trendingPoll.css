@@ -1,0 +1,8 @@
+/* public/styles/trendingpoll.css */
+.card-title {
+  font-weight: bold;
+}
+
+canvas {
+  max-width: 100%;
+}

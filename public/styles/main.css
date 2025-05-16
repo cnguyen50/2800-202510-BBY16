@@ -45,19 +45,15 @@ main {
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
-    /* makes them unclickable */
-    z-index: -1;
-    /* behind everything */
+    pointer-events: none; /* makes them unclickable */
+    z-index: -1; /* behind everything */
     overflow: hidden;
 }
 
 .svg-icon {
     position: absolute;
-    opacity: 0.25;
-    /* transparent like a background */
+    opacity: 0.25; /* transparent like a background */
     width: 250px;
-    /* or randomize with Jgit S */
     height: auto;
 }
 

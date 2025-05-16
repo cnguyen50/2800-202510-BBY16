@@ -6,7 +6,7 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongo');
 const User = require('./models/user.model.js');
 const path = require('path');
-const fs = require('fs'); 
+const fs = require('fs');
 
 const { connectDB } = require('./scripts/db.js');
 const makeAuthRouter = require('./routes/auth.route.js');
@@ -16,7 +16,7 @@ const makePollsRouter = require('./routes/polls.route.js');
 const makeTypedRouter = require('./routes/postTypes.route.js');
 const makeCommentsRouter = require('./routes/comments.route.js');
 const makeNewsRouter = require('./routes/news.route.js');
-const aiRouter         = require('./routes/ai.route.js');
+const aiRouter = require('./routes/ai.route.js');
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
@@ -28,7 +28,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     const app = express();
 
-        // app.use(middleware) attaches JSON-body parser to all requests
+    // app.use(middleware) attaches JSON-body parser to all requests
     // handles application/json
     app.use(express.json());
 
@@ -39,7 +39,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // handles form submissions from HTML <form>
     app.use(express.urlencoded({ extended: true }));
 
-        // app.use(express.static(dir)) serves static files
+    // app.use(express.static(dir)) serves static files
     // exposes everything inside /public
     app.use(express.static('public'));
 
@@ -66,22 +66,22 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
       });
 
     app.use(sessionMiddleware);
-  
-    const http = require('http').createServer(app);
-    const {Server} = require('socket.io');
 
-    const io = new Server(http, { cors: {origin: '*'} });
+    const http = require('http').createServer(app);
+    const { Server } = require('socket.io');
+
+    const io = new Server(http, { cors: { origin: '*' } });
     app.io = io;
 
-    require('./scripts/reminders.js')(io);  
-    
+    require('./scripts/reminders.js')(io);
+
     io.use((socket, next) => {
       sessionMiddleware(socket.request, {}, next);
     })
 
     io.on('connection', (socket) => {
       const uid = socket.request.session.userId;
-      if(uid) {
+      if (uid) {
         socket.join(String(uid));
         console.log('[socket-join]', uid);
       } else {
@@ -141,6 +141,32 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     const pollsRouter = require('./routes/polls.route.js');
     app.use('/polls', pollsRouter);
+    app.get('/trendingpoll', async (req, res) => {
+      if (!req.session.userId) return res.redirect('/login');
+
+      const topPolls = await PollPost.find().lean();
+
+      const sorted = topPolls
+        .map(p => ({
+          ...p,
+          totalVotes: p.options.reduce((sum, o) => sum + o.votes, 0)
+        }))
+        .sort((a, b) => b.totalVotes - a.totalVotes)
+        .slice(0, 6); // show 6 trending
+
+      res.render('trendingpoll', {
+        title: 'Trending Polls',
+        polls: sorted,
+        headerLinks: [
+          { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+          { rel: 'stylesheet', href: '/styles/trendingpoll.css' }
+        ],
+        footerScripts: [
+          { src: 'https://cdn.jsdelivr.net/npm/chart.js' },
+          { src: '/scripts/pollChart.js' }
+        ]
+      });
+    });
 
 
     // Serve uploaded profile pictures
@@ -150,17 +176,17 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     // app.get(path, handler) sends index page
     // landing page
-    app.get('/', (req, res) =>{
-      if(req.session.userId) {
+    app.get('/', (req, res) => {
+      if (req.session.userId) {
         res.redirect('/home');
       } else {
-      res.sendFile(path.join(__dirname, './public/index.html'))
+        res.sendFile(path.join(__dirname, './public/index.html'))
       }
     });
 
     app.use('/ai', aiRouter);
 
-   //app.get(path, handler) sends profile page
+    //app.get(path, handler) sends profile page
     //profile page (uses JS to fetch /current endpoints)
     app.get('/profile', async (req, res) => {
       if (!req.session.userId) {
@@ -218,8 +244,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             headerLinks: [
               { rel: 'stylesheet', href: '/styles/main.css' },
               { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-              {rel: 'stylesheet', href: '/styles/ai.css' },
-              
+              { rel: 'stylesheet', href: '/styles/ai.css' },
+
 
             ],
             footerScripts: [
@@ -229,9 +255,10 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             ],
             svgs: selectedSvgs
           });
+        }
+        )
       }
-    )}
-  });
+    });
 
     // app.use(path, handler) intercepts /login
     // redirects logged-in users, otherwise shows login form
@@ -258,7 +285,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         })
       }
     })
-    
+
 
     // Start HTTP server on given port
     // default 3000
