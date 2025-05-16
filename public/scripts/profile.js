@@ -189,6 +189,7 @@ async function init() {
     ]);
 
     if (user) {
+      console.log('User data:', user);
       renderUser(user);
       document.getElementById('profilePic').src = user.profilePic || '/uploads/default.jpg';
     } else {
