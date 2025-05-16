@@ -10,6 +10,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const lngField = document.getElementById("event-lng");
   let debounceTimer;
 
+  //helper function to shorten location data
+  function shortLocation(loc) {
+  const parts = loc.split(',').map(s => s.trim());
+    return parts.length >= 3
+      ? `${parts[0]}, ${parts[2]}`
+      : loc;
+  }
+
   // ─── Autocomplete for event-location ───
   locInput.addEventListener("input", () => {
     clearTimeout(debounceTimer);
@@ -250,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
     <div class="post-type-label">${typeLabel}</div>
     <p><strong>${post.event_name}</strong> — <em>${new Date(post.event_date).toLocaleDateString()}</em></p>
-    <p><strong>Location:</strong> ${post.location}</p>
+    <p><strong>Location:</strong> ${shortLocation(post.location)}</p>
     <p>${post.description}</p>
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
     <div class="post-footer">

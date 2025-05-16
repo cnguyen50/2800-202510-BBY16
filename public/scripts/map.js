@@ -88,16 +88,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         // parsing date
                         const date = new Date(e.event_date);
 
+                        // Parsed location to be shorter
+                        const parts = e.location.split(',').map(s => s.trim());
+                        const foramttedLoc = parts.length >= 3
+                            ? `${parts[0]}, ${parts[2]}`
+                            : e.location;  // fallback if fewer than 3 parts
+
                         const formattedDate = date.toLocaleDateString('en-CA', {
                             month: 'long',
                             day:   'numeric',
                             year:  'numeric'
                         });
-                        
+
                         const eventInfoHTML = `
                             <strong>${e.event_name}</strong><br>
                             <small>${formattedDate}</small><br>
-                            <p>${e.location}</p><br>
+                            <p>${foramttedLoc}</p><br>
                             <em>${e.description || ''}</em>
                         `
 

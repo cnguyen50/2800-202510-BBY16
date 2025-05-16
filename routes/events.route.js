@@ -35,12 +35,8 @@ function makeEventsRouter() {
                 bounded:      '1',
                 addressdetails: '1'
             });
+            
             const nomURL  = `https://nominatim.openstreetmap.org/search?${nomParams}`;
-            // const nomRes  = await fetch(nomURL);
-            // const nomData = await nomRes.json();
-            // if (!nomData.length) throw new Error(`Couldn’t geocode "${location}"`);
-            // const lat = parseFloat(nomData[0].lat);
-            // const lng = parseFloat(nomData[0].lon);
 
             // read the coords user selected
             const lat = parseFloat(req.body.lat);
