@@ -203,7 +203,6 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("body", document.getElementById("news-body").value);
       console.log(document.getElementById("news-body").value);
       formData.append("image_url", document.getElementById("news-image-url").value);
-      formData.append("neighborhood", document.getElementById("news-neighborhood").value);
     }
 
     console.log("Form data before image append:", formData.get('content'), formData.get('body'), formData.get('neighborhood'));

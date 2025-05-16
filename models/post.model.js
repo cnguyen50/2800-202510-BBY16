@@ -67,8 +67,7 @@ const NewsPost = Post.discriminator(
   new Schema({
     headline  : { type: String, required: true, minlength: 3, maxlength: 200, validate: noDollarDot },
     body      : { type: String, required: true, validate: noDollarDot },
-    image_url   : { type: String },
-    neighbourhood: { type: String, required: true }
+    image_url   : { type: String }
   })
 );
 
