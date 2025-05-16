@@ -13,7 +13,6 @@
 }
 
 :root {
-<<<<<<< HEAD
   --text-clr: #4A4A4A;
   --icon-clr: #0D1209;
   --blue-clr: #6A86E9;
@@ -33,15 +32,6 @@ body {
 
 h1, h2 {
   font-weight: bold;
-=======
-  --text-clr: #2C3E3A;
-  --icon-clr: #2C3E3A;
-  --btn-shadow: rgba(122, 197, 176, 0.2);
-}
-
-body {
-  color: var(--text-clr);
->>>>>>> profile_feature
 }
 
 /* Buttons */
