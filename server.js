@@ -128,7 +128,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     app.get('/notifications', (req, res) => {
       res.render('notifications', {
         userId: req.session.userId,
-         headerLinks: [
+        headerLinks: [
           { rel: 'stylesheet', href: '/styles/loggedIn.css' },
           { rel: 'stylesheet', href: '/styles/notifications.css' }
         ],
@@ -181,6 +181,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           ],
           footerScripts: [
             { src: '/scripts/profile.js' },
+            { src: '/scripts/comment.js' },
+            { src: '/scripts/pollChart.js' }
           ],
           user,  // Pass the user object to the EJS template
         });
@@ -222,7 +224,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             ],
             footerScripts: [
               { src: '/scripts/main.js' },
-              { src: '/scripts/comment.js' }
+              { src: '/scripts/comment.js' },
+              { src: '/scripts/pollChart.js' }
             ],
             svgs: selectedSvgs
           });
