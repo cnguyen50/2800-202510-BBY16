@@ -76,14 +76,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!mapDataRes.ok) throw new Error(await mapDataRes.text());
                 const events = await mapDataRes.json();
 
+
                 events.forEach(e => {
                     if (typeof e.lat === 'number' && typeof e.lng === 'number') {
+                        
+                        const eventInfoHTML = `
+                            <strong>${e.event_name}</strong><br>
+                            <p>${e.location}</p><br>
+                            <em>${e.description || ''}</em>
+                        `
+
                         L.marker([e.lat, e.lng])
                         .addTo(map)
-                        .bindPopup(
-                            `<strong>${e.event_name}</strong><br>` +
-                            `${new Date(e.event_date).toLocaleString()}`
-                        );
+                        .bindPopup(eventInfoHTML);
                     }
                 });
             } catch (err) {
