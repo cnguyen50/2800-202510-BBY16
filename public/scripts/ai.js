@@ -48,16 +48,25 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
 });
 
 function formatResponse(response) {
-  // Remove asterisks
-  const noAsterisks = response.replace(/\*/g, '');
+  // 1. Normalise line-breaks & remove asterisks
+  const lines = response
+    .replace(/\*/g, '')           // no Markdown bullets
+    .replace(/\r\n/g, '\n')       // Windows → Unix line-feeds
+    .split('\n')
+    .map(l => l.trim())
+    .filter(Boolean);             // drop empty lines
 
-  // Split the response into parts
-  const parts = noAsterisks.split(/\d+\.\s*/);
+  // 2. First line = title
+  const title = lines.shift();
 
-  // Remove empty strings and trim whitespace
-  // Retrieve title and items
-  const title = parts[0].trim();
-  const items = parts.slice(1).map((item,i) =>`${i + 1}. ${item.trim()}`);
+  // 3. Everything else = list items (lines starting with "-" or "N.")
+  const items = lines
+    .filter(l => /^[-•\u2022]|\d+\./.test(l))
+    .map(l =>
+      l.replace(/^[-•\u2022]\s*|\d+\.\s*/, '')  // strip bullet / number
+    )
+    .map((text, i) => `${i + 1}. ${text}`);     // add clean numbering
 
-  return {title, items};
+  return { title, items };
 }
+

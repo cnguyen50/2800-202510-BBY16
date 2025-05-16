@@ -19,10 +19,11 @@ router.post('/', async (req, res) => {
       messages: [
         {
           role: "system",
-          content: `3 to 5 cool things I can do around ${userLocation}? No follow up questions, just a list of 5 things I can do. Just one list item per line and a title.`
+          content: `3 to 7 cool things I can do around ${userLocation}? No follow up questions, just a numbered list (1-5) of things I can do and a title with no number. One item per line. No extra text.`
         }
       ],
       model: "deepseek-chat",
+      temperature: 0.9
     });
 
     const reply = completion.choices[0].message.content;
