@@ -1,6 +1,13 @@
 <%- include('templates/loggedHeader') %>
 
     <main>
+
+        <div class="svg-background">
+            <% svgs.forEach(file=> { %>
+                <img src="/img/svg/<%= file %>" class="svg-icon" />
+                <% }) %>
+        </div>
+
         <h2 class="text-center my-4">User Profile</h2>
 
         <div class="profile-container">
