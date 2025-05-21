@@ -114,7 +114,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           res.render('map', {
             title: 'Map',
             headerLinks: [
-              { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css' },
               { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
               { rel: 'stylesheet', href: 'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css' },
               { rel: 'stylesheet', href: 'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css' },

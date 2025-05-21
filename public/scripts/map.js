@@ -1,5 +1,3 @@
-console.log("testing from inside map.js");
-
 document.addEventListener('DOMContentLoaded', () => {
     //Init map inside div id='map'
     const map = L.map('map').setView(
@@ -38,11 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let nearbyEvents = [];
     let allEvents = [];
 
-    //Custom BootStrap icon for user's location
-    const userIcon = L.divIcon({
-        className: "",
-        html: `<i class="bi bi-geo-alt-fill text-danger" style="font-size: 2rem;"></i>`,
-        iconAnchor: [16, 32]
+    //Custom leaflet icon for user's location
+    const userIcon = new L.Icon({
+        iconUrl:'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
     });
 
     function shortLoc(location) {
