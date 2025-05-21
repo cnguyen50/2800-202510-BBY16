@@ -68,7 +68,7 @@ function renderPosts(list, filterType = 'all') {
         </div>
         <span class="dropdown-arrow" style="font-size: 24px; user-select: none;">&#9660;</span>
       </div>
-      <div class="post-preview" style="display: none; margin-top: 10px;">
+      <div class="post-preview" style="margin-top: 10px;">
         ${postBody}
         ${post.image_url ? `<img src="${post.image_url}" alt="Post image" style="max-width: 100%; height: auto;" />` : ''}
       </div>
@@ -78,9 +78,8 @@ function renderPosts(list, filterType = 'all') {
     const preview = div.querySelector('.post-preview');
     dropdown.addEventListener('click', e => {
       e.stopPropagation();
-      const show = preview.style.display === 'none';
-      preview.style.display = show ? 'block' : 'none';
-      dropdown.innerHTML = show ? '&#9650;' : '&#9660;';
+      const isOpen = preview.classList.toggle('open'); // toggle class
+      dropdown.innerHTML = isOpen ? '&#9650;' : '&#9660;';
     });
 
     div.addEventListener('click', () => {
@@ -89,7 +88,7 @@ function renderPosts(list, filterType = 'all') {
 
     container.appendChild(div);
   });
- }
+}
 
 // Function to render comments
 function renderComments(list) {
@@ -240,5 +239,15 @@ async function init() {
     document.getElementById('uploadMessage').textContent = 'Error loading user data. Please try again.';
   }
 }
+
+const svgIcons = document.querySelectorAll(".svg-icon");
+
+svgIcons.forEach(icon => {
+  icon.style.top = Math.floor(Math.random() * 90) + "vh";
+  icon.style.left = Math.floor(Math.random() * 90) + "vw";
+  icon.style.position = "absolute";  // Make sure they are positioned absolutely for top/left to work
+  icon.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`;
+});
+
 
 document.addEventListener('DOMContentLoaded', init);

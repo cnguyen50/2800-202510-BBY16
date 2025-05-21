@@ -216,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("body", document.getElementById("news-body").value);
       console.log(document.getElementById("news-body").value);
       formData.append("image_url", document.getElementById("news-image-url").value);
+      formData.append("neighbourhood", document.getElementById("news-neighbourhood").value);
     }
 
     console.log("Form data before image append:", formData.get('content'), formData.get('body'), formData.get('neighborhood'));
@@ -477,7 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <h5>${post.headline}</h5>
     <p>${post.body}</p>
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
-    <p><strong>Neighborhood:</strong> ${post.neighborhood || 'N/A'}</p>
+    <p><strong>Neighborhood:</strong> ${post.neighbourhood || 'N/A'}</p>
     <div class="post-footer">
       <div class="post-actions-left">
         <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>

@@ -113,10 +113,10 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
         ]
       });
     });
-    
+
     // JSON API: events in my neighbourhood for map pins
     app.use('/map/data', makeMapDataRouter());
-    
+
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', makePostsRouter());
@@ -221,18 +221,33 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           return res.status(404).send('User not found');  // If user is not found in DB
         }
 
-        res.render('profile', {
-          title: 'Profile',
-          headerLinks: [
-            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-            { rel: 'stylesheet', href: '/styles/profile.css' }
-          ],
-          footerScripts: [
-            { src: '/scripts/profile.js', type: 'module' },
-            { src: '/scripts/comment.js' },
-            { src: '/scripts/pollChart.js' }
-          ],
-          user,  // Pass the user object to the EJS template
+        const svgDir = path.join(__dirname, './public/img/svg/');
+        fs.readdir(svgDir, (err, files) => {
+          if (err) {
+            console.error('Failed to load SVGs', err);
+            // Optionally, still render with empty svgs array or handle error page
+            return res.status(500).send('Server error loading SVGs');
+          }
+
+          const svgs = files.filter(file => file.endsWith('.svg'));
+          const shuffled = svgs.sort(() => 0.5 - Math.random());
+          const count = Math.floor(Math.random() * 6) + 5; // between 5 and 10
+          const selectedSvgs = shuffled.slice(0, count);
+
+          res.render('profile', {
+            title: 'Profile',
+            headerLinks: [
+              { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+              { rel: 'stylesheet', href: '/styles/profile.css' }
+            ],
+            footerScripts: [
+              { src: '/scripts/profile.js', type: 'module' },
+              { src: '/scripts/comment.js' },
+              { src: '/scripts/pollChart.js' }
+            ],
+            user,  // Pass the user object to the EJS template
+            svgs: selectedSvgs // Pass svgs here so your EJS template can use it
+          });
         });
       } catch (err) {
         console.error(err);
