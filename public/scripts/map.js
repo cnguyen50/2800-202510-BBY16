@@ -114,12 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
 
                         listContainer.appendChild(card);
-
+                        
                         const eventInfoHTML = `
                             <strong>${e.event_name}</strong><br>
                             <span>${foramttedLoc}</span><br>
-                            <span>${formattedDate}</span><br>
-                            <em>${e.description || ''}</em>
                         `
 
                         const marker = L.marker([e.lat, e.lng])
