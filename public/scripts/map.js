@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const eventInfoHTML = `
                             <strong>${e.event_name}</strong><br>
                             <span>${foramttedLoc}</span><br>
-                            <a href="#" class="details-link" data-id="${e._id}">Details</a>
+                            <a href="#" class="details-link" data-id="${e._id}">See More Details</a>
                         `
 
                         const marker = L.marker([e.lat, e.lng])

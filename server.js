@@ -116,11 +116,14 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             headerLinks: [
               { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css' },
               { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
+              { rel: 'stylesheet', href: 'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css' },
+              { rel: 'stylesheet', href: 'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css' },
               { rel: 'stylesheet', href: '/styles/map.css' },
               { rel: 'stylesheet', href: '/styles/loggedIn.css' }
             ],
             footerScripts: [
               { src: 'https://unpkg.com/leaflet/dist/leaflet.js' },
+              { src: 'https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js' },
               { src: '/scripts/map.js' }
             ],
             events
