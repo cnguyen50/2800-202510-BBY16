@@ -29,377 +29,384 @@ document.addEventListener("DOMContentLoaded", () => {
     icon.style.left = Math.floor(Math.random() * 90) + "vw";  // Random horizontal position
     icon.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`; // Random rotation
 
-    // Filter Dropdown setup
-    const filterTrigger = document.getElementById('filterTrigger');
-    const filterBox = document.getElementById('filterOptions');
-    const select = document.getElementById('post-select');
+  });
 
-    // Toggle dropdown visibility when the trigger is clicked
-    filterTrigger.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent outside click from closing immediately
-      filterBox.classList.toggle('show'); // Toggle visibility by adding/removing .show class
-    });
+  // Filter Dropdown setup
+  const filterTrigger = document.getElementById('filterTrigger');
+  const filterBox = document.getElementById('filterOptions');
+  const select = document.getElementById('post-select');
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!filterBox.contains(e.target) && !filterTrigger.contains(e.target)) {
-        filterBox.classList.remove('show');
-      }
-    });
+  // Toggle dropdown visibility when the trigger is clicked
+  filterTrigger.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent outside click from closing immediately
+    filterBox.classList.toggle('show'); // Toggle visibility by adding/removing .show class
+  });
 
-    // When an option is clicked
-    document.querySelectorAll('.filter-option').forEach(button => {
-      button.addEventListener('click', () => {
-        const value = button.getAttribute('data-value');
-        select.value = value;
-        select.dispatchEvent(new Event('change'));
-        filterBox.classList.remove('show');
-        filterTrigger.textContent = button.textContent;
-      });
-    });
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!filterBox.contains(e.target) && !filterTrigger.contains(e.target)) {
+      filterBox.classList.remove('show');
+    }
+  });
 
-    const postContainer = document.getElementById("post-container");
-
-    postContainer.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('delete-post')) {
-        const postId = e.target.getAttribute('data-id');
-        // Show a SweetAlert confirmation popup before deleting the post
-        Swal.fire({
-          title: 'Delete this post?',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#3085d6',
-          confirmButtonText: 'Yes, delete it!'
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            try {
-              // Send DELETE request to the backend to delete the post
-              await fetch(`/posts/${postId}`, {
-                method: 'DELETE',
-                credentials: 'include'
-              });
-
-              e.target.closest('.post-card').remove();
-
-              Swal.fire('Deleted!', 'Your post has been deleted.', 'success');
-            } catch (err) {
-              console.error('Failed to delete post:', err);
-              Swal.fire('Error', 'Could not delete post.', 'error');
-            }
-          }
-        });
-      }
+  // When an option is clicked
+  document.querySelectorAll('.filter-option').forEach(button => {
+    button.addEventListener('click', () => {
+      const value = button.getAttribute('data-value');
+      select.value = value;
+      select.dispatchEvent(new Event('change'));
+      filterBox.classList.remove('show');
+      filterTrigger.textContent = button.textContent;
     });
   });
 
-  // Add a change event listener to the dropdown/select element for post type
-  document.getElementById("post-type").addEventListener("change", (e) => {
-    type = e.target.value;
+  postContainer.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('delete-post')) {
+      const postId = e.target.getAttribute('data-id');
+      // Show a SweetAlert confirmation popup before deleting the post
+      Swal.fire({
+        title: 'Delete this post?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            // Send DELETE request to the backend to delete the post
+            await fetch(`/posts/${postId}`, {
+              method: 'DELETE',
+              credentials: 'include'
+            });
 
-    let debounceTimer;
+            e.target.closest('.post-card').remove();
 
-    // ─── Autocomplete for event-location ───
-    locInput.addEventListener("input", () => {
-      clearTimeout(debounceTimer);
-      const q = locInput.value.trim();
+            Swal.fire('Deleted!', 'Your post has been deleted.', 'success');
+          } catch (err) {
+            console.error('Failed to delete post:', err);
+            Swal.fire('Error', 'Could not delete post.', 'error');
+          }
+        }
+      });
+    }
+  });
 
-      if (!q) {
-        suggList.innerHTML = "";
-        return;
-      }
+// Add a change event listener to the dropdown/select element for post type
+document.getElementById("post-type").addEventListener("change", (e) => {
+  type = e.target.value;
 
-      debounceTimer = setTimeout(async () => {
-        const params = new URLSearchParams({
-          format: "jsonv2",
-          q,
-          limit: "5",
-          countrycodes: "ca",
-        });
+  let debounceTimer;
 
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
-          const list = await res.json();
-          suggList.innerHTML = list.map(place =>
-            `<li data-lat="${place.lat}" data-lon="${place.lon}">
+  // ─── Autocomplete for event-location ───
+  locInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    const q = locInput.value.trim();
+
+    if (!q) {
+      suggList.innerHTML = "";
+      return;
+    }
+
+    debounceTimer = setTimeout(async () => {
+      const params = new URLSearchParams({
+        format: "jsonv2",
+        q,
+        limit: "5",
+        countrycodes: "ca",
+      });
+
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
+        const list = await res.json();
+        suggList.innerHTML = list.map(place =>
+          `<li data-lat="${place.lat}" data-lon="${place.lon}">
               ${place.display_name.trim()}
             </li>`
-          ).join("");
+        ).join("");
 
-        } catch (err) {
-          console.error("Autocomplete error:", err);
-        }
-      }, 300);
-    });
-
-    suggList.addEventListener("click", (e) => {
-      if (e.target.tagName === "LI") {
-        locInput.value = e.target.textContent.trim();
-        latField.value = e.target.dataset.lat;
-        lngField.value = e.target.dataset.lon;
-        suggList.innerHTML = "";
-
-        console.log("Selected location:", locInput.value);
+      } catch (err) {
+        console.error("Autocomplete error:", err);
       }
-    });
-  })
-
-  //helper function to shorten location data
-  function shortLocation(loc) {
-    const parts = loc.split(',').map(s => s.trim());
-    return parts.length >= 3
-      ? `${parts[0]}, ${parts[2]}`
-      : loc;
-  }
-
-  document.getElementById("post-type").addEventListener("change", (e) => {
-    type = e.target.value;
-
-    const eventFields = document.getElementById("event-fields");
-    const pollFields = document.getElementById("poll-fields");
-    const newsFields = document.getElementById("news-fields");
-
-    // Show only the fields related to the selected post type and hide others
-    eventFields.style.display = (type === "event") ? "block" : "none";
-    pollFields.style.display = (type === "poll") ? "block" : "none";
-    newsFields.style.display = (type === "news") ? "block" : "none";
+    }, 300);
   });
 
-  // Add event listener to the main post filter dropdown
-  document.getElementById('post-select').addEventListener('change', async (e) => {
-    const filter = e.target.value;
-    // Clear the current post container so new filtered posts can be rendered
-    postContainer.innerHTML = '';
+  suggList.addEventListener("click", (e) => {
+    if (e.target.tagName === "LI") {
+      locInput.value = e.target.textContent.trim();
+      latField.value = e.target.dataset.lat;
+      lngField.value = e.target.dataset.lon;
+      suggList.innerHTML = "";
 
-    const typeMap = {
-      event: 'Event',
-      poll: 'Poll',
-      news: 'News'
-    };
+      console.log("Selected location:", locInput.value);
+    }
+  });
+})
+
+//helper function to shorten location data
+function shortLocation(loc) {
+  const parts = loc.split(',').map(s => s.trim());
+  return parts.length >= 3
+    ? `${parts[0]}, ${parts[2]}`
+    : loc;
+}
+
+document.getElementById("post-type").addEventListener("change", (e) => {
+  type = e.target.value;
+
+  const eventFields = document.getElementById("event-fields");
+  const pollFields = document.getElementById("poll-fields");
+  const newsFields = document.getElementById("news-fields");
+
+  // Show only the fields related to the selected post type and hide others
+  eventFields.style.display = (type === "event") ? "block" : "none";
+  pollFields.style.display = (type === "poll") ? "block" : "none";
+  newsFields.style.display = (type === "news") ? "block" : "none";
+});
+
+// Add event listener to the main post filter dropdown
+document.getElementById('post-select').addEventListener('change', async (e) => {
+  const filter = e.target.value;
+  // Clear the current post container so new filtered posts can be rendered
+  postContainer.innerHTML = '';
+
+  const typeMap = {
+    event: 'Event',
+    poll: 'Poll',
+    news: 'News'
+  };
+
+  let endpoint;
+  if (filter === 'all') {
+    endpoint = '/posts';
+  } else if (filter === 'news') {
+    endpoint = '/news';
+  } else {
+    endpoint = `/${filter}s`;
+  }
+
+  try {
+    const res = await fetch(endpoint, { credentials: "include" });
+    const posts = await res.json();
+
+    // Sort posts by creation date (newest first)
+    allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    offset = 0;
+
+    // Store for access from Load More
+    window.loadedPosts = allPosts;
+
+    // Reset Load More button
+    loadMoreBtn.disabled = false;
+    loadMoreBtn.textContent = "Load More";
+    document.getElementById("no-more-msg").style.display = "none";
+
+    // Clear post container and show first 10
+    postContainer.innerHTML = '';
+    loadMorePosts();
+  } catch (err) {
+    console.error("Filter failed:", err);
+  }
+});
+
+// Submit post from modal
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData();
+  const type = document.getElementById("post-type").value;
+
+  //getting neighbourhood from profile
+  const meRes = await fetch('/users/me', { credentials: 'include' });
+  if (!meRes.ok) throw new Error('Not authenticated');
+  const { neighbourhood } = await meRes.json();
+
+  const rawType = document.getElementById("post-type").value;
+
+  formData.append("content", document.getElementById("post-content").value);
+
+
+  if (type === "event") {
+    formData.append("event_name", document.getElementById("event-name").value);
+    const day = document.getElementById('event-date').value;  // '2025-05-20'
+    formData.append('event_date', day ? `${day}T23:59` : ''); // → '2025-05-20T23:59'
+    // formData.append("location", document.getElementById("event-location").value);
+    formData.append("description", document.getElementById("event-description").value);
+    formData.append("neighbourhood", neighbourhood);
+    formData.append("location", locInput.value);
+    formData.append("lat", latField.value);
+    formData.append("lng", lngField.value);
+
+  } else if (type === "poll") {
+    const pollText = document.getElementById('poll-text').value.trim();
+    const pollOptions = Array.from(document.querySelectorAll('.poll-option'))
+      .map(o => o.value.trim())
+      .filter(Boolean);
+
+    formData.append('text', pollText);
+    pollOptions.forEach((label, i) => {
+      formData.append(`options[${i}][label]`, label);
+    });
+
+  } else if (type === "news") {
+    formData.append("headline", document.getElementById("news-headline").value);
+    console.log(document.getElementById("news-headline").value);
+    formData.append("body", document.getElementById("news-body").value);
+    console.log(document.getElementById("news-body").value);
+    formData.append("image_url", document.getElementById("news-image-url").value);
+  }
+
+  console.log("Form data before image append:", formData.get('content'), formData.get('body'), formData.get('neighborhood'));
+
+  const fileInput = document.getElementById("post-image");
+  if (fileInput.files.length > 0) {
+    formData.append("image", fileInput.files[0]);
+  }
+
+  try {
+    // const endpoint = (type === "Event") ? "/events" : "/posts";
 
     let endpoint;
-    if (filter === 'all') {
-      endpoint = '/posts';
-    } else if (filter === 'news') {
-      endpoint = '/news';
-    } else {
-      endpoint = `/${filter}s`;
-    }
-
-    try {
-      const res = await fetch(endpoint, { credentials: "include" });
-      const posts = await res.json();
-
-      // Sort posts by creation date (newest first)
-      allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      offset = 0;
-
-      // Store for access from Load More
-      window.loadedPosts = allPosts;
-
-      // Reset Load More button
-      loadMoreBtn.disabled = false;
-      loadMoreBtn.textContent = "Load More";
-      document.getElementById("no-more-msg").style.display = "none";
-
-      // Clear post container and show first 10
-      postContainer.innerHTML = '';
-      loadMorePosts();
-    } catch (err) {
-      console.error("Filter failed:", err);
-    }
-  });
-
-  // Submit post from modal
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    const type = document.getElementById("post-type").value;
-
-    //getting neighbourhood from profile
-    const meRes = await fetch('/users/me', { credentials: 'include' });
-    if (!meRes.ok) throw new Error('Not authenticated');
-    const { neighbourhood } = await meRes.json();
-
-    const rawType = document.getElementById("post-type").value;
-
-    formData.append("content", document.getElementById("post-content").value);
-
-
-    if (type === "event") {
-      formData.append("event_name", document.getElementById("event-name").value);
-      const day = document.getElementById('event-date').value;  // '2025-05-20'
-      formData.append('event_date', day ? `${day}T23:59` : ''); // → '2025-05-20T23:59'
-      // formData.append("location", document.getElementById("event-location").value);
-      formData.append("description", document.getElementById("event-description").value);
-      formData.append("neighbourhood", neighbourhood);
-      formData.append("location", locInput.value);
-      formData.append("lat", latField.value);
-      formData.append("lng", lngField.value);
-
-    } else if (type === "poll") {
-      const pollText = document.getElementById('poll-text').value.trim();
-      const pollOptions = Array.from(document.querySelectorAll('.poll-option'))
-        .map(o => o.value.trim())
-        .filter(Boolean);
-
-      formData.append('text', pollText);
-      pollOptions.forEach((label, i) => {
-        formData.append(`options[${i}][label]`, label);
-      });
-
+    if (type === "poll") {
+      endpoint = "/polls";
+    } else if (type === "event") {
+      endpoint = "/events";
     } else if (type === "news") {
-      formData.append("headline", document.getElementById("news-headline").value);
-      console.log(document.getElementById("news-headline").value);
-      formData.append("body", document.getElementById("news-body").value);
-      console.log(document.getElementById("news-body").value);
-      formData.append("image_url", document.getElementById("news-image-url").value);
+      endpoint = "/news";
     }
 
-    console.log("Form data before image append:", formData.get('content'), formData.get('body'), formData.get('neighborhood'));
+    console.log(endpoint);
+    console.log(type);
 
-    const fileInput = document.getElementById("post-image");
-    if (fileInput.files.length > 0) {
-      formData.append("image", fileInput.files[0]);
+    const res = await fetch(endpoint, {
+      method: "POST",
+      body: formData,
+      credentials: "include"
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Unknown server error');
     }
 
-    try {
-      // const endpoint = (type === "Event") ? "/events" : "/posts";
+    const newPost = await res.json();
+    renderPost(newPost, currentUserId);
+    Swal.fire({
+      icon: 'success',
+      title: 'Post Created!',
+      timer: 2000,
+      showConfirmButton: false
+    }).then(() => {
+      location.reload();
+    });
 
-      let endpoint;
-      if (type === "poll") {
-        endpoint = "/polls";
-      } else if (type === "event") {
-        endpoint = "/events";
-      } else if (type === "news") {
-        endpoint = "/news";
-      }
+    form.reset();
+    document.getElementById("event-fields").style.display = "none";
+    document.getElementById("poll-fields").style.display = "none";
+    document.getElementById("news-fields").style.display = "none";
+    const postModal = new bootstrap.Modal(document.getElementById('postModal'));
+    postModal.hide();
+  } catch (err) {
+    console.error("Error creating post:", err);
+  }
+});
 
-      console.log(endpoint);
-      console.log(type);
+// Pagination control variables
+let offset = 0;                // Number of posts already displayed
+const limit = 10;              // Number of posts to show per batch
+let allPosts = [];             // Array to store all fetched posts
 
-      const res = await fetch(endpoint, {
-        method: "POST",
-        body: formData,
-        credentials: "include"
-      });
+// Get reference to the "Load More" button
+const loadMoreBtn = document.getElementById("load-more-btn");
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Unknown server error');
-      }
+// Fetch all posts from the server and initialize the feed
+async function fetchAllPosts() {
+  try {
+    const res = await fetch("/posts", { credentials: "include" });
+    const posts = await res.json();
 
-      const newPost = await res.json();
-      renderPost(newPost, currentUserId);
+    const res2 = await fetch('/users/me', { credentials: "include" });
+    const user = await res2.json();
+    currentUserId = user._id;
+    console.log(currentUserId);
+    // Sort posts by newest first
+    allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-      form.reset();
-      document.getElementById("event-fields").style.display = "none";
-      document.getElementById("poll-fields").style.display = "none";
-      document.getElementById("news-fields").style.display = "none";
-      const postModal = new bootstrap.Modal(document.getElementById('postModal'));
-      postModal.hide();
-    } catch (err) {
-      console.error("Error creating post:", err);
-    }
+    // make allPosts available globally for charts to access
+    window.loadedPosts = posts;
+
+    loadMorePosts();
+  } catch (err) {
+    console.error("Failed to fetch posts:", err);
+  }
+}
+
+function loadMorePosts() {
+  const nextPosts = allPosts.slice(offset, offset + limit);
+  console.log(currentUserId);
+  nextPosts.forEach(post => {
+
+    renderPost(post, currentUserId)
+  });
+  offset += limit;
+
+  // Disable button if no more posts
+  if (offset >= allPosts.length) {
+    loadMoreBtn.disabled = true;
+    loadMoreBtn.textContent = "No more posts";
+    document.getElementById("no-more-msg").style.display = "block";
+  }
+}
+
+loadMoreBtn.addEventListener("click", () => loadMorePosts(currentUserId));
+
+fetchAllPosts();
+
+// Renderers by type
+function renderPost(post, currentUserId) {
+  const div = document.createElement("div");
+  div.classList.add("post-card", `post-${post.type}`);
+
+  const typeLabel = {
+    event: "Event",
+    post: "Post",
+    poll: "Poll",
+    news: "News"
+  }[post.type] || post.type;
+
+  const date = new Date(post.createdAt).toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric"
   });
 
-  // Pagination control variables
-  let offset = 0;                // Number of posts already displayed
-  const limit = 10;              // Number of posts to show per batch
-  let allPosts = [];             // Array to store all fetched posts
+  const username = post.user_id?.username || 'Anonymous';
 
-  // Get reference to the "Load More" button
-  const loadMoreBtn = document.getElementById("load-more-btn");
-
-  // Fetch all posts from the server and initialize the feed
-  async function fetchAllPosts() {
-    try {
-      const res = await fetch("/posts", { credentials: "include" });
-      const posts = await res.json();
-
-      const res2 = await fetch('/users/me', { credentials: "include" });
-      const user = await res2.json();
-      currentUserId = user._id;
-      console.log(currentUserId);
-      // Sort posts by newest first
-      allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-      // make allPosts available globally for charts to access
-      window.loadedPosts = posts;
-
-      loadMorePosts();
-    } catch (err) {
-      console.error("Failed to fetch posts:", err);
-    }
+  let html = "";
+  switch (post.type?.toLowerCase()) {
+    case "event":
+      html = renderEvent(post, username, date, typeLabel); break;
+    case "news":
+      html = renderNews(post, username, date, typeLabel); break;
+    case "poll":
+      html = renderPoll(post, username, date, typeLabel); break;
+    default:
+      html = renderDefault(post, username, date, typeLabel); break;
   }
 
-  function loadMorePosts() {
-    const nextPosts = allPosts.slice(offset, offset + limit);
-    console.log(currentUserId);
-    nextPosts.forEach(post => {
+  console.log(currentUserId);
 
-      renderPost(post, currentUserId)
-    });
-    offset += limit;
-
-    // Disable button if no more posts
-    if (offset >= allPosts.length) {
-      loadMoreBtn.disabled = true;
-      loadMoreBtn.textContent = "No more posts";
-      document.getElementById("no-more-msg").style.display = "block";
-    }
-  }
-
-  loadMoreBtn.addEventListener("click", () => loadMorePosts(currentUserId));
-
-  fetchAllPosts();
-
-  // Renderers by type
-  function renderPost(post, currentUserId) {
-    const div = document.createElement("div");
-    div.classList.add("post-card", `post-${post.type}`);
-
-    const typeLabel = {
-      event: "Event",
-      post: "Post",
-      poll: "Poll",
-      news: "News"
-    }[post.type] || post.type;
-
-    const date = new Date(post.createdAt).toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric"
-    });
-
-    const username = post.user_id?.username || 'Anonymous';
-
-    let html = "";
-    switch (post.type?.toLowerCase()) {
-      case "event":
-        html = renderEvent(post, username, date, typeLabel); break;
-      case "news":
-        html = renderNews(post, username, date, typeLabel); break;
-      case "poll":
-        html = renderPoll(post, username, date, typeLabel); break;
-      default:
-        html = renderDefault(post, username, date, typeLabel); break;
-    }
-
-    console.log(currentUserId);
-
-    if (post.user_id?._id === currentUserId) {
-      html += `
+  if (post.user_id?._id === currentUserId) {
+    html += `
         <div class="text-end mt-2">
           <button class="btn delete-post" data-id="${post._id}">Delete</button>
         </div>
       `;
-    }
+  }
 
-    div.innerHTML = html;
+  div.innerHTML = html;
 
-    const commentHtml = `
+  const commentHtml = `
     <div class="comment-section" data-post-id="${post._id}">
       <form class="comment-form mt-2">
         <input type="text" class="form-control mb-2" name="comment" placeholder="Write a comment..." required>
@@ -408,15 +415,15 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="comments-list"></div>
     </div>
   `;
-    div.innerHTML += commentHtml;
-    loadComments(post._id, div.querySelector(".comments-list"));
+  div.innerHTML += commentHtml;
+  loadComments(post._id, div.querySelector(".comments-list"));
 
-    document.getElementById("post-container").appendChild(div);
+  document.getElementById("post-container").appendChild(div);
 
-  }
+}
 
-  function renderEvent(post, username, date, typeLabel) {
-    return `
+function renderEvent(post, username, date, typeLabel) {
+  return `
     <div class="post-header">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
@@ -438,19 +445,19 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 
   `;
-  }
+}
 
-  function renderPoll(post, username, date, typeLabel) {
-    const optionsHtml = post.options.map(option => `
+function renderPoll(post, username, date, typeLabel) {
+  const optionsHtml = post.options.map(option => `
       <li>
         <span>${option.label}</span>
         <span class="badge bg-secondary">${option.votes} vote(s)</span>
       </li>
     `).join('');
 
-    const chartId = `chart-${post._id}`;
+  const chartId = `chart-${post._id}`;
 
-    return `
+  return `
       <div class="post-header">
         <strong>@${username}</strong>
         <span class="post-date">${date}</span>
@@ -483,10 +490,10 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
     `;
-  }
+}
 
-  function renderDefault(post, username, date, typeLabel) {
-    return `
+function renderDefault(post, username, date, typeLabel) {
+  return `
     <div class="post-header">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
@@ -504,10 +511,10 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     </div>
   `;
-  }
+}
 
-  function renderNews(post, username, date, typeLabel) {
-    return `
+function renderNews(post, username, date, typeLabel) {
+  return `
     <div class="post-header">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
@@ -528,6 +535,5 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     </div>
   `;
-  }
+}
 });
-
