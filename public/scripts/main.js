@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const form       = document.getElementById("create-post-form");
-  const locInput   = document.getElementById("event-location");
-  const suggList   = document.getElementById("loc-suggestions");
-  const latField   = document.getElementById("event-lat");
-  const lngField   = document.getElementById("event-lng");
+  const form = document.getElementById("create-post-form");
+  const locInput = document.getElementById("event-location");
+  const suggList = document.getElementById("loc-suggestions");
+  const latField = document.getElementById("event-lat");
+  const lngField = document.getElementById("event-lng");
 
   let currentUserId;
   const postContainer = document.getElementById("post-container");
@@ -54,23 +54,23 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error("Autocomplete error:", err);
         }
       }, 300);
-  });
+    });
 
-  suggList.addEventListener("click", (e) => {
-    if (e.target.tagName === "LI") {
-      locInput.value = e.target.textContent.trim();
-      latField.value = e.target.dataset.lat;
-      lngField.value = e.target.dataset.lon;
-      suggList.innerHTML = "";
+    suggList.addEventListener("click", (e) => {
+      if (e.target.tagName === "LI") {
+        locInput.value = e.target.textContent.trim();
+        latField.value = e.target.dataset.lat;
+        lngField.value = e.target.dataset.lon;
+        suggList.innerHTML = "";
 
-      console.log("Selected location:", locInput.value);
-    }
-  });
-})
+        console.log("Selected location:", locInput.value);
+      }
+    });
+  })
 
   //helper function to shorten location data
   function shortLocation(loc) {
-  const parts = loc.split(',').map(s => s.trim());
+    const parts = loc.split(',').map(s => s.trim());
     return parts.length >= 3
       ? `${parts[0]}, ${parts[2]}`
       : loc;
@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const pollOptions = Array.from(document.querySelectorAll('.poll-option'))
         .map(o => o.value.trim())
         .filter(Boolean);
-      
+
       formData.append('text', pollText);
       pollOptions.forEach((label, i) => {
         formData.append(`options[${i}][label]`, label);
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("body", document.getElementById("news-body").value);
       console.log(document.getElementById("news-body").value);
       formData.append("image_url", document.getElementById("news-image-url").value);
-      formData.append("neighbourhood", document.getElementById("news-neighbourhood").value);
+      formData.append("neighborhood", document.getElementById("news-neighborhood").value);
     }
 
     console.log("Form data before image append:", formData.get('content'), formData.get('body'), formData.get('neighborhood'));
@@ -234,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
         credentials: "include"
       });
 
-      
+
 
       if (!res.ok) {
         const err = await res.json();
@@ -311,6 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderPost(post, currentUserId) {
     const div = document.createElement("div");
     div.classList.add("post-card", `post-${post.type}`);
+    div.id = `post-${post._id}`; // add unique ID to each post wrapper to refresh it individually later
 
     const typeLabel = {
       event: "Event",
@@ -393,12 +394,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderPoll(post, username, date, typeLabel) {
-    const optionsHtml = post.options.map(option => `
+    const now = Date.now();
+    const expired = new Date(post.expires_at) < now;
+    const hasVoted = post.voted_user_ids?.includes(currentUserId);
+
+    let optionsHtml = '';
+
+    if (!hasVoted && !expired) {
+      // Show clickable buttons to vote
+      optionsHtml = post.options.map(option => `
+      <li>
+        <button type="button" class="btn btn-outline-primary vote-option"
+                data-post-id="${post._id}"
+                data-option-id="${option._id}">
+          ${option.label}
+        </button>
+      </li>
+    `).join('');
+    } else {
+      // Show results with vote counts
+      optionsHtml = post.options.map(option => `
       <li>
         <span>${option.label}</span>
         <span class="badge bg-secondary">${option.votes} vote(s)</span>
       </li>
     `).join('');
+    }
 
     const chartId = `chart-${post._id}`;
 
@@ -413,6 +434,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ${optionsHtml}
       </ul>
 
+      ${hasVoted || expired ? `
       <button class="btn btn-sm btn-outline-primary toggle-chart" data-post-id="${post._id}">Show Chart</button>
       <div class="chart-controls d-none" data-controls-id="${post._id}">
       <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="bar" data-chart-id="${chartId}">Bar</button>
@@ -421,8 +443,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
 
       <canvas id="${chartId}" class="mt-3 d-none" height="250"></canvas>
-
-      <a href="/polls/${post._id}/view" class="btn btn-outline-primary btn-sm">Vote or View Results</a>
+      ` : ''}
 
       <div class="post-footer">
         <div class="post-actions-left">
@@ -469,7 +490,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <h5>${post.headline}</h5>
     <p>${post.body}</p>
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
-    <p><strong>Neighborhood:</strong> ${post.neighbourhood || 'N/A'}</p>
+    <p><strong>Neighborhood:</strong> ${post.neighborhood || 'N/A'}</p>
     <div class="post-footer">
       <div class="post-actions-left">
         <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
@@ -502,4 +523,29 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   })
+});
+
+document.addEventListener('click', async (e) => {
+  if (e.target.classList.contains('vote-option')) {
+    const postId = e.target.dataset.postId;
+    const optionId = e.target.dataset.optionId;
+
+    try {
+      const res = await fetch(`/polls/${postId}/vote`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ optionId })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || "Voting failed");
+        return;
+      }
+
+    } catch (err) {
+      console.error("Voting failed:", err);
+    }
+  }
 });
