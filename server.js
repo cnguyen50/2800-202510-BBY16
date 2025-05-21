@@ -131,8 +131,6 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // Useing this since seperated event.route.js
     app.use('/events', makeEventsRouter());
 
-
-
     app.use('/news', makeTypedRouter(NewsPost));
 
     app.get('/notifications', (req, res) => {

@@ -2,7 +2,9 @@ const express = require('express');
 const multer = require('multer');
 const upload = multer({ dest: 'public/uploads/' });
 const { Post } = require('../models/post.model.js')
+const { Comment } = require('../models/comment.model.js');
 const requireAuth = require('../middleware/requireAuth.js');
+const fs = require('fs').promises;
 
 function makePostsRouter() {
   const router = express.Router();
@@ -74,12 +76,14 @@ function makePostsRouter() {
       // Delete uploaded image file from disk
       if (post.image_url && post.image_url.startsWith('/uploads/')) {
         const imgPath = path.join(__dirname, '../public', post.image_url);
-        fs.unlink(imgPath, (err) => {
-          if (err) console.warn('Failed to delete image:', imgPath);
-        });
+        try {
+          await fs.promises.unlink(imgPath);
+        } catch (err) {
+          console.warn('Failed to delete image:', imgPath, err.message);
+        }
       }
 
-      await post.deleteOne(); // or Post.findByIdAndDelete
+      await mongoose.model(post.constructor.modelName).deleteOne({ _id: post._id });
       res.status(204).end();
     } catch (err) {
       console.error('Error deleting post:', err);
