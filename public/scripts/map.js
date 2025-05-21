@@ -6,18 +6,18 @@ document.addEventListener('DOMContentLoaded', () => {
         [49.2827, -123.1207], //set to Vancouver coords
         10 //zoom level
     )
+    const listContainer = document.getElementById('event-list');
 
     //Load and display tile layers on the map
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19
     }).addTo(map);
-
+    
+    //Toggle control
     const clusterGroup = L.markerClusterGroup();
     const nearbyGroup = L.layerGroup();
-
     const clusterBtn = document.getElementById('toggle-cluster');
     const nearbyBtn = document.getElementById('toggle-near');
-    const listContainer = document.getElementById('event-list');
 
     //Checking geolocation service is supported by browser
     if (!navigator.geolocation) {
