@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="post-header">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
-      <span class="post-neighbourhood">${post.userNeighbourhood}</span>
+      <span class="post-neighbourhood">${makeFirstUpperCase(post.userNeighbourhood)}</span>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     <p><strong>${post.event_name}</strong> — <em>${new Date(post.event_date).toLocaleDateString()}</em></p>
@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="post-header">
         <strong>@${username}</strong>
         <span class="post-date">${date}</span>
-         <span class="post-neighbourhood">${post.userNeighbourhood}</span>
+         <span class="post-neighbourhood">${makeFirstUpperCase(post.userNeighbourhood)}</span>
       </div>
       <div class="post-type-label">${typeLabel}</div>
       <p><strong>Poll:</strong> ${post.text}</p>
@@ -215,7 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="post-header">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
-       <span class="post-neighbourhood">${post.userNeighbourhood}</span>
+       <span class="post-neighbourhood">${makeFirstUpperCase(post.userNeighbourhood)}</span>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
@@ -238,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="post-header">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
-       <span class="post-neighbourhood">${post.userNeighbourhood}</span>
+       <span class="post-neighbourhood">${makeFirstUpperCase(post.userNeighbourhood)}</span>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     <h5>${post.headline}</h5>
@@ -257,6 +257,13 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     </div>
   `;
+  }
+
+  function makeFirstUpperCase(string) {
+    let firstLetter = string.charAt(0);
+    let firstLetterCap = firstLetter.toUpperCase();
+    let remainingLetters = string.slice(1);
+    return firstLetterCap + remainingLetters;
   }
 
 });
