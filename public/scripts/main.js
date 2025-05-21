@@ -523,7 +523,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   })
-});
 
 document.addEventListener('click', async (e) => {
   if (e.target.classList.contains('vote-option')) {
@@ -544,8 +543,34 @@ document.addEventListener('click', async (e) => {
         return;
       }
 
+      // ✅ Update frontend state
+      const postIndex = allPosts.findIndex(p => p._id === postId);
+      if (postIndex !== -1) {
+        const updatedPoll = { ...allPosts[postIndex] };
+        const votedOption = updatedPoll.options.find(o => o._id === optionId);
+        if (votedOption) votedOption.votes += 1;
+
+        updatedPoll.voted_user_ids.push(currentUserId);
+        allPosts[postIndex] = updatedPoll;
+        window.loadedPosts = allPosts;
+
+        // ✅ Re-render just this one post
+        const card = document.getElementById(`post-${postId}`);
+        if (card) {
+          const username = updatedPoll.user_id?.username || 'Anonymous';
+          const date = new Date(updatedPoll.createdAt).toLocaleDateString("en-US", {
+            weekday: "short", month: "short", day: "numeric"
+          });
+
+          card.innerHTML = renderPoll(updatedPoll, username, date, "Poll");
+        }
+      }
+
     } catch (err) {
       console.error("Voting failed:", err);
     }
   }
+});
+
+
 });
