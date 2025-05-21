@@ -277,7 +277,7 @@ const requireAuth = require('./middleware/requireAuth.js');
               { src: '/scripts/comment.js' },
               { src: '/scripts/pollChart.js' },
               { src: '/scripts/ai.js' },
-              
+              { src: '/scripts/post.js' }
             ],
             svgs: selectedSvgs
           });

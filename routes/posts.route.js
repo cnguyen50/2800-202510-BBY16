@@ -78,6 +78,17 @@ function makePostsRouter() {
     } else {
       post.likes.push(userId); // like
     }
+
+    await post.save();
+
+    res.json({ likesCount: post.likes.length, liked: !alreadyLiked });
+  });
+
+  router.get('/:id/like', requireAuth, async (req, res) => {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: 'Not found' });
+    const liked = post.likes.some(id => id.equals(req.session.userId));
+    res.json({ likesCount: post.likes.length, liked });
   });
 
   // GET /posts/user/:id
