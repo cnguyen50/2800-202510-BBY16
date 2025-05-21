@@ -24,12 +24,24 @@ document.addEventListener("click", (e) => {
         const postId = e.target.dataset.postId;
         const canvas = document.getElementById(`chart-${postId}`);
         const controls = document.querySelector(`[data-controls-id="${postId}"]`);
+        const isHidden = canvas.classList.contains("d-none");
         canvas.classList.toggle("d-none");
         controls.classList.toggle("d-none");
 
-        if (!chartInstances[postId]) {
-            const defaultType = getDefaultChartType(postId);
-            renderPollChart(postId, defaultType);
+        // Check if the chart is already rendered to fix bug where chart size is
+
+        if (isHidden) {
+            // Wait one frame so canvas has proper layout size
+            requestAnimationFrame(() => {
+                const type = getDefaultChartType(postId);
+
+                // Always destroy and recreate chart to avoid wrong canvas sizing
+                if (chartInstances[postId]) {
+                    chartInstances[postId].destroy();
+                }
+
+                renderPollChart(postId, type);
+            });
         }
     }
 

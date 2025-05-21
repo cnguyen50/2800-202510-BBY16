@@ -444,7 +444,10 @@ document.addEventListener("DOMContentLoaded", () => {
       </ul>
 
       ${hasVoted || expired ? `
-      <button class="btn btn-sm btn-outline-primary toggle-chart" data-post-id="${post._id}">Show Chart</button>
+      <div class="d-grid gap-2 col-6 mx-auto">
+        <button class="btn btn-sm btn-outline-info toggle-chart" data-post-id="${post._id}">Show Chart</button>
+      </div>
+      
       <div class="chart-controls d-none" data-controls-id="${post._id}">
       <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="bar" data-chart-id="${chartId}">Bar</button>
       <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="pie" data-chart-id="${chartId}">Pie</button>
