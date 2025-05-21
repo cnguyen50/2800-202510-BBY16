@@ -39,12 +39,12 @@ main {
 
 /* SVG */
 .sticky-buttons {
-  position: sticky;
-  z-index: 9999;
-  top: 20px;
-  padding: 10px;
-  display: flex;
-  gap: 10px;
+    position: sticky;
+    z-index: 9999;
+    top: 20px;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
 }
 
 .svg-background {
@@ -119,28 +119,28 @@ main {
 }
 
 #backToTopBtn {
-  position: fixed;
-  bottom: 80px;
-  right: 30px;
-  background-color: var(--yellow-clr);
-  opacity: 0.8;
-  color: white;
-  width: 70px;
-  height: 70px;
-  font-size: 1.5rem;
-  z-index: 9999;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  transition: opacity 0.3s ease;
+    position: fixed;
+    bottom: 80px;
+    right: 30px;
+    background-color: var(--yellow-clr);
+    opacity: 0.8;
+    color: white;
+    width: 70px;
+    height: 70px;
+    font-size: 1.5rem;
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease;
 }
 
 #backToTopBtn:hover {
-  opacity: 0.8;
+    opacity: 0.8;
 }
 
 #backToTopBtn i {
-  font-size: 2.5rem; 
+    font-size: 2.5rem;
 }
 
 /* Filter */
@@ -148,30 +148,42 @@ main {
     display: none;
 }
 
-.filter-popup {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    border-top: 2px solid var(--blue-clr);
-    padding: 1rem;
-    z-index: 9999;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+.filter-container {
+  position: relative;
+  display: inline-block;
 }
 
-.filter-option {
-    display: block;
-    width: 100%;
-    padding: 1rem;
-    text-align: center;
-    font-weight: bold;
-    border: none;
-    background: var(--purple-clr);
-    color: var(--text-clr);
-    margin-bottom: 0.5rem;
-    border-radius: 10px;
+.filter-dropdown {
+  display: none; /* Hide by default */
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: var(--purple-clr);
+  border: 2px solid var(--purple-clr);
+  border-radius: 25px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem;
+  z-index: 1000;
+  min-width: 150px;
 }
+
+.filter-dropdown .filter-option {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  text-align: left;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--text-clr);
+  border-radius: 10px;
+}
+
+.filter-dropdown.show {
+  display: block;
+}
+
 
 /* Posts */
 .post-card {
@@ -267,6 +279,7 @@ main {
         left: 5%;
     }
 }
+
 #event-fields {
     display: none;
     position: relative;

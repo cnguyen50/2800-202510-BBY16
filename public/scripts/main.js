@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
+  // SVG icons
   let currentUserId;
   const postContainer = document.getElementById("post-container");
   const svgIcons = document.querySelectorAll(".svg-icon");
@@ -27,8 +28,37 @@ document.addEventListener("DOMContentLoaded", () => {
     icon.style.top = Math.floor(Math.random() * 90) + "vh";   // Random vertical position
     icon.style.left = Math.floor(Math.random() * 90) + "vw";  // Random horizontal position
     icon.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`; // Random rotation
-  });
 
+    // Filter Dropdown setup
+    const filterTrigger = document.getElementById('filterTrigger');
+    const filterBox = document.getElementById('filterOptions');
+    const select = document.getElementById('post-select');
+
+    // Toggle dropdown visibility when the trigger is clicked
+    filterTrigger.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent outside click from closing immediately
+      filterBox.classList.toggle('show'); // Toggle visibility by adding/removing .show class
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!filterBox.contains(e.target) && !filterTrigger.contains(e.target)) {
+        filterBox.classList.remove('show');
+      }
+    });
+
+    // When an option is clicked
+    document.querySelectorAll('.filter-option').forEach(button => {
+      button.addEventListener('click', () => {
+        const value = button.getAttribute('data-value');
+        select.value = value;
+        select.dispatchEvent(new Event('change'));
+        filterBox.classList.remove('show');
+        filterTrigger.textContent = button.textContent;
+      });
+    });
+
+  });
 
   // Add a change event listener to the dropdown/select element for post type
   document.getElementById("post-type").addEventListener("change", (e) => {
@@ -125,51 +155,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const res = await fetch(endpoint, { credentials: "include" });
-
       const posts = await res.json();
 
       // Sort posts by creation date (newest first)
       allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      // Reset offset (for pagination/load more logic)
       offset = 0;
 
-      // Reset "Load More" button to visible and enabled state
+      // Store for access from Load More
+      window.loadedPosts = allPosts;
+
+      // Reset Load More button
       loadMoreBtn.disabled = false;
       loadMoreBtn.textContent = "Load More";
-      // Hide the "no more posts" message
       document.getElementById("no-more-msg").style.display = "none";
 
-      // Render first batch
+      // Clear post container and show first 10
+      postContainer.innerHTML = '';
       loadMorePosts();
     } catch (err) {
       console.error("Filter failed:", err);
     }
   });
-
-  // Add click event listener to the filter trigger button to show/hide the filter menu)
-  document.getElementById('filterTrigger').addEventListener('click', () => {
-    const filterBox = document.getElementById('filterOptions');
-    filterBox.style.display = (filterBox.style.display === 'none') ? 'block' : 'none';
-  });
-
-  // Add click event listeners to all filter option buttons inside the filter box
-  document.querySelectorAll('.filter-option').forEach(button => {
-    button.addEventListener('click', () => {
-      // Get the value associated with the clicked filter button (from data-value attribute)
-      const value = button.getAttribute('data-value');
-      // Set the value of the main select element
-      const select = document.getElementById('post-select');
-      select.value = value;
-      select.dispatchEvent(new Event('change')); // triggers main.js logic
-
-      // Close filter window
-      document.getElementById('filterOptions').style.display = 'none';
-
-      // Optional: update the trigger button text
-      document.getElementById('filterTrigger').textContent = button.textContent;
-    });
-  });
-
 
   // Submit post from modal
   form.addEventListener("submit", async (e) => {

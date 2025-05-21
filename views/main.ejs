@@ -5,31 +5,33 @@
             <button class="btn custom-btn-green" data-bs-toggle="modal" data-bs-target="#postModal">
                 CREATE POSTS
             </button>
-            <!-- Fake filter button for better mobile display -->
-            <button id="filterTrigger" class="btn custom-btn-purple">FILTER POSTS</button>
+
+            <!-- Modal-style options -->
+            <div class="filter-container">
+                <!-- Fake filter button for better mobile display -->
+                <button id="filterTrigger" class="btn custom-btn-purple dropdown-toggle">FILTER POSTS</button>
+                <div id="filterOptions" class="filter-dropdown">
+                    <button class="filter-option" data-value="all">All</button>
+                    <button class="filter-option" data-value="event">Event</button>
+                    <button class="filter-option" data-value="poll">Poll</button>
+                    <button class="filter-option" data-value="news">News</button>
+                </div>
+            </div>
         </div>
 
-        <div class="svg-background">
-            <% svgs.forEach(file=> { %>
-                <img src="/img/svg/<%= file %>" class="svg-icon" />
-                <% }) %>
-        </div>
-
-        <!-- Modal-style options -->
-        <div id="filterOptions" class="filter-popup" style="display: none;">
-            <button class="filter-option" data-value="all">All Posts</button>
-            <button class="filter-option" data-value="event">Event</button>
-            <button class="filter-option" data-value="poll">Poll</button>
-            <button class="filter-option" data-value="news">News</button>
-        </div>
-
-        <!-- Hidden select to trigger your JS -->
+        <!-- Hidden select to trigger our JS -->
         <select id="post-select" style="display: none;">
             <option value="all">All Posts</option>
             <option value="event">Event</option>
             <option value="poll">Poll</option>
             <option value="news">News</option>
         </select>
+
+        <div class="svg-background">
+            <% svgs.forEach(file=> { %>
+                <img src="/img/svg/<%= file %>" class="svg-icon" />
+                <% }) %>
+        </div>
 
         <div class="ai-container">
             <h2>Looking for Something to do Around Your Area?</h2>
