@@ -398,6 +398,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const expired = new Date(post.expires_at) < now;
     const hasVoted = post.voted_user_ids?.includes(currentUserId);
 
+    let pollStateClass = '';
+    if (!hasVoted && !expired) {
+      pollStateClass = 'poll-unvoted';
+    } else if (hasVoted && !expired) {
+      pollStateClass = 'poll-voted';
+    } else {
+      pollStateClass = 'poll-expired';
+    }
+
     let optionsHtml = '';
 
     if (!hasVoted && !expired) {
@@ -415,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Show results with vote counts
       optionsHtml = post.options.map(option => `
       <li>
-        <span>${option.label}</span>
+        <span class="poll-label">${option.label}</span>
         <span class="badge bg-secondary">${option.votes} vote(s)</span>
       </li>
     `).join('');
@@ -428,9 +437,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <strong>@${username}</strong>
         <span class="post-date">${date}</span>
       </div>
-      <div class="post-type-label">${typeLabel}</div>
+      <div class="post-type-label ${pollStateClass}">${typeLabel}</div>
       <p><strong>Poll:</strong> ${post.text}</p>
-      <ul class="list-unstyled ps-3">
+      <ul class="list-unstyled ps-3 ${pollStateClass}">
         ${optionsHtml}
       </ul>
 
@@ -524,53 +533,53 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-document.addEventListener('click', async (e) => {
-  if (e.target.classList.contains('vote-option')) {
-    const postId = e.target.dataset.postId;
-    const optionId = e.target.dataset.optionId;
+  document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('vote-option')) {
+      const postId = e.target.dataset.postId;
+      const optionId = e.target.dataset.optionId;
 
-    try {
-      const res = await fetch(`/polls/${postId}/vote`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ optionId })
-      });
+      try {
+        const res = await fetch(`/polls/${postId}/vote`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ optionId })
+        });
 
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.error || "Voting failed");
-        return;
-      }
-
-      // ✅ Update frontend state
-      const postIndex = allPosts.findIndex(p => p._id === postId);
-      if (postIndex !== -1) {
-        const updatedPoll = { ...allPosts[postIndex] };
-        const votedOption = updatedPoll.options.find(o => o._id === optionId);
-        if (votedOption) votedOption.votes += 1;
-
-        updatedPoll.voted_user_ids.push(currentUserId);
-        allPosts[postIndex] = updatedPoll;
-        window.loadedPosts = allPosts;
-
-        // ✅ Re-render just this one post
-        const card = document.getElementById(`post-${postId}`);
-        if (card) {
-          const username = updatedPoll.user_id?.username || 'Anonymous';
-          const date = new Date(updatedPoll.createdAt).toLocaleDateString("en-US", {
-            weekday: "short", month: "short", day: "numeric"
-          });
-
-          card.innerHTML = renderPoll(updatedPoll, username, date, "Poll");
+        if (!res.ok) {
+          const err = await res.json();
+          alert(err.error || "Voting failed");
+          return;
         }
-      }
 
-    } catch (err) {
-      console.error("Voting failed:", err);
+        // Update frontend state
+        const postIndex = allPosts.findIndex(p => p._id === postId);
+        if (postIndex !== -1) {
+          const updatedPoll = { ...allPosts[postIndex] };
+          const votedOption = updatedPoll.options.find(o => o._id === optionId);
+          if (votedOption) votedOption.votes += 1;
+
+          updatedPoll.voted_user_ids.push(currentUserId);
+          allPosts[postIndex] = updatedPoll;
+          window.loadedPosts = allPosts;
+
+          // Re-render just this one post
+          const card = document.getElementById(`post-${postId}`);
+          if (card) {
+            const username = updatedPoll.user_id?.username || 'Anonymous';
+            const date = new Date(updatedPoll.createdAt).toLocaleDateString("en-US", {
+              weekday: "short", month: "short", day: "numeric"
+            });
+
+            card.innerHTML = renderPoll(updatedPoll, username, date, "Poll");
+          }
+        }
+
+      } catch (err) {
+        console.error("Voting failed:", err);
+      }
     }
-  }
-});
+  });
 
 
 });

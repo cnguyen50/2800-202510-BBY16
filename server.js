@@ -179,6 +179,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           polls: sorted,
           headerLinks: [
             { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+            { rel: 'stylesheet', href: '/styles/polls.css' },
             { rel: 'stylesheet', href: '/styles/trendingPoll.css' }
           ],
           footerScripts: [
@@ -238,6 +239,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             title: 'Profile',
             headerLinks: [
               { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+              { rel: 'stylesheet', href: '/styles/polls.css' },
               { rel: 'stylesheet', href: '/styles/profile.css' }
             ],
             footerScripts: [
@@ -281,6 +283,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             headerLinks: [
               { rel: 'stylesheet', href: '/styles/main.css' },
               { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+              { rel: 'stylesheet', href: '/styles/polls.css' },
               { rel: 'stylesheet', href: '/styles/ai.css' },
 
 
