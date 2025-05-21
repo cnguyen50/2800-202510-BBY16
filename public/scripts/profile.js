@@ -1,3 +1,5 @@
+let currentChartType = "doughnut";
+
 async function fetchJson(url, options = {}) {
   const res = await fetch(url, { credentials: 'include', ...options });
   if (!res.ok) {
@@ -32,8 +34,8 @@ function renderPosts(list, filterType = 'all') {
 
     let postTitle = '';
     let postBody = '';
-
     const type = post.type?.toLowerCase();
+    const chartId = `chart-${post._id}`;
 
     if (type === 'event') {
       const eventDate = post.event_date ? new Date(post.event_date).toLocaleDateString('en-US') : 'No date';
@@ -45,13 +47,24 @@ function renderPosts(list, filterType = 'all') {
       `;
     } else if (type === 'poll') {
       postTitle = post.text || 'Untitled Poll';
-      postBody = `<p>${post.text || 'No description.'}</p>`;
-      if (post.options?.length) {
-        postBody += `
-          <ul>
-            ${post.options.map(opt => `<li>${opt.label} (${opt.votes} votes)</li>`).join('')}
-          </ul>`;
-      }
+      const optionsHtml = post.options?.map(opt => `
+        <li>
+          <span>${opt.label}</span>
+          <span class="badge bg-secondary">${opt.votes} vote(s)</span>
+        </li>
+      `).join('') || '';
+
+      postBody = `
+        <p><strong>Poll:</strong> ${post.text || 'No description.'}</p>
+        <ul class="list-unstyled ps-3">${optionsHtml}</ul>
+        <div class="chart-controls mb-2" data-controls-id="${post._id}">
+        <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="bar" data-chart-id="${chartId}">Bar</button>
+        <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="pie" data-chart-id="${chartId}">Pie</button>
+        <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="doughnut" data-chart-id="${chartId}">Doughnut</button>
+        </div>
+        <canvas id="${chartId}" class="poll-chart mt-3" height="250"></canvas>
+        <a href="/polls/${post._id}/view" class="btn btn-outline-primary btn-sm mt-2">Vote or View Results</a>
+      `;
     } else if (type === 'news') {
       postTitle = post.headline || 'Untitled News';
       postBody = `<p>${post.body || 'No content.'}</p>`;
@@ -80,13 +93,75 @@ function renderPosts(list, filterType = 'all') {
 
     const dropdown = div.querySelector('.dropdown-arrow');
     const preview = div.querySelector('.post-preview');
+
     dropdown.addEventListener('click', e => {
       e.stopPropagation();
-      const isOpen = preview.classList.toggle('open'); // toggle class
+      const isOpen = preview.classList.toggle('open');
       dropdown.classList.toggle('open', isOpen);
+
+      if (type === 'poll') {
+        const canvas = div.querySelector(`#${chartId}`);
+        renderPollChart(canvas, post, currentChartType);
+      }
+    });
+
+    // Local chart type switcher
+    div.addEventListener('click', e => {
+      const target = e.target;
+      if (target.classList.contains('chart-type-btn')) {
+        const newType = target.dataset.type;
+        const chartId = target.dataset.chartId;
+        const canvas = document.getElementById(chartId);
+        const postId = chartId.replace('chart-', '');
+        const post = allPosts.find(p => p._id === postId);
+        if (canvas && post) {
+          currentChartType = newType;
+          renderPollChart(canvas, post, newType);
+        }
+      }
     });
 
     container.appendChild(div);
+  });
+}
+
+function renderPollChart(canvas, poll, type = "doughnut") {
+  if (!canvas || !poll) return;
+
+  const ctx = canvas.getContext('2d');
+  const labels = poll.options.map(o => o.label);
+  const votes = poll.options.map(o => o.votes);
+
+  // Destroy previous chart instance if exists
+  if (canvas.chartInstance) {
+    canvas.chartInstance.destroy();
+  }
+
+  canvas.chartInstance = new Chart(ctx, {
+    type,
+    data: {
+      labels,
+      datasets: [{
+        label: 'Votes',
+        data: votes,
+        backgroundColor: ['#AEBFF3', '#FAF0A5', '#BEE5B4', '#FAD8E2'],
+        borderColor: '#fff',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: type !== "bar",
+          labels: { font: { size: 12 } }
+        }
+      },
+      scales: type === "bar" ? {
+        x: { ticks: { font: { size: 12 } } },
+        y: { ticks: { font: { size: 12 }, beginAtZero: true } }
+      } : {}
+    }
   });
 }
 
@@ -248,6 +323,5 @@ svgIcons.forEach(icon => {
   icon.style.position = "absolute";  // Make sure they are positioned absolutely for top/left to work
   icon.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`;
 });
-
 
 document.addEventListener('DOMContentLoaded', init);

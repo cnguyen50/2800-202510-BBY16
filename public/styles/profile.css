@@ -159,7 +159,7 @@ h2 {
 }
 
 .tab.active {
-    background-color: var(--blue-clr);
+    background-color: rgb(180, 164, 164);
     color: white;
 }
 
@@ -195,25 +195,21 @@ h2 {
 
 .post {
     position: relative;
-    /* for absolute positioning of preview if needed */
 }
 
 .post-preview {
     display: none;
-    /* hide by default */
     margin-top: 10px;
-    /* your existing styles */
 }
 
 .post-preview.open {
     display: block !important;
-    /* show if toggled open */
     position: static;
-    /* Let it expand in place, not float */
     background: rgba(255, 255, 255, 0.7);
     margin-top: 10px;
 }
 
+/* Drop-down arrow */
 .dropdown-arrow {
     cursor: pointer;
     display: inline-flex;
