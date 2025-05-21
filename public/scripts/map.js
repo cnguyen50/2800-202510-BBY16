@@ -14,8 +14,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }).addTo(map);
     
     //Toggle control
-    const clusterGroup = L.markerClusterGroup();
-    const nearbyGroup = L.layerGroup();
+    const clusterGroup = L.markerClusterGroup({
+        zoomToBoundsOnClick: true,
+        showCoverageOnHover: false
+    });
+
+    clusterGroup.on('clusterclick', e => {
+        map.fitBounds(e.layer.getBounds())
+    })
+
+    const nearbyGroup = L.layerGroup({
+        zoomToBoundsOnClick: true,
+        showCoverageOnHover: false
+    });
+
+    nearbyGroup.on('clusterclick', e => {
+        map.fitBounds(e.layer.getBounds())
+    })
+
     const clusterBtn = document.getElementById('toggle-cluster');
     const nearbyBtn = document.getElementById('toggle-near');
 
