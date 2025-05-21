@@ -7,6 +7,8 @@ h2 {
 body {
     font-family: 'Satoshi', sans-serif;
     background-color: var(--background-clr);
+      max-height: 100vh;
+  overflow-y: auto;
 }
 
 main {
@@ -38,6 +40,15 @@ main {
 }
 
 /* SVG */
+.sticky-buttons {
+    position: sticky;
+    z-index: 9999;
+    top: 20px;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+}
+
 .svg-background {
     position: fixed;
     top: 0;
@@ -59,7 +70,7 @@ main {
 /* Buttons */
 .custom-btn-green {
     border: 2px solid var(--green-clr);
-    background: transparent;
+    background: var(--background-clr);
     border-radius: 25px;
     padding: 8px 14px;
     cursor: pointer;
@@ -70,6 +81,7 @@ main {
 
 .custom-btn-green:hover {
     color: black;
+    background: #e0e0c8;
     transform: translateY(-1px);
     box-shadow: 0px 6px 15px var(--btn-shadow);
 }
@@ -86,14 +98,15 @@ main {
 }
 
 .custom-btn-purple:hover {
+    background-color: #b0a8de;
     color: black;
     transform: translateY(-1px);
     box-shadow: 0px 6px 15px var(--btn-shadow);
 }
 
 .delete-post {
-    border: 2px solid var(--red-clr);
-    background-color: var(--red-clr);
+    border: 2px solid var(--text-clr);
+    background: transparent;
     border-radius: 25px;
 }
 
@@ -109,29 +122,23 @@ main {
     transition: background 0.3s ease;
 }
 
-#backToTopBtn {
-  position: fixed;
-  bottom: 80px;
-  right: 30px;
-  background-color: var(--yellow-clr);
-  opacity: 0.8;
-  color: white;
-  width: 70px;
-  height: 70px;
-  font-size: 1.5rem;
-  z-index: 9999;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  transition: opacity 0.3s ease;
+#refreshBtn {
+    position: fixed;
+    bottom: 80px;
+    right: 30px;
+    background-color: var(--purple-clr);
+    color: var(--text-clr);
+    width: 70px;
+    height: 70px;
+    font-size: 1.5rem;
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease;
 }
 
-#backToTopBtn:hover {
-  opacity: 0.8;
-}
-
-#backToTopBtn i {
-  font-size: 2.5rem; 
+#refreshBtn:hover {
+    opacity: 0.8;
 }
 
 /* Filter */
@@ -139,30 +146,43 @@ main {
     display: none;
 }
 
-.filter-popup {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: white;
-    border-top: 2px solid var(--blue-clr);
-    padding: 1rem;
-    z-index: 9999;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+.filter-container {
+    position: relative;
+    display: inline-block;
 }
 
-.filter-option {
+.filter-dropdown {
+    display: none;
+    /* Hide by default */
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: var(--purple-clr);
+    border: 2px solid var(--purple-clr);
+    border-radius: 25px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 0.5rem;
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.filter-dropdown .filter-option {
     display: block;
     width: 100%;
-    padding: 1rem;
-    text-align: center;
-    font-weight: bold;
+    background: transparent;
     border: none;
-    background: var(--purple-clr);
+    padding: 0.5rem;
+    text-align: left;
+    font-size: 14px;
+    font-weight: bold;
     color: var(--text-clr);
-    margin-bottom: 0.5rem;
     border-radius: 10px;
 }
+
+.filter-dropdown.show {
+    display: block;
+}
+
 
 /* Posts */
 .post-card {
@@ -258,6 +278,7 @@ main {
         left: 5%;
     }
 }
+
 #event-fields {
     display: none;
     position: relative;
