@@ -5,18 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const suggList = document.getElementById("loc-suggestions");
   const latField = document.getElementById("event-lat");
   const lngField = document.getElementById("event-lng");
-  const btn = document.getElementById("backToTopBtn");
+  const btn = document.getElementById("refreshBtn");
 
-  // “Back to Top” button
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > 300) {
-      btn.style.display = "flex";
-    } else {
-      btn.style.display = "none";
-    }
-  });
+  // Refresh button
   btn.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+    location.reload();
   });
 
   // SVG icons
