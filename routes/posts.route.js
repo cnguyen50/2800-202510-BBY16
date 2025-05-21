@@ -2,7 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const upload = multer({ dest: 'public/uploads/' });
 const { Post } = require('../models/post.model.js')
-const { Comment } = require('../models/comment.model.js');
+const mongoose = require('mongoose');
+const Comment = require('../models/comment.model.js');
 const requireAuth = require('../middleware/requireAuth.js');
 const fs = require('fs').promises;
 
@@ -77,7 +78,7 @@ function makePostsRouter() {
       if (post.image_url && post.image_url.startsWith('/uploads/')) {
         const imgPath = path.join(__dirname, '../public', post.image_url);
         try {
-          await fs.promises.unlink(imgPath);
+          await fs.unlink(imgPath);
         } catch (err) {
           console.warn('Failed to delete image:', imgPath, err.message);
         }

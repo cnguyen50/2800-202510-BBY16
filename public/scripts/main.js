@@ -58,6 +58,39 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
+    const postContainer = document.getElementById("post-container");
+
+    postContainer.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-post')) {
+        const postId = e.target.getAttribute('data-id');
+        // Show a SweetAlert confirmation popup before deleting the post
+        Swal.fire({
+          title: 'Delete this post?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, delete it!'
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            try {
+              // Send DELETE request to the backend to delete the post
+              await fetch(`/posts/${postId}`, {
+                method: 'DELETE',
+                credentials: 'include'
+              });
+
+              e.target.closest('.post-card').remove();
+
+              Swal.fire('Deleted!', 'Your post has been deleted.', 'success');
+            } catch (err) {
+              console.error('Failed to delete post:', err);
+              Swal.fire('Error', 'Could not delete post.', 'error');
+            }
+          }
+        });
+      }
+    });
   });
 
   // Add a change event listener to the dropdown/select element for post type
@@ -496,24 +529,5 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   `;
   }
-
-  postContainer.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('delete-post')) {
-      const postId = e.target.getAttribute('data-id');
-      if (!confirm('Are you sure you want to delete this post?')) return;
-
-      try {
-        await fetch(`/posts/${postId}`, {
-          method: 'DELETE',
-          credentials: 'include'
-        });
-
-        // Remove the post element from the DOM
-        e.target.closest('.post-card').remove();
-      } catch (err) {
-        console.error('Failed to delete post:', err);
-        alert('Could not delete post.');
-      }
-    }
-  })
 });
+
