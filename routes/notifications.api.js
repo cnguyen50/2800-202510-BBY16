@@ -12,8 +12,12 @@ router.get('/', async (req, res) => {
 });
 
 router.patch('/:id/read', async (req, res) => {
+ const ONE_DAY = 24 * 60 * 60 * 1000;
+  const now = new Date();
   await Notification.findByIdAndUpdate(req.params.id, {
-    read: true, read_at: new Date()
+    read: true, 
+    read_at: now,
+    expire_at: new Date(now.getTime() + ONE_DAY)
   });
   res.sendStatus(204);
 });

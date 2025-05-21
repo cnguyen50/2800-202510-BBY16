@@ -42,6 +42,14 @@ function makeUsersRouter() {
     if (!user) return res.status(404).json({ error: 'Not found' });
     res.json(user);
   })
+
+  // purely-JSON version
+  router.get('/:id/json', async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'Not found' });
+    res.json(user);
+  });
+
   
   router.put('/me/location', requireAuth, async (req,res) => {
     const { latitude, longitude } = req.body;
@@ -121,9 +129,25 @@ function makeUsersRouter() {
 
   // GET user by ID
   router.get('/:id', async (req, res) => {
+    //console.log('Fetching user with ID:', req.params.id);
     const user = await User.findById(req.params.id);
+   // console.log('Fetched user:', user);
     if (!user) return res.status(404).json({ error: 'Not found' });
-    res.json(user);
+    
+    res.render('profile', {
+      title: 'User Profile',
+      headerLinks: [
+         { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+        { rel: 'stylesheet', href: '/styles/profile.css' }
+      ],
+      footerScripts: [
+        { src: '/scripts/profile.js', type: 'module' },
+        { src: '/scripts/comment.js' },
+        { src: '/scripts/pollChart.js' }
+      ],
+      user,
+      viewingOtherUser: true
+    })
   });
 
   // PUT update user by ID

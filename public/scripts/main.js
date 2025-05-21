@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // SVG icons
   let currentUserId;
+  let currentUserNeighbourhood
   const postContainer = document.getElementById("post-container");
   const svgIcons = document.querySelectorAll(".svg-icon");
 
@@ -215,21 +216,21 @@ form.addEventListener("submit", async (e) => {
   if (!meRes.ok) throw new Error('Not authenticated');
   const { neighbourhood } = await meRes.json();
 
-  const rawType = document.getElementById("post-type").value;
+    const rawType = document.getElementById("post-type").value.trim();
 
-  formData.append("content", document.getElementById("post-content").value);
+    formData.append("content", document.getElementById("post-content").value.trim());
 
-
-  if (type === "event") {
-    formData.append("event_name", document.getElementById("event-name").value);
-    const day = document.getElementById('event-date').value;  // '2025-05-20'
-    formData.append('event_date', day ? `${day}T23:59` : ''); // → '2025-05-20T23:59'
-    // formData.append("location", document.getElementById("event-location").value);
-    formData.append("description", document.getElementById("event-description").value);
-    formData.append("neighbourhood", neighbourhood);
-    formData.append("location", locInput.value);
-    formData.append("lat", latField.value);
-    formData.append("lng", lngField.value);
+    formData.append("userNeighbourhood", currentUserNeighbourhood);
+    if (type === "event") {
+      formData.append("event_name", document.getElementById("event-name").value.trim());
+      const day = document.getElementById('event-date').value.trim();  // '2025-05-20'
+      formData.append('event_date', day ? `${day}T23:59` : ''); // → '2025-05-20T23:59'
+      // formData.append("location", document.getElementById("event-location").value);
+      formData.append("description", document.getElementById("event-description").value.trim());
+      formData.append("neighbourhood", neighbourhood.trim());
+      formData.append("location", locInput.value.trim());
+      formData.append("lat", latField.value.trim());
+      formData.append("lng", lngField.value.trim());
 
   } else if (type === "poll") {
     const pollText = document.getElementById('poll-text').value.trim();
@@ -324,12 +325,13 @@ async function fetchAllPosts() {
     const res = await fetch("/posts", { credentials: "include" });
     const posts = await res.json();
 
-    const res2 = await fetch('/users/me', { credentials: "include" });
-    const user = await res2.json();
-    currentUserId = user._id;
-    console.log(currentUserId);
-    // Sort posts by newest first
-    allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const res2 = await fetch('/users/me', { credentials: "include" });
+      const user = await res2.json();
+      currentUserId = user._id;
+      currentUserNeighbourhood = user.neighbourhood;
+      console.log(currentUserId);
+      // Sort posts by newest first
+      allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     // make allPosts available globally for charts to access
     window.loadedPosts = posts;
@@ -361,17 +363,17 @@ loadMoreBtn.addEventListener("click", () => loadMorePosts(currentUserId));
 
 fetchAllPosts();
 
-// Renderers by type
-function renderPost(post, currentUserId) {
-  const div = document.createElement("div");
-  div.classList.add("post-card", `post-${post.type}`);
-
-  const typeLabel = {
-    event: "Event",
-    post: "Post",
-    poll: "Poll",
-    news: "News"
-  }[post.type] || post.type;
+  // Renderers by type
+  function renderPost(post, currentUserId) {
+    const div = document.createElement("div");
+    div.classList.add("post-card", `post-${post.type}`);
+   
+    const typeLabel = {
+      event: "Event",
+      post: "Post",
+      poll: "Poll",
+      news: "News"
+    }[post.type] || post.type;
 
   const date = new Date(post.createdAt).toLocaleDateString("en-US", {
     weekday: "short",
@@ -379,19 +381,20 @@ function renderPost(post, currentUserId) {
     day: "numeric"
   });
 
-  const username = post.user_id?.username || 'Anonymous';
-
-  let html = "";
-  switch (post.type?.toLowerCase()) {
-    case "event":
-      html = renderEvent(post, username, date, typeLabel); break;
-    case "news":
-      html = renderNews(post, username, date, typeLabel); break;
-    case "poll":
-      html = renderPoll(post, username, date, typeLabel); break;
-    default:
-      html = renderDefault(post, username, date, typeLabel); break;
-  }
+    const username = post.user_id?.username || 'Anonymous';
+    const userId = post.user_id?._id || 'Unknown';
+    
+    let html = "";
+    switch (post.type?.toLowerCase()) {
+      case "event":
+        html = renderEvent(post, username, date, typeLabel, userId); break;
+      case "news":
+        html = renderNews(post, username, date, typeLabel, userId); break;
+      case "poll":
+        html = renderPoll(post, username, date, typeLabel, userId); break;
+      default:
+        html = renderDefault(post, username, date, typeLabel, userId); break;
+    }
 
   console.log(currentUserId);
 
@@ -414,18 +417,23 @@ function renderPost(post, currentUserId) {
       <div class="comments-list"></div>
     </div>
   `;
-  div.innerHTML += commentHtml;
-  loadComments(post._id, div.querySelector(".comments-list"));
 
-  document.getElementById("post-container").appendChild(div);
+    
+    div.innerHTML += commentHtml;
+    loadComments(post._id, div.querySelector(".comments-list"));
+    loadPostLikes(post._id);
+    document.getElementById("post-container").appendChild(div);
 
 }
 
-function renderEvent(post, username, date, typeLabel) {
-  return `
+  function renderEvent(post, username, date, typeLabel, userId) {
+    
+    return `
     <div class="post-header">
-      <strong>@${username}</strong>
-      <span class="post-date">${date}</span>
+      <a href="/users/${userId}" class="text-decoration-none">
+        <strong>@${username}</strong>
+        <span class="post-date">${date}</span>
+      </a>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     <p><strong>${post.event_name}</strong> — <em>${new Date(post.event_date).toLocaleDateString()}</em></p>
@@ -434,8 +442,9 @@ function renderEvent(post, username, date, typeLabel) {
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
     <div class="post-footer">
       <div class="post-actions-left">
-        <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
+        <button class="post-like" data-id="${post._id}">
+          <i class="bi bi-hand-thumbs-up"></i> 0
+        </button>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">
@@ -446,8 +455,8 @@ function renderEvent(post, username, date, typeLabel) {
   `;
 }
 
-function renderPoll(post, username, date, typeLabel) {
-  const optionsHtml = post.options.map(option => `
+  function renderPoll(post, username, date, typeLabel, userId) {
+    const optionsHtml = post.options.map(option => `
       <li>
         <span>${option.label}</span>
         <span class="badge bg-secondary">${option.votes} vote(s)</span>
@@ -458,8 +467,10 @@ function renderPoll(post, username, date, typeLabel) {
 
   return `
       <div class="post-header">
+       <a href="/users/${userId}" class="text-decoration-none">
         <strong>@${username}</strong>
         <span class="post-date">${date}</span>
+      </a>
       </div>
       <div class="post-type-label">${typeLabel}</div>
       <p><strong>Poll:</strong> ${post.text}</p>
@@ -480,9 +491,10 @@ function renderPoll(post, username, date, typeLabel) {
 
       <div class="post-footer">
         <div class="post-actions-left">
-          <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-          <span><i class="bi bi-chat-dots-fill"></i> 0</span>
-          <span><i class="bi bi-share-fill"></i></span>
+          <button class="post-like" data-id="${post._id}">
+          <i class="bi bi-hand-thumbs-up-fill"></i> 0
+        </button>
+          <span><i class="bi bi-share"></i></span>
         </div>
         <div class="post-bookmark">
           <span><i class="bi bi-bookmark-fill"></i></span>
@@ -491,18 +503,21 @@ function renderPoll(post, username, date, typeLabel) {
     `;
 }
 
-function renderDefault(post, username, date, typeLabel) {
-  return `
+  function renderDefault(post, username, date, typeLabel, userId) {
+    return `
     <div class="post-header">
+     <a href="/users/${userId}" class="text-decoration-none">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
+    </a>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
     <div class="post-footer">
       <div class="post-actions-left">
-        <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
+        <button class="post-like" data-id="${post._id}">
+          <i class="bi bi-hand-thumbs-up"></i> 0
+        </button>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">
@@ -512,11 +527,13 @@ function renderDefault(post, username, date, typeLabel) {
   `;
 }
 
-function renderNews(post, username, date, typeLabel) {
-  return `
+  function renderNews(post, username, date, typeLabel, userId) {
+    return `
     <div class="post-header">
+     <a href='/users/${userId}' class="text-decoration-none">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
+    </a>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     <h5>${post.headline}</h5>
@@ -525,8 +542,9 @@ function renderNews(post, username, date, typeLabel) {
     <p><strong>Neighborhood:</strong> ${post.neighbourhood || 'N/A'}</p>
     <div class="post-footer">
       <div class="post-actions-left">
-        <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
+        <button class="post-like" data-id="${post._id}">
+          <i class="bi bi-hand-thumbs-up"></i> 0
+        </button>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">

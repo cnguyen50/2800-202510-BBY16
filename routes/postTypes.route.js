@@ -25,8 +25,12 @@ module.exports = function makeTypedRouter(Model) {
       const doc = await Model.create({
         ...req.body,
         user_id: req.session.userId,
+        neighbourhood: req.session.neighbourhood,
         image_url
       });
+
+   
+      console.log(req.session.neighbourhood);
 
       res.status(201).json(doc);
     } catch (err) {
@@ -80,6 +84,9 @@ module.exports = function makeTypedRouter(Model) {
       console.error('Error deleting typed post:', err);
       res.status(500).json({ error: err.message });
     }
+  });
+
+  router.get('/sameNeighbourhood', requireAuth, async (req, res) => {
   });
 
   return router;

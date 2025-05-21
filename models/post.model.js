@@ -8,9 +8,17 @@ const BasePostSchema = new Schema(
   {
     user_id  : { type: Schema.Types.ObjectId, ref: 'User', required: true },
     parent_id: { type: Schema.Types.ObjectId, ref: 'Post' },      // replies
-    image_url: {
+
+    userNeighbourhood: {
       type: String,
-      validate: { validator: v => !v || /^https?:\/\//.test(v), message: 'Bad image URL' }
+      required: true,
+      lowercase: true,
+      trim: true
+    },
+    likes: {
+      type: [Schema.Types.ObjectId],
+      ref: 'User',
+      default: []
     }
   },
   {
@@ -33,7 +41,10 @@ const EventPost = Post.discriminator(
     },
     location   : { type: String, required: true, minlength: 2, maxlength: 200, validate: noDollarDot },
     description: { type: String, maxlength: 2000, validate: noDollarDot },
-    image_url  : { type: String },                    // inherits URL regex above if you like
+      image_url: {
+      type: String,
+      validate: { validator: v => !v || /^https?:\/\//.test(v), message: 'Bad image URL' }
+    },               // inherits URL regex above if you like
     neighbourhood: {
       type: String,
       required: true,
@@ -67,7 +78,10 @@ const NewsPost = Post.discriminator(
   new Schema({
     headline  : { type: String, required: true, minlength: 3, maxlength: 200, validate: noDollarDot },
     body      : { type: String, required: true, validate: noDollarDot },
-    image_url   : { type: String }
+     image_url: {
+      type: String,
+      validate: { validator: v => !v || /^https?:\/\//.test(v), message: 'Bad image URL' }
+    },
   })
 );
 
