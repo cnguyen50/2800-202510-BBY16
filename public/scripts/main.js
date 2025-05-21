@@ -325,17 +325,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const username = post.user_id?.username || 'Anonymous';
-
+    const userId = post.user_id?._id || 'Unknown';
+    
     let html = "";
     switch (post.type?.toLowerCase()) {
       case "event":
-        html = renderEvent(post, username, date, typeLabel); break;
+        html = renderEvent(post, username, date, typeLabel, userId); break;
       case "news":
-        html = renderNews(post, username, date, typeLabel); break;
+        html = renderNews(post, username, date, typeLabel, userId); break;
       case "poll":
-        html = renderPoll(post, username, date, typeLabel); break;
+        html = renderPoll(post, username, date, typeLabel, userId); break;
       default:
-        html = renderDefault(post, username, date, typeLabel); break;
+        html = renderDefault(post, username, date, typeLabel, userId); break;
     }
 
     console.log(currentUserId);
@@ -366,11 +367,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   }
 
-  function renderEvent(post, username, date, typeLabel) {
+  function renderEvent(post, username, date, typeLabel, userId) {
     return `
     <div class="post-header">
-      <strong>@${username}</strong>
-      <span class="post-date">${date}</span>
+      <a href="/users/${userId}" class="text-decoration-none">
+        <strong>@${username}</strong>
+        <span class="post-date">${date}</span>
+      </a>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     <p><strong>${post.event_name}</strong> — <em>${new Date(post.event_date).toLocaleDateString()}</em></p>
@@ -391,7 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   }
 
-  function renderPoll(post, username, date, typeLabel) {
+  function renderPoll(post, username, date, typeLabel, userId) {
     const optionsHtml = post.options.map(option => `
       <li>
         <span>${option.label}</span>
@@ -403,8 +406,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return `
       <div class="post-header">
+       <a href="/users/${userId}" class="text-decoration-none">
         <strong>@${username}</strong>
         <span class="post-date">${date}</span>
+      </a>
       </div>
       <div class="post-type-label">${typeLabel}</div>
       <p><strong>Poll:</strong> ${post.text}</p>
@@ -437,11 +442,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  function renderDefault(post, username, date, typeLabel) {
+  function renderDefault(post, username, date, typeLabel, userId) {
     return `
     <div class="post-header">
+     <a href="/users/${userId}" class="text-decoration-none">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
+    </a>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
@@ -458,11 +465,13 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   }
 
-  function renderNews(post, username, date, typeLabel) {
+  function renderNews(post, username, date, typeLabel, userId) {
     return `
     <div class="post-header">
+     <a href='/users/${userId}' class="text-decoration-none">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
+    </a>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     <h5>${post.headline}</h5>

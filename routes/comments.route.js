@@ -73,8 +73,9 @@ function makeCommentsRouter() {
         res.json(comments);
     });
 
-    router.get('/user/:userId', async (req, res) => {
+    router.get('/users/:userId', async (req, res) => {
         const comments = await Comment.find({ user_id: req.params.userId }).populate('post_id', 'text').sort({ create_at: -1 });
+        //console.log(comments);
         res.json(comments);
     })
 

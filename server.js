@@ -20,6 +20,7 @@ const makeMapDataRouter = require('./routes/map-data.route.js');
 
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
+const requireAuth = require('./middleware/requireAuth.js');
 
 
 (async () => {
@@ -92,13 +93,13 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     // app.use('/auth', router) mounts router under /auth
     // routes for login, register, logout, etc.
-    app.use('/auth', makeAuthRouter());
+    app.use('/auth',  makeAuthRouter());
 
     // app.use('/users', router) mounts router under /users
     // profile, update, delete, current user endpoints
-    app.use('/users', makeUsersRouter());
+    app.use('/users', requireAuth, makeUsersRouter());
 
-    app.get('/map', (req, res) => {
+    app.get('/map', requireAuth, (req, res) => {
       res.render('map', {
         title: 'Map',
         headerLinks: [
@@ -115,27 +116,27 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     });
     
     // JSON API: events in my neighbourhood for map pins
-    app.use('/map/data', makeMapDataRouter());
+    app.use('/map/data', requireAuth, makeMapDataRouter());
     
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
-    app.use('/posts', makePostsRouter());
+    app.use('/posts', requireAuth, makePostsRouter());
 
     // app.use('/comments', router) mounts router under /comments
     // create and list current user comments
-    app.use('/comments', makeCommentsRouter());
+    app.use('/comments', requireAuth, makeCommentsRouter());
 
     // app.use('/events', router) mounts router under /events
     // create, read, update, delete typed posts
     //app.use('/events', makeTypedRouter(EventPost));
     // Useing this since seperated event.route.js
-    app.use('/events', makeEventsRouter());
+    app.use('/events', requireAuth, makeEventsRouter());
 
 
 
-    app.use('/news', makeTypedRouter(NewsPost));
+    app.use('/news', requireAuth, makeTypedRouter(NewsPost));
 
-    app.get('/notifications', (req, res) => {
+    app.get('/notifications', requireAuth, (req, res) => {
       res.render('notifications', {
         userId: req.session.userId,
         headerLinks: [
@@ -150,9 +151,9 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
 
     const pollsRouter = require('./routes/polls.route.js');
-    app.use('/polls', pollsRouter);
+    app.use('/polls', requireAuth, pollsRouter);
 
-    app.get('/trendingpoll', async (req, res) => {
+    app.get('/trendingpoll', requireAuth, async (req, res) => {
       if (!req.session.userId) return res.redirect('/login');
 
       const topPolls = await PollPost.find().lean();
@@ -192,13 +193,13 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
 
     // Serve uploaded profile pictures
-    app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+    app.use('/uploads', requireAuth, express.static(path.join(__dirname, 'public/uploads')));
 
-    app.use('/api/notifications', require('./routes/notifications.api.js'));
+    app.use('/api/notifications', requireAuth, require('./routes/notifications.api.js'));
 
     // app.get(path, handler) sends index page
     // landing page
-    app.get('/', (req, res) => {
+    app.get('/',  (req, res) => {
       if (req.session.userId) {
         res.redirect('/home');
       } else {
@@ -206,11 +207,11 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
       }
     });
 
-    app.use('/ai', aiRouter);
+    app.use('/ai', requireAuth, aiRouter);
 
     //app.get(path, handler) sends profile page
     //profile page (uses JS to fetch /current endpoints)
-    app.get('/profile', async (req, res) => {
+    app.get('/profile', requireAuth, async (req, res) => {
       if (!req.session.userId) {
         return res.redirect('/login');  // If user is not logged in, redirect to login
       }
@@ -233,6 +234,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
             { src: '/scripts/pollChart.js' }
           ],
           user,  // Pass the user object to the EJS template
+          viewingOtherUser: false  // Flag to indicate if viewing own profile
         });
       } catch (err) {
         console.error(err);
@@ -242,7 +244,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 
     // app.get(path, handler) sends main feed
     // main/home page
-    app.get('/home', (req, res) => {
+    app.get('/home' , requireAuth, (req, res) => {
       if (!req.session.userId) {
         res.redirect('/login');
       }
@@ -283,6 +285,36 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
       }
     });
 
+    app.use('/myCommunity', requireAuth, (req, res) => {
+
+      const svgDir = path.join(__dirname, './public/img/svg/');
+      fs.readdir(svgDir, (err, files) => {
+        if (err) return res.status(500).send("Failed to load SVGs");
+
+        // Filter only .svg files
+        const svgs = files.filter(file => file.endsWith('.svg'));
+
+        // Shuffle and pick 5–10 SVGs
+        const shuffled = svgs.sort(() => 0.5 - Math.random());
+        const count = Math.floor(Math.random() * 6) + 5; // 5 to 10
+        const selectedSvgs = shuffled.slice(0, count);
+
+             res.render('myCommunity', {
+        title: 'My Community',
+        headerLinks: [
+          { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+           { rel: 'stylesheet', href: '/styles/main.css' },
+        ],
+        footerScripts: [
+          { src: '/scripts/myCommunity.js' },
+          { src: '/scripts/comment.js' },
+        ],
+        svgs: selectedSvgs
+      });
+      });
+      
+    });
+
     // app.use(path, handler) intercepts /login
     // redirects logged-in users, otherwise shows login form
     app.use('/login', (req, res) => {
@@ -293,7 +325,7 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
       }
     });
 
-    app.use('/logout', (req, res) => {
+    app.use('/logout', requireAuth, (req, res) => {
       if (!req.session.userId) {
         res.redirect('/login');
       } else {

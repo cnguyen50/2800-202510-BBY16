@@ -3,7 +3,7 @@ const multer = require('multer');
 const upload = multer({ dest: 'public/uploads/' });
 const { Post } = require('../models/post.model.js')
 const requireAuth = require('../middleware/requireAuth.js');
-
+const User = require('../models/user.model.js');
 function makePostsRouter() {
   const router = express.Router();
 
@@ -19,6 +19,35 @@ function makePostsRouter() {
       res.status(500).json({ error: err.message });
     }
   });
+
+  router.get('/sameNeighbourhood', async (req, res) => {
+    const { neighbourhood } = req.query;
+    if (!neighbourhood) return res.status(400).json({ error: 'Neighbourhood is required' });
+    
+    try {
+
+      const users = await User.find(
+        { neighbourhood: new RegExp(`^${neighbourhood}$`, 'i') }, // 'i' flag = case-insensitive
+        '_id'
+      );
+
+
+      const userIds = users.map(u => u._id);
+    
+
+      const posts = await Post.find({ user_id: { $in: userIds } })
+        .sort({ createdAt: -1 })
+        .populate('user_id', 'username');
+
+    
+
+      res.json(posts);
+    } catch (err) {
+      console.error("GET /posts/sameNeighbourhood error:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
 
   router.get('/me', requireAuth, async (req, res) => {
     const posts = await Post.find({ user_id: req.session.userId }).sort({ createdAt: -1 });
@@ -48,6 +77,20 @@ function makePostsRouter() {
     if (!post) return res.status(404).json({ error: 'Not found' });
     res.json(post);
   });
+
+  // GET /posts/user/:id
+  router.get('/users/:id', async (req, res) => {
+
+    try {
+      const posts = await Post.find({ user_id: req.params.id }).sort({ createdAt: -1 });
+      //console.log('Fetched posts for user:', req.params.id, posts);
+      res.json(posts);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+
 
   router.put('/:id', async (req, res) => {
     try {

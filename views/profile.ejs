@@ -52,6 +52,11 @@
         </div>
     </main>
 
-    <script src="/scripts/profile.js" type="module"></script>
+      <script>
+         window.profileUserId   = <%- JSON.stringify(user._id.toString()) %>;
+        window.isSelfProfile   = <%= viewingOtherUser ? 'false' : 'true' %>;
+    </script>
+
+
 
     <%- include('templates/loggedFooter') %>

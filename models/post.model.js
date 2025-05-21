@@ -11,7 +11,7 @@ const BasePostSchema = new Schema(
     image_url: {
       type: String,
       validate: { validator: v => !v || /^https?:\/\//.test(v), message: 'Bad image URL' }
-    }
+    },
   },
   {
     timestamps      : true,

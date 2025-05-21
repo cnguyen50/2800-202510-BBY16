@@ -166,12 +166,19 @@ let allComments = [];
 
 async function init() {
   try {
+    const userId = window.profileUserId;
+    const isSelf = window.isSelfProfile;
+
     const [user, comments, posts] = await Promise.all([
-      fetchJson('/users/me'),
-      fetchJson('/comments/my'),
-      fetchJson('/posts/me')
+      fetchJson(isSelf ? '/users/me' : `/users/${userId}/json`),
+      fetchJson(isSelf ? '/comments/my' : `/comments/users/${userId}`),
+      fetchJson(isSelf ? '/posts/me' : `/posts/users/${userId}`)
     ]);
 
+
+    console.log('User:', user);
+    console.log('Comments:', comments);
+    console.log('Posts:', posts);
     if (user) {
       console.log('User:', user);
       renderUser(user);
@@ -190,19 +197,20 @@ async function init() {
     renderPosts(allPosts);
     renderComments(allComments);
 
-    const form = document.getElementById('profilePicForm');
-    if (form) {
-      form.addEventListener('submit', uploadProfilePic);
-    }
-    console.log('Form found and event listener added');
+    if (isSelf) {
+      const form = document.getElementById('profilePicForm');
+      if (form) {
+        form.addEventListener('submit', uploadProfilePic);
+      }
 
-    const fileInput = document.getElementById('profilePicInput');
-    if (fileInput) {
-      fileInput.addEventListener('change', () => {
-        if (fileInput.files.length > 0) {
-          form.dispatchEvent(new Event('submit', { cancelable: true }));
-        }
-      });
+      const fileInput = document.getElementById('profilePicInput');
+      if (fileInput) {
+        fileInput.addEventListener('change', () => {
+          if (fileInput.files.length > 0) {
+            form.dispatchEvent(new Event('submit', { cancelable: true }));
+          }
+        });
+      }
     }
     console.log('File input found and event listener added');
 

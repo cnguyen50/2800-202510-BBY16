@@ -1,0 +1,22 @@
+<%- include('templates/loggedHeader') %>
+    <main>
+
+        <div class="svg-background">
+            <% svgs.forEach(file=> { %>
+                <img src="/img/svg/<%= file %>" class="svg-icon" />
+                <% }) %>
+        </div>
+
+        <section class="feed community" id="community-feed">
+            <h2>The Latest In Your Neighbourhood</h2>
+            <div id="post-container"></div>
+            <div class="text-center my-4">
+                <button id="load-more-btn" class="btn">Load More</button>
+                <p id="no-more-msg" class="mt-2 text-muted" style="display: none;">All posts loaded.</p>
+            </div>
+        </section>
+
+        <%- include('partials/postModal') %>
+
+    </main>
+    <%- include('templates/loggedFooter') %>

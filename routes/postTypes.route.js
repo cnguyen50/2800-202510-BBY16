@@ -59,5 +59,8 @@ module.exports = function makeTypedRouter(Model) {
     res.status(204).end();
   });
 
+  router.get('/sameNeighbourhood', requireAuth, async (req, res) => {
+  });
+
   return router;
 };
