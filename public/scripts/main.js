@@ -449,9 +449,11 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       
       <div class="chart-controls d-none" data-controls-id="${post._id}">
-      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="bar" data-chart-id="${chartId}">Bar</button>
-      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="pie" data-chart-id="${chartId}">Pie</button>
-      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="doughnut" data-chart-id="${chartId}">Doughnut</button>
+        <div class="d-flex justify-content-center gap-2 mt-2">
+        <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="bar" data-chart-id="${chartId}">Bar</button>
+        <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="pie" data-chart-id="${chartId}">Pie</button>
+        <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="doughnut" data-chart-id="${chartId}">Doughnut</button>
+        </div>
       </div>
 
       <canvas id="${chartId}" class="mt-3 d-none" height="250"></canvas>
