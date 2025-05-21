@@ -38,6 +38,15 @@ main {
 }
 
 /* SVG */
+.sticky-buttons {
+  position: sticky;
+  z-index: 9999;
+  top: 20px;
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+}
+
 .svg-background {
     position: fixed;
     top: 0;
