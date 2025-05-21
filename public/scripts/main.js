@@ -581,5 +581,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Dynamic poll option management
+  const optionContainer = document.getElementById('poll-options-container');
+  const addOptionBtn = document.getElementById('add-option-btn');
+
+  function updateRemoveButtons() {
+    const removeButtons = optionContainer.querySelectorAll('.remove-option');
+    removeButtons.forEach(btn => {
+      btn.onclick = () => {
+        if (optionContainer.children.length > 2) {
+          btn.closest('.poll-option-group').remove();
+        }
+      };
+    });
+  }
+
+  addOptionBtn.addEventListener('click', () => {
+    const count = optionContainer.querySelectorAll('.poll-option-group').length;
+    if (count >= 7) return;
+
+    const newOption = document.createElement('div');
+    newOption.className = 'input-group mb-2 poll-option-group';
+    newOption.innerHTML = `
+    <input type="text" class="form-control poll-option" placeholder="Option ${count + 1}" required>
+    <button type="button" class="btn btn-outline-danger remove-option">×</button>
+  `;
+    optionContainer.appendChild(newOption);
+    updateRemoveButtons();
+  });
+
+  updateRemoveButtons(); // for initial 2 options
+
 
 });
