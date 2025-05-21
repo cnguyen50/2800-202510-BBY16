@@ -25,24 +25,6 @@ function makePostsRouter() {
     res.json(posts);
   });
 
-  router.get('/:id/view', async (req, res) => {
-    try {
-      const post = await Post.findById(req.params.id).populate('user_id', 'username');
-      if (!post) return res.status(404).send('Post not found');
-
-      res.render('post', {
-        post,
-        title: post.title || 'Post Details',  // pass a title for the page
-        headerLinks: [],
-        footerScripts: []
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).send('Server error');
-    }
-  });
-
-
   router.get('/:id', async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Not found' });

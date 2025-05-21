@@ -66,7 +66,11 @@ function renderPosts(list, filterType = 'all') {
           <p><strong>${post.type}</strong> • ${formattedDate}</p>
           <h4 style="margin: 0;">${postTitle}</h4>
         </div>
-        <span class="dropdown-arrow" style="font-size: 24px; user-select: none;">&#9660;</span>
+        <span class="dropdown-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+    <path d="M480-360 280-560h400L480-360Z"/>
+  </svg>
+        </span>
       </div>
       <div class="post-preview" style="margin-top: 10px;">
         ${postBody}
@@ -79,11 +83,7 @@ function renderPosts(list, filterType = 'all') {
     dropdown.addEventListener('click', e => {
       e.stopPropagation();
       const isOpen = preview.classList.toggle('open'); // toggle class
-      dropdown.innerHTML = isOpen ? '&#9650;' : '&#9660;';
-    });
-
-    div.addEventListener('click', () => {
-      window.location.href = `/posts/${post._id}/view`;
+      dropdown.classList.toggle('open', isOpen);
     });
 
     container.appendChild(div);
