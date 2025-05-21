@@ -19,12 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const clusterBtn = document.getElementById('toggle-cluster');
     const nearbyBtn = document.getElementById('toggle-near');
 
-    //Checking geolocation service is supported by browser
-    if (!navigator.geolocation) {
-        document.getElementById('location-info').textContent = 'Geolocation not supported';
-        return;
-    }
-    
+    let nearbyEvents = [];
+    let allEvents = [];
+
     //Custom BootStrap icon for user's location
     const userIcon = L.divIcon({
         className: "",
@@ -32,6 +29,72 @@ document.addEventListener('DOMContentLoaded', () => {
         iconAnchor: [16, 32]
     });
 
+    function shortLoc(location) {
+        const parts = location.split(',').map(s => s.trim());
+        return parts.length >= 3 ? 
+            `${parts[0]}, ${parts[2]}`
+            : location;
+    }
+
+    function addEvent(e, group) {
+        const date = new Date(e.event_date);
+        const formattedDate = date.toLocaleDateString('en-CA', {
+            month:'long',
+            day:'numeric',
+            year:'numeric'
+        });
+        const location = shortLoc(e.location);
+
+        const eventInfoHTML = `
+            <strong>${e.event_name}</strong><br>
+            <span>${location}</span><br>
+            <a href="#" class="details-link" data-id="${e._id}">See More Details</a>
+        `
+
+        const marker = L.marker([e.lat, e.lng])
+            .addTo(map)
+            .bindPopup(eventInfoHTML);
+    
+        marker.on('popupopen', () => {
+            const link = document.querySelector('.details-link');
+            if (!link) return;
+    
+            link.addEventListener('click', (evt) => {
+                evt.preventDefault();
+                const id = evt.target.dataset.id;
+                const card = document.querySelector(`#event-list .card[data-id="${id}"]`);
+    
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    card.classList.add('highlight');
+                    setTimeout(() => card.classList.remove('highlight'), 2000);
+                }
+            }, { once: true });
+        });
+    
+        group.addLayer(marker);
+    
+        const card = document.createElement('div');
+        card.className = 'card mb-2';
+        card.dataset.id = e._id;
+        card.innerHTML = `
+            <div class="card-body">
+            <h5 class="card-title">${e.event_name}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">${formattedDate}</h6>
+            <p class="card-text">${location}</p>
+            <p class="card-text">${e.description || ''}</p>
+            </div>
+        `;
+    
+        listContainer.appendChild(card);
+    }
+
+    //Checking geolocation service is supported by browser
+    if (!navigator.geolocation) {
+        document.getElementById('location-info').textContent = 'Geolocation not supported';
+        return;
+    }
+    
     //Requesting user's position
     navigator.geolocation.getCurrentPosition(
         //on success callback
@@ -88,66 +151,54 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const mapDataRes = await fetch('/map/data', { credentials: 'include' });
                 if (!mapDataRes.ok) throw new Error(await mapDataRes.text());
-                const events = await mapDataRes.json();
+                nearbyEvents = await mapDataRes.json();
 
-                events.forEach(e => {
+                const allRes = await fetch('/events', { credentials: 'include' });
+                if (!allRes.ok) throw new Error(await allRes.text());
+                allEvents = await allRes.json();
+
+                //add only if lat/lng are numbers
+                nearbyEvents.forEach(e => {
                     if (typeof e.lat === 'number' && typeof e.lng === 'number') {
-                        // parsing date
-                        const date = new Date(e.event_date);
-                        const formattedDate = date.toLocaleDateString('en-CA', {
-                            month:'long',
-                            day:'numeric',
-                            year:'numeric'
-                        });
-
-                        // Parsed location to be shorter
-                        const parts = e.location.split(',').map(s => s.trim());
-                        const foramttedLoc = parts.length >= 3
-                            ? `${parts[0]}, ${parts[2]}`
-                            : e.location;
-
-                        const card = document.createElement('div');
-                        card.className = 'card mb-2';
-                        card.dataset.id = e._id;
-                        card.innerHTML = `
-                            <div class="card-body">
-                            <h5 class="card-title">${e.event_name}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">${formattedDate}</h6>
-                            <p class="card-text">${foramttedLoc}</p>
-                            <p class="card-text">${e.description || ''}</p>
-                            </div>
-                        `;
-
-                        listContainer.appendChild(card);
-                        
-                        const eventInfoHTML = `
-                            <strong>${e.event_name}</strong><br>
-                            <span>${foramttedLoc}</span><br>
-                            <a href="#" class="details-link" data-id="${e._id}">See More Details</a>
-                        `
-
-                        const marker = L.marker([e.lat, e.lng])
-                            .addTo(map)
-                            .bindPopup(eventInfoHTML);
-
-                        marker.on('popupopen', () => {
-                            const link = document.querySelector('.details-link');
-                            if (!link) return;
-
-                            link.addEventListener('click', (evt) => {
-                                evt.preventDefault();
-                                const id = evt.target.dataset.id;
-                                const card = document.querySelector(`#event-list .card[data-id="${id}"]`);
-
-                                if (card) {
-                                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                    card.classList.add('highlight');
-                                    setTimeout(() => card.classList.remove('highlight'), 2000);
-                                }
-                            }, { once: true });
-                        });
+                        addEvent(e, nearbyGroup);
                     }
                 });
+
+                allEvents.forEach(e => {
+                    if (typeof e.lat === 'number' && typeof e.lng === 'number') {
+                        addEvent(e, clusterGroup);
+                    }
+                });
+
+                // Start in nearby view
+                map.addLayer(nearbyGroup);
+
+                clusterBtn.addEventListener('click', () => {
+                    map.removeLayer(nearbyGroup);
+                    map.addLayer(clusterGroup);
+                    map.setView([49.2827, -123.1207], 10);
+                    listContainer.innerHTML = '';
+
+                    allEvents.forEach(e => {
+                        if (typeof e.lat === 'number' && typeof e.lng === 'number') {
+                            addEvent(e, clusterGroup);
+                        }
+                    });
+                });
+                
+                nearbyBtn.addEventListener('click', () => {
+                    map.removeLayer(clusterGroup);
+                    map.addLayer(nearbyGroup);
+                    map.setView([latitude, longitude], 15);
+                    listContainer.innerHTML = '';
+
+                    nearbyEvents.forEach(e => {
+                        if (typeof e.lat === 'number' && typeof e.lng === 'number') {
+                            addEvent(e, nearbyGroup);
+                        }
+                    });
+                });
+
             } catch (err) {
                 console.error('Could not load neighbourhood events', err);
             }
