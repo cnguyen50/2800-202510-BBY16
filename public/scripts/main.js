@@ -171,21 +171,21 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!meRes.ok) throw new Error('Not authenticated');
     const { neighbourhood } = await meRes.json();
 
-    const rawType = document.getElementById("post-type").value;
+    const rawType = document.getElementById("post-type").value.trim();
 
-    formData.append("content", document.getElementById("post-content").value);
+    formData.append("content", document.getElementById("post-content").value.trim());
 
     formData.append("userNeighbourhood", currentUserNeighbourhood);
     if (type === "event") {
-      formData.append("event_name", document.getElementById("event-name").value);
-      const day = document.getElementById('event-date').value;  // '2025-05-20'
+      formData.append("event_name", document.getElementById("event-name").value.trim());
+      const day = document.getElementById('event-date').value.trim();  // '2025-05-20'
       formData.append('event_date', day ? `${day}T23:59` : ''); // → '2025-05-20T23:59'
       // formData.append("location", document.getElementById("event-location").value);
-      formData.append("description", document.getElementById("event-description").value);
-      formData.append("neighbourhood", neighbourhood);
-      formData.append("location", locInput.value);
-      formData.append("lat", latField.value);
-      formData.append("lng", lngField.value);
+      formData.append("description", document.getElementById("event-description").value.trim());
+      formData.append("neighbourhood", neighbourhood.trim());
+      formData.append("location", locInput.value.trim());
+      formData.append("lat", latField.value.trim());
+      formData.append("lng", lngField.value.trim());
 
     } else if (type === "poll") {
       const pollText = document.getElementById('poll-text').value.trim();
