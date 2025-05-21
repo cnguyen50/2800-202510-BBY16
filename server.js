@@ -269,14 +269,15 @@ const requireAuth = require('./middleware/requireAuth.js');
               { rel: 'stylesheet', href: '/styles/main.css' },
               { rel: 'stylesheet', href: '/styles/loggedIn.css' },
               { rel: 'stylesheet', href: '/styles/ai.css' },
-
+              { rel: 'stylesheet', href: '/styles/modal.css' },
 
             ],
             footerScripts: [
               { src: '/scripts/main.js' },
               { src: '/scripts/comment.js' },
               { src: '/scripts/pollChart.js' },
-              { src: '/scripts/ai.js' }
+              { src: '/scripts/ai.js' },
+              
             ],
             svgs: selectedSvgs
           });

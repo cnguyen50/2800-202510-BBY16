@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const lngField   = document.getElementById("event-lng");
 
   let currentUserId;
+  let currentUserNeighbourhood
   const postContainer = document.getElementById("post-container");
   const svgIcons = document.querySelectorAll(".svg-icon");
 
@@ -271,6 +272,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res2 = await fetch('/users/me', { credentials: "include" });
       const user = await res2.json();
       currentUserId = user._id;
+      currentUserNeighbourhood = user.neighbourhood;
       console.log(currentUserId);
       // Sort posts by newest first
       allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -383,7 +385,6 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="post-footer">
       <div class="post-actions-left">
         <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">
@@ -431,7 +432,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="post-footer">
         <div class="post-actions-left">
           <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-          <span><i class="bi bi-chat-dots-fill"></i> 0</span>
           <span><i class="bi bi-share-fill"></i></span>
         </div>
         <div class="post-bookmark">
@@ -455,7 +455,6 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="post-footer">
       <div class="post-actions-left">
         <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">
@@ -481,7 +480,6 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="post-footer">
       <div class="post-actions-left">
         <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">

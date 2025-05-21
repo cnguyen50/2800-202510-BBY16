@@ -138,6 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="post-header">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
+      <span class="post-neighbourhood">${post.userNeighbourhood}</span>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     <p><strong>${post.event_name}</strong> — <em>${new Date(post.event_date).toLocaleDateString()}</em></p>
@@ -147,7 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="post-footer">
       <div class="post-actions-left">
         <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">
@@ -172,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="post-header">
         <strong>@${username}</strong>
         <span class="post-date">${date}</span>
+         <span class="post-neighbourhood">${post.userNeighbourhood}</span>
       </div>
       <div class="post-type-label">${typeLabel}</div>
       <p><strong>Poll:</strong> ${post.text}</p>
@@ -193,7 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="post-footer">
         <div class="post-actions-left">
           <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-          <span><i class="bi bi-chat-dots-fill"></i> 0</span>
           <span><i class="bi bi-share-fill"></i></span>
         </div>
         <div class="post-bookmark">
@@ -209,13 +209,13 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="post-header">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
+       <span class="post-neighbourhood">${post.userNeighbourhood}</span>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
     <div class="post-footer">
       <div class="post-actions-left">
         <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">
@@ -230,6 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="post-header">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
+       <span class="post-neighbourhood">${post.userNeighbourhood}</span>
     </div>
     <div class="post-type-label">${typeLabel}</div>
     <h5>${post.headline}</h5>
@@ -239,7 +240,6 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="post-footer">
       <div class="post-actions-left">
         <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
-        <span><i class="bi bi-chat-dots-fill"></i> 0</span>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">

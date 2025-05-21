@@ -33,7 +33,7 @@ function makeAuthRouter() {
 
       // req.session.userId stores login in session cookie
       req.session.userId = user._id;
-      req.session.neighbourhood = neighbourhood;
+      req.session.neighbourhood = user.neighbourhood;
       res.status(201).json({ _id: user._id, username, email, neighbourhood });
     } catch (err) {
       res.status(400).json({ error: err.message });
@@ -71,11 +71,10 @@ function makeAuthRouter() {
       const match = await bcrypt.compare(password, user.password);
       if (!match) return res.status(401).json({ error: 'Invalid credentials' });
       req.session.userId = user._id;
-      req.session.neighbourhood = neighbourhood;
+      req.session.neighbourhood = user.neighbourhood;
 
-      //cache in session for quick access
-      req.session.userNeighbourhood = user.neighbourhood;
 
+      console.log(req.session.neighbourhood);
       res.redirect('/profile');
     } else {
       return res.status(401).json({ error: 'Invalid credentials' });

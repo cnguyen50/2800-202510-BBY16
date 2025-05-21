@@ -25,21 +25,10 @@ function makePostsRouter() {
     if (!neighbourhood) return res.status(400).json({ error: 'Neighbourhood is required' });
     
     try {
-
-      const users = await User.find(
-        { neighbourhood: new RegExp(`^${neighbourhood}$`, 'i') }, // 'i' flag = case-insensitive
-        '_id'
-      );
-
-
-      const userIds = users.map(u => u._id);
     
-
-      const posts = await Post.find({ user_id: { $in: userIds } })
+      const posts = await Post.find({ neighbourhood: req.session.neighbourhood })
         .sort({ createdAt: -1 })
-        .populate('user_id', 'username');
 
-    
 
       res.json(posts);
     } catch (err) {
@@ -76,6 +65,19 @@ function makePostsRouter() {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ error: 'Not found' });
     res.json(post);
+  });
+
+  router.post('/:id/like', requireAuth, async (req, res) => {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: 'Not found' });
+    
+    const userId = req.session.userId;
+    const alreadyLiked = post.likes.some(id => id.equals(userId));
+    if (alreadyLiked) {
+      post.likes = post.likes.filter(id => !id.equals(userId)); // unlike
+    } else {
+      post.likes.push(userId); // like
+    }
   });
 
   // GET /posts/user/:id
