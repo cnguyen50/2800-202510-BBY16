@@ -98,20 +98,36 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
     // profile, update, delete, current user endpoints
     app.use('/users', makeUsersRouter());
 
-    app.get('/map', (req, res) => {
-      res.render('map', {
-        title: 'Map',
-        headerLinks: [
-          { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css' },
-          { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
-          { rel: 'stylesheet', href: '/styles/map.css' },
-          { rel: 'stylesheet', href: '/styles/loggedIn.css' }
-        ],
-        footerScripts: [
-          { src: 'https://unpkg.com/leaflet/dist/leaflet.js' },
-          { src: '/scripts/map.js' }
-        ]
-      });
+    app.get('/map', async (req, res) => {
+      try {
+        const today = new Date();
+        const nextWeek = new Date();
+
+        nextWeek.setDate(today.getDate() + 7);
+
+        const events = await EventPost
+          .find({ event_date:{ $gte: today, $lte: nextWeek} })
+          .sort({ event_date: 1 })
+          .populate('user_id', 'username')
+          .lean();
+
+          res.render('map', {
+            title: 'Map',
+            headerLinks: [
+              { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css' },
+              { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
+              { rel: 'stylesheet', href: '/styles/map.css' },
+              { rel: 'stylesheet', href: '/styles/loggedIn.css' }
+            ],
+            footerScripts: [
+              { src: 'https://unpkg.com/leaflet/dist/leaflet.js' },
+              { src: '/scripts/map.js' }
+            ],
+            events
+          });
+      } catch (err) {
+        console.log("Cannot fetch map and events", err);
+      }
     });
 
     // JSON API: events in my neighbourhood for map pins
