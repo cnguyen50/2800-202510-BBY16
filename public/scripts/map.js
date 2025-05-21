@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const eventInfoHTML = `
                             <strong>${e.event_name}</strong><br>
                             <span>${foramttedLoc}</span><br>
+                            <a href="#" class="details-link" data-id="${e._id}">Details</a>
                         `
 
                         const marker = L.marker([e.lat, e.lng])
@@ -125,12 +126,20 @@ document.addEventListener('DOMContentLoaded', () => {
                             .bindPopup(eventInfoHTML);
 
                         marker.on('click', () => {
-                            const target = document.querySelector(`#event-list .card[data-id="${e._id}"]`);
-                            if (target) {
-                                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                target.classList.add('highlight');
-                                setTimeout(() => target.classList.remove('highlight'), 2000);
-                            }
+                            const link = document.querySelector('.details-link');
+                            if (!link) return;
+
+                            link.addEventListener('click', (evt) => {
+                                evt.preventDefault();
+                                const id = evt.target.dataset.id;
+                                const card = document.querySelector(`#event-list .card[data-id="${id}"]`);
+
+                                if (card) {
+                                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    card.classList.add('highlight');
+                                    setTimeout(() => card.classList.remove('highlight'), 2000);
+                                }
+                            }, { once: true });
                         });
                     }
                 });
