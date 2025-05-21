@@ -82,9 +82,17 @@ function renderPosts(list, filterType = 'all') {
       dropdown.innerHTML = isOpen ? '&#9650;' : '&#9660;';
     });
 
+    // fixed redirection of polls to /polls/:id/view instead of /posts/:id/view
     div.addEventListener('click', () => {
-      window.location.href = `/posts/${post._id}/view`;
+      const type = post.type?.toLowerCase();
+
+      if (type === 'poll') {
+        window.location.href = `/polls/${post._id}/view`;
+      } else {
+        window.location.href = `/posts/${post._id}/view`;
+      }
     });
+
 
     container.appendChild(div);
   });
