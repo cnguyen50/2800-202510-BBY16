@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
         maxZoom: 19
     }).addTo(map);
 
+    const clusterGroup = L.markerClusterGroup();
+    const nearbyGroup = L.layerGroup();
+
+    const clusterBtn = document.getElementById('toggle-cluster');
+    const nearbyBtn = document.getElementById('toggle-near');
     const listContainer = document.getElementById('event-list');
 
     //Checking geolocation service is supported by browser
@@ -125,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             .addTo(map)
                             .bindPopup(eventInfoHTML);
 
-                        marker.on('click', () => {
+                        marker.on('popupopen', () => {
                             const link = document.querySelector('.details-link');
                             if (!link) return;
 
