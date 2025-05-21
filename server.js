@@ -245,8 +245,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
               { src: '/scripts/comment.js' },
               { src: '/scripts/pollChart.js' }
             ],
-            user,  // Pass the user object to the EJS template
-            svgs: selectedSvgs // Pass svgs here so your EJS template can use it
+            user,  
+            svgs: selectedSvgs 
           });
         });
       } catch (err) {

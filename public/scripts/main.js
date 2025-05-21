@@ -82,11 +82,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const eventFields = document.getElementById("event-fields");
     const pollFields = document.getElementById("poll-fields");
     const newsFields = document.getElementById("news-fields");
+    const fileContainer = document.getElementById("post-image");
 
     // Show only the fields related to the selected post type and hide others
     eventFields.style.display = (type === "event") ? "block" : "none";
     pollFields.style.display = (type === "poll") ? "block" : "none";
     newsFields.style.display = (type === "news") ? "block" : "none";
+    fileContainer.style.display = (type === "poll") ? "none" : "block";
   });
 
   // Add event listener to the main post filter dropdown
@@ -202,11 +204,10 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log(document.getElementById("news-headline").value);
       formData.append("body", document.getElementById("news-body").value);
       console.log(document.getElementById("news-body").value);
-      formData.append("image_url", document.getElementById("news-image-url").value);
       formData.append("neighbourhood", document.getElementById("news-neighbourhood").value);
     }
 
-    console.log("Form data before image append:", formData.get('content'), formData.get('body'), formData.get('neighborhood'));
+    console.log("Form data before image append:", formData.get('content'), formData.get('body'), formData.get('neighbourhood'));
 
     const fileInput = document.getElementById("post-image");
     if (fileInput.files.length > 0) {
