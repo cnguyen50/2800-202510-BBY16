@@ -1,6 +1,5 @@
 /* General poll styles */
 ul.poll-unvoted button.vote-option {
-    margin-bottom: 0.5rem;
     transition: transform 0.2s;
 }
 
@@ -23,7 +22,7 @@ ul.poll-unvoted .vote-option {
     border: 2px solid #90caf9;
     /* Blue border */
     border-radius: 8px;
-    padding: 0.6rem 1rem;
+    padding: 0.4rem 1rem;
     font-weight: bold;
     font-size: 1rem;
     color: #0d47a1;
