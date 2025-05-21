@@ -309,6 +309,7 @@ const requireAuth = require('./middleware/requireAuth.js');
         footerScripts: [
           { src: '/scripts/myCommunity.js' },
           { src: '/scripts/comment.js' },
+             { src: '/scripts/post.js' }
         ],
         svgs: selectedSvgs
       });

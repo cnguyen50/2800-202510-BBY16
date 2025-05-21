@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const user = await res2.json();
  
       const neighbourhood = user.neighbourhood;
-
+  
       const res = await fetch(`/posts/sameNeighbourhood?neighbourhood=${neighbourhood}`, { credentials: "include" });
       const posts = await res.json();
 
@@ -106,6 +106,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     console.log(currentUserId);
+    console.log(post.userNeighbourhood);
+  
 
     if (post.user_id?._id === currentUserId) {
       html += `
@@ -128,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
     div.innerHTML += commentHtml;
     loadComments(post._id, div.querySelector(".comments-list"));
-
+   loadPostLikes(post._id);
     document.getElementById("post-container").appendChild(div);
 
   }
@@ -147,7 +149,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
     <div class="post-footer">
       <div class="post-actions-left">
-        <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
+        <button class="post-like" data-id="${post._id}">
+          <i class="bi bi-hand-thumbs-up"></i> 0
+        </button>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">
@@ -193,7 +197,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       <div class="post-footer">
         <div class="post-actions-left">
-          <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
+          <button class="post-like" data-id="${post._id}">
+          <i class="bi bi-hand-thumbs-up"></i> 0
+        </button>
           <span><i class="bi bi-share-fill"></i></span>
         </div>
         <div class="post-bookmark">
@@ -215,7 +221,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
     <div class="post-footer">
       <div class="post-actions-left">
-        <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
+        <button class="post-like" data-id="${post._id}">
+          <i class="bi bi-hand-thumbs-up"></i> 0
+        </button>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">
@@ -239,7 +247,9 @@ document.addEventListener("DOMContentLoaded", () => {
     <p><strong>Neighborhood:</strong> ${post.neighborhood || 'N/A'}</p>
     <div class="post-footer">
       <div class="post-actions-left">
-        <span><i class="bi bi-hand-thumbs-up-fill"></i> 0</span>
+       <button class="post-like" data-id="${post._id}">
+          <i class="bi bi-hand-thumbs-up"></i> 0
+        </button>
         <span><i class="bi bi-share-fill"></i></span>
       </div>
       <div class="post-bookmark">

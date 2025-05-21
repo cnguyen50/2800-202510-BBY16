@@ -24,9 +24,10 @@ function makePostsRouter() {
     const { neighbourhood } = req.query;
     if (!neighbourhood) return res.status(400).json({ error: 'Neighbourhood is required' });
     
+
     try {
     
-      const posts = await Post.find({ neighbourhood: req.session.neighbourhood })
+      const posts = await Post.find({ userNeighbourhood: req.session.neighbourhood.toLowerCase() })
         .sort({ createdAt: -1 })
 
 
