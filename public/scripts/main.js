@@ -1,10 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const form       = document.getElementById("create-post-form");
-  const locInput   = document.getElementById("event-location");
-  const suggList   = document.getElementById("loc-suggestions");
-  const latField   = document.getElementById("event-lat");
-  const lngField   = document.getElementById("event-lng");
+  const form = document.getElementById("create-post-form");
+  const locInput = document.getElementById("event-location");
+  const suggList = document.getElementById("loc-suggestions");
+  const latField = document.getElementById("event-lat");
+  const lngField = document.getElementById("event-lng");
+  const btn = document.getElementById("backToTopBtn");
+
+  // “Back to Top” button
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) {
+      btn.style.display = "flex";
+    } else {
+      btn.style.display = "none";
+    }
+  });
+  btn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
 
   let currentUserId;
   const postContainer = document.getElementById("post-container");
@@ -54,23 +67,23 @@ document.addEventListener("DOMContentLoaded", () => {
           console.error("Autocomplete error:", err);
         }
       }, 300);
-  });
+    });
 
-  suggList.addEventListener("click", (e) => {
-    if (e.target.tagName === "LI") {
-      locInput.value = e.target.textContent.trim();
-      latField.value = e.target.dataset.lat;
-      lngField.value = e.target.dataset.lon;
-      suggList.innerHTML = "";
+    suggList.addEventListener("click", (e) => {
+      if (e.target.tagName === "LI") {
+        locInput.value = e.target.textContent.trim();
+        latField.value = e.target.dataset.lat;
+        lngField.value = e.target.dataset.lon;
+        suggList.innerHTML = "";
 
-      console.log("Selected location:", locInput.value);
-    }
-  });
-})
+        console.log("Selected location:", locInput.value);
+      }
+    });
+  })
 
   //helper function to shorten location data
   function shortLocation(loc) {
-  const parts = loc.split(',').map(s => s.trim());
+    const parts = loc.split(',').map(s => s.trim());
     return parts.length >= 3
       ? `${parts[0]}, ${parts[2]}`
       : loc;
@@ -191,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const pollOptions = Array.from(document.querySelectorAll('.poll-option'))
         .map(o => o.value.trim())
         .filter(Boolean);
-      
+
       formData.append('text', pollText);
       pollOptions.forEach((label, i) => {
         formData.append(`options[${i}][label]`, label);
@@ -232,8 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
         body: formData,
         credentials: "include"
       });
-
-      
 
       if (!res.ok) {
         const err = await res.json();
@@ -304,7 +315,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadMoreBtn.addEventListener("click", () => loadMorePosts(currentUserId));
 
   fetchAllPosts();
-
 
   // Renderers by type
   function renderPost(post, currentUserId) {
@@ -435,7 +445,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
   }
-
 
   function renderDefault(post, username, date, typeLabel) {
     return `
