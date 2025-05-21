@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
         maxZoom: 19
     }).addTo(map);
 
+    const listContainer = document.getElementById('event-list');
+
     //Checking geolocation service is supported by browser
     if (!navigator.geolocation) {
         document.getElementById('location-info').textContent = 'Geolocation not supported';
@@ -20,9 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     //Custom BootStrap icon for user's location
     const userIcon = L.divIcon({
-    className: "",
-    html: `<i class="bi bi-geo-alt-fill text-danger" style="font-size: 2rem;"></i>`,
-    iconAnchor: [16, 32]
+        className: "",
+        html: `<i class="bi bi-geo-alt-fill text-danger" style="font-size: 2rem;"></i>`,
+        iconAnchor: [16, 32]
     });
 
     //Requesting user's position
@@ -83,11 +85,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!mapDataRes.ok) throw new Error(await mapDataRes.text());
                 const events = await mapDataRes.json();
 
-
                 events.forEach(e => {
                     if (typeof e.lat === 'number' && typeof e.lng === 'number') {
                         // parsing date
                         const date = new Date(e.event_date);
+                        const formattedDate = date.toLocaleDateString('en-CA', {
+                            month:'long',
+                            day:'numeric',
+                            year:'numeric'
+                        });
 
                         // Parsed location to be shorter
                         const parts = e.location.split(',').map(s => s.trim());
@@ -95,11 +101,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             ? `${parts[0]}, ${parts[2]}`
                             : e.location;
 
-                        const formattedDate = date.toLocaleDateString('en-CA', {
-                            month: 'long',
-                            day:   'numeric',
-                            year:  'numeric'
-                        });
+                        const card = document.createElement('div');
+                        card.className = 'card mb-2';
+                        card.dataset.id = e._id;
+                        card.innerHTML = `
+                            <div class="card-body">
+                            <h5 class="card-title">${e.event_name}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">${formattedDate}</h6>
+                            <p class="card-text">${foramttedLoc}</p>
+                            <p class="card-text">${e.description || ''}</p>
+                            </div>
+                        `;
+
+                        listContainer.appendChild(card);
 
                         const eventInfoHTML = `
                             <strong>${e.event_name}</strong><br>
@@ -108,9 +122,18 @@ document.addEventListener('DOMContentLoaded', () => {
                             <em>${e.description || ''}</em>
                         `
 
-                        L.marker([e.lat, e.lng])
-                        .addTo(map)
-                        .bindPopup(eventInfoHTML);
+                        const marker = L.marker([e.lat, e.lng])
+                            .addTo(map)
+                            .bindPopup(eventInfoHTML);
+
+                        marker.on('click', () => {
+                            const target = document.querySelector(`#event-list .card[data-id="${e._id}"]`);
+                            if (target) {
+                                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                target.classList.add('highlight');
+                                setTimeout(() => target.classList.remove('highlight'), 2000);
+                            }
+                        });
                     }
                 });
             } catch (err) {

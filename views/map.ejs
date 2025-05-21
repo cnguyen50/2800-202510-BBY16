@@ -14,7 +14,7 @@
             <div class="row">
                 <% events.forEach(ev => { %>
                 <div class="col-md-4 mb-3">
-                    <div class="card h-100">
+                    <div class="card h-100" data-id="<%= ev._id %>">
                     <div class="card-body">
                         <h5 class="card-title"><%= ev.event_name %></h5>
                         <h6 class="card-subtitle mb-2 text-muted">
