@@ -57,9 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function shortLoc(location) {
         const parts = location.split(',').map(s => s.trim());
-        return parts.length >= 3 ? 
-            `${parts[0]}, ${parts[2]}`
-            : location;
+        if (parts.length >= 4) {
+            return `${parts[0]}, ${parts[1]}, ${parts[3]}`;
+        } else if (parts.length >= 2) {
+            return `${parts[0]}, ${parts[1]}`;
+        }
+        return location;
     }
 
     function addEvent(e, group) {
@@ -71,15 +74,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const location = shortLoc(e.location);
 
+        // <strong>${e.event_name}</strong><br>
+        // <span>${location}</span><br>
+        // <a href="#" class="details-link" data-id="${e._id}">See More Details</a>
         const eventInfoHTML = `
-            <strong>${e.event_name}</strong><br>
-            <span>${location}</span><br>
-            <a href="#" class="details-link" data-id="${e._id}">See More Details</a>
+            <div class="event-popup">
+                <h3 class="event-popup__title">${e.event_name}</h3>
+                <p class="event-popup__loc">${shortLoc(e.location)}</p>
+                <a href="#" class="event-popup__link" data-id="${e._id}">See More Details</a>
+            </div>
         `
 
         const marker = L.marker([e.lat, e.lng])
             .addTo(map)
-            .bindPopup(eventInfoHTML);
+            .bindPopup(eventInfoHTML, {
+                className: 'custom-event-popup'
+            });
     
         marker.on('popupopen', (evt) => {
             // Grabbing the just opened popup element
