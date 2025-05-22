@@ -328,6 +328,28 @@ const requireAuth = require('./middleware/requireAuth.js');
       }
     });
 
+    app.use(async (req, res, next) => {
+      if (!req.session.userId) {
+        
+        res.redirect('/login');
+      } else {
+      
+        const selectedSvgs = await getRandomSvgs(svgPath);
+        res.status(404).render('404', {
+           title: '404 Not Found',
+          headerLinks: [
+            { rel: 'stylesheet', href: '/styles/main.css' },
+            { rel: 'stylesheet', href: '/styles/404.css'}
+          ],
+          footerScripts: [
+            {src: '/scripts/renderSvgs.js'}
+          ],
+          svgs: selectedSvgs
+        });
+      }
+    });
+
+
 
     // Start HTTP server on given port
     // default 3000

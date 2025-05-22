@@ -1,3 +1,15 @@
-<main>
-    <h1>This Page Does not Exist</h1>
+<%- include('templates/loggedHeader') %>
+<main id="error404" class="error404">
+
+    <div class="container404">
+        <h1>404 - This Page Does Not Exist</h1>
+        <p>Sorry, the page you are looking for could not be found.</p>
+        <a href="/home">Back to Home</a>
+    </div>
 </main>
+ <div class="svg-background">
+        <% svgs.forEach(file=> { %>
+            <img src="/img/svg/<%= file %>" class="svg-icon" />
+            <% }) %>
+    </div>
+<%- include('templates/loggedFooter') %>
