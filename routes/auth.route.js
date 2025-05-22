@@ -14,16 +14,11 @@ function makeAuthRouter() {
   // router.post(path, handler) → login (auto-register if not found)
   // purpose: sign in existing user or create one on the fly
   router.post('/login', validateBody(loginSchema), async (req, res) => {
-    const username = req.body.username.trim();
-    const password = req.body.password.trim();
-    const email = req.body.email.trim();
-    const neighbourhood = req.body.neighbourhood.trim().toLowerCase();
+    const username = (req.body.username || "").trim();
+    const password = (req.body.password || "").trim();
+    const email = (req.body.email || "").trim();
+    const neighbourhood = (req.body.neighbourhood || "").trim().toLowerCase();
 
-
-    username.trim();
-    password.trim();
-    email.trim();
-    neighbourhood.trim();
     // User.findOne finds user by username
     let user = await User.findOne({ username });
 
