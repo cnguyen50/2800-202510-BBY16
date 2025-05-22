@@ -63,14 +63,15 @@ const PollPost = Post.discriminator(
     text: { type: String, required: true, maxlength: 1000, validate: noDollarDot },
     expires_at: {
       type: Date,
-      default: () => Date.now() + 62 * 60 * 1000,
+      default: () => Date.now() + 24 * 60 * 60 * 1000,
       validate: { validator: d => d > Date.now(), message: 'Expiry must be in the future' }
     },
     options: [{
       label: { type: String, required: true, maxlength: 280, validate: noDollarDot },
       votes: { type: Number, default: 0 }
     }],
-    voted_user_ids: [String]
+    voted_user_ids: [String],
+    reminder_sent: {type:Boolean, default: false}
   })
 );
 
