@@ -51,16 +51,18 @@
 
                     <div id="poll-fields" style="display: none;">
                         <input type="text" class="form-control mb-2" id="poll-text" placeholder="Poll Question">
-                        <input type="text" class="form-control mb-2 poll-option" id="poll-option1"
-                            placeholder="Option 1">
-                        <input type="text" class="form-control mb-2 poll-option" id="poll-option2"
-                            placeholder="Option 2">
-                        <input type="text" class="form-control mb-2 poll-option" id="poll-option3"
-                            placeholder="Option 3">
-                        <input type="text" class="form-control mb-2 poll-option" id="poll-option4"
-                            placeholder="Option 4">
-                    </div>
 
+                        <div id="poll-options-container">
+                        <div class="input-group mb-2 poll-option-group">
+                            <input type="text" class="form-control poll-option" placeholder="Option 1" required>
+                            <button type="button" class="btn btn-outline-danger remove-option">×</button>
+                        </div>
+                        <div class="input-group mb-2 poll-option-group">
+                            <input type="text" class="form-control poll-option" placeholder="Option 2" required>
+                            <button type="button" class="btn btn-outline-danger remove-option">×</button>
+                        </div>
+                        </div>
+                        <button type="button" id="add-option-btn" class="btn btn-outline-primary btn-sm mb-3">+ Add Option</button>
                 </div>
 
                 <div class="modal-footer">
