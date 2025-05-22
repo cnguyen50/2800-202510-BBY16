@@ -1,4 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const svgIcons = document.querySelectorAll(".svg-icon");
+
+    svgIcons.forEach(icon => {
+        icon.style.top = Math.floor(Math.random() * 90) + "vh"; 
+        icon.style.left = Math.floor(Math.random() * 90) + "vw";
+        icon.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`;
+    });
+
     //Init map inside div id='map'
     const map = L.map('map').setView(
         [49.2827, -123.1207], //set to Vancouver coords

@@ -111,6 +111,12 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
           .populate('user_id', 'username')
           .lean();
 
+        const svgDir = path.join(__dirname, 'public/img/svg');
+        const allSvgs = fs.readdirSync(svgDir).filter(f => f.endsWith('.svg'));
+        const shuffled = allSvgs.sort(() => 0.5 - Math.random());
+        const count = Math.floor(Math.random() * 6) + 5;
+        const svgs = shuffled.slice(0, count);
+
           res.render('map', {
             title: 'Map',
             headerLinks: [
@@ -125,7 +131,8 @@ const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
               { src: 'https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js' },
               { src: '/scripts/map.js' }
             ],
-            events
+            events,
+            svgs
           });
       } catch (err) {
         console.log("Cannot fetch map and events", err);

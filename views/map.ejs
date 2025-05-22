@@ -4,6 +4,12 @@
 <main>
     <div id="map"></div>
     
+    <div class="svg-background">
+        <% svgs.forEach(file=> { %>
+        <img src="/img/svg/<%= file %>" class="svg-icon" />
+        <% }) %>
+    </div>
+
     <div id="bottom-container">
         <div id="location-info">location info</div>
         <div class="btn-group my-2">
