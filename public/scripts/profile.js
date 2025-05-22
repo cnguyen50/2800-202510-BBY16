@@ -1,4 +1,7 @@
 let currentChartType = "doughnut";
+let postsPerPage = 5;
+let currentPostIndex = 0;
+let currentFilterType = 'all';
 
 async function fetchJson(url, options = {}) {
   const res = await fetch(url, { credentials: 'include', ...options });
@@ -9,21 +12,29 @@ async function fetchJson(url, options = {}) {
   return res.json();
 }
 
-function renderPosts(list, filterType = 'all') {
+function renderPosts(list, filterType = 'all', append = false) {
   const container = document.getElementById('posts-list');
-  container.innerHTML = '';
+
+  if (!append) {
+    container.innerHTML = '';
+    currentPostIndex = 0;
+  }
+
+  currentFilterType = filterType;
 
   const filtered = list.filter(post => {
     if (filterType === 'all') return true;
     return post.type?.toLowerCase() === filterType;
   });
 
-  if (!filtered.length) {
+  const postsToShow = filtered.slice(currentPostIndex, currentPostIndex + postsPerPage);
+
+  if (!append && !postsToShow.length) {
     container.textContent = 'No posts to display.';
     return;
   }
 
-  filtered.forEach(post => {
+  postsToShow.forEach(post => {
     const div = document.createElement('div');
     div.className = 'post';
     div.style.cursor = 'pointer';
@@ -123,6 +134,14 @@ function renderPosts(list, filterType = 'all') {
 
     container.appendChild(div);
   });
+  currentPostIndex += postsPerPage;
+
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
+  if (currentPostIndex >= filtered.length) {
+    loadMoreBtn.style.display = 'none';
+  } else {
+    loadMoreBtn.style.display = 'inline-block';
+  }
 }
 
 function renderPollChart(canvas, poll, type = "doughnut") {
@@ -288,13 +307,13 @@ async function init() {
         tab.classList.add('active');
 
         const type = tab.dataset.type;
-
         const postsContainer = document.getElementById('posts-list');
         const commentsContainer = document.getElementById('comments-list');
 
         if (type === 'comment') {
           postsContainer.style.display = 'none';
           commentsContainer.style.display = 'block';
+          document.getElementById('loadMoreBtn').style.display = 'none';
           renderComments(allComments);
         } else {
           commentsContainer.style.display = 'none';
@@ -323,5 +342,10 @@ svgIcons.forEach(icon => {
   icon.style.position = "absolute";  // Make sure they are positioned absolutely for top/left to work
   icon.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`;
 });
+
+document.getElementById('loadMoreBtn').addEventListener('click', () => {
+  renderPosts(allPosts, currentFilterType, true);
+});
+
 
 document.addEventListener('DOMContentLoaded', init);

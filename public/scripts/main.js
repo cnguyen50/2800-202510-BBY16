@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
           setTimeout(() => {
             errorPopup.style.display = "none";
             errorPopup.classList.remove("hide"); // reset for next use
-          }, 500); 
+          }, 500);
         }, 3000);
       }
       // Date validation
@@ -280,8 +280,22 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const newPost = await res.json();
-      renderPost(newPost, currentUserId);
+      //renderPost(newPost, currentUserId);
 
+      //update post list 
+      allPosts.unshift(newPost);
+      offset = 0;
+      postContainer.innerHTML = "";
+      loadMorePosts();
+
+      //close the modal
+      // const postModalEl = document.getElementById('postModal');
+      // const modalInstance = bootstrap.Modal.getInstance(postModalEl);
+      // if (modalInstance) {
+      //   modalInstance.hide();
+      // }
+
+      // Reset the form and hide dynamic fields
       form.reset();
       document.getElementById("event-fields").style.display = "none";
       document.getElementById("poll-fields").style.display = "none";
@@ -547,7 +561,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (eventDateInput && eventDateError) {
     eventDateInput.addEventListener("change", () => {
-      const inputVal = eventDateInput.value; 
+      const inputVal = eventDateInput.value;
       if (!inputVal) {
         eventDateError.classList.remove("d-none");
         return;
@@ -555,7 +569,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Convert date strings to YYYY-MM-DD format for easy comparison
       const today = new Date();
       const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0'); 
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
       const dd = String(today.getDate()).padStart(2, '0');
       const todayStr = `${yyyy}-${mm}-${dd}`;
 
