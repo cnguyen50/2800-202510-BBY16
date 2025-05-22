@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         marker.on('popupopen', (evt) => {
             // Grabbing the just opened popup element
             const popupEl = evt.popup.getElement();
-            const link = popupEl.querySelector('.details-link');
+            const link = popupEl.querySelector('.event-popup__link');
             if (!link) return;
     
             link.addEventListener('click', (clickEvt) => {
