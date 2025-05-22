@@ -387,7 +387,7 @@ loadMoreBtn.addEventListener("click", () => loadMorePosts(currentUserId));
 fetchAllPosts();
 
   // Renderers by type
-  function renderPost(post, currentUserId) {
+function renderPost(post, currentUserId) {
     const div = document.createElement("div");
     div.classList.add("post-card", `post-${post.type}`);
     div.id = `post-${post._id}`; // add unique ID to each post wrapper to refresh it individually later
@@ -404,6 +404,7 @@ fetchAllPosts();
     month: "short",
     day: "numeric"
   });
+
 
     const username = post.user_id?.username || 'Anonymous';
     const userId = post.user_id?._id || 'Unknown';

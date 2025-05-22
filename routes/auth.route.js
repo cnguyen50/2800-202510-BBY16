@@ -48,7 +48,7 @@ function makeAuthRouter() {
       req.session.neighbourhood = user.neighbourhood;
 
 
-      console.log(req.session.neighbourhood);
+  
       res.redirect('/profile');
     } else {
       return res.status(401).json({ error: 'Invalid credentials' });

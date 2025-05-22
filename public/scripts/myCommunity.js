@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function loadMorePosts() {
     const nextPosts = allPosts.slice(offset, offset + limit);
     nextPosts.forEach(post => {
-
+ console.log(post.user_id.username);
       renderPost(post, currentUserId)
     });
     offset += limit;
@@ -89,6 +89,8 @@ document.addEventListener("DOMContentLoaded", () => {
       day: "numeric"
     });
 
+      console.log(post.user_id?.username);
+  console.log(post);
     const username = post.user_id?.username || 'Anonymous';
 
     let html = "";
