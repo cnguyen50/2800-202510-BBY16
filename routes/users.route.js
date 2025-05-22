@@ -132,7 +132,6 @@ function makeUsersRouter() {
   router.get('/:id', async (req, res) => {
     //console.log('Fetching user with ID:', req.params.id);
     const user = await User.findById(req.params.id);
-    console.log('Fetched user:', user);
     if (!user) return res.status(404).json({ error: 'Not found' });
     const svgDir = path.join(process.cwd(), './public/img/svg/');
     fs.readdir(svgDir, (err, files) => {

@@ -85,9 +85,7 @@ const requireAuth = require('./middleware/requireAuth.js');
       const uid = socket.request.session.userId;
       if (uid) {
         socket.join(String(uid));
-        console.log('[socket-join]', uid);
       } else {
-        console.log('[socket-join]', 'anonymous');
       }
     })
 
@@ -221,7 +219,6 @@ const requireAuth = require('./middleware/requireAuth.js');
           return res.status(404).send('User not found');  // If user is not found in DB
         }
 
-        console.log(user._id);
         const svgDir = path.join(__dirname, './public/img/svg/');
         fs.readdir(svgDir, (err, files) => {
           if (err) {
@@ -367,7 +364,6 @@ const requireAuth = require('./middleware/requireAuth.js');
     const PORT = process.env.PORT || 3000;
 
     http.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
     });
 
   } catch (error) {

@@ -29,8 +29,6 @@ module.exports = function makeTypedRouter(Model) {
         image_url
       });
 
-   
-      console.log(req.session.neighbourhood);
 
       res.status(201).json(doc);
     } catch (err) {

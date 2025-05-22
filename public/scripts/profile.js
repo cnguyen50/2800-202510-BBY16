@@ -274,8 +274,6 @@ async function init() {
   try {
     const userId = window.profileUserId;
     const isSelf = window.isSelfProfile;
-    console.log(userId);
-    console.log(isSelf);
     const [user, comments, posts] = await Promise.all([
       fetchJson(isSelf ? '/users/me' : `/users/${userId}/json`),
       fetchJson(isSelf ? '/comments/my' : `/comments/users/${userId}`),
@@ -283,11 +281,7 @@ async function init() {
     ]);
 
 
-    console.log('User:', user);
-    console.log('Comments:', comments);
-    console.log('Posts:', posts);
     if (user) {
-      console.log('User:', user);
       renderUser(user);
       document.getElementById('profilePic').src = user.profilePic || '/uploads/default.jpg';
     } else {
@@ -319,7 +313,6 @@ async function init() {
         });
       }
     }
-    console.log('File input found and event listener added');
 
     // Tab filtering logic & toggle containers
     const tabButtons = document.querySelectorAll('.tab');
@@ -344,7 +337,6 @@ async function init() {
         }
       });
     });
-    console.log('Tab buttons found and event listeners added');
 
   } catch (err) {
     console.error('Error initializing:', err);

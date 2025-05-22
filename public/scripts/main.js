@@ -133,7 +133,6 @@ document.getElementById("post-type").addEventListener("change", (e) => {
         lngField.value = e.target.dataset.lon;
         suggList.innerHTML = "";
 
-        console.log("Selected location:", locInput.value);
       }
     });
   })
@@ -219,7 +218,6 @@ form.addEventListener("submit", async (e) => {
   const { neighbourhood } = await meRes.json();
 
   formData.append("userNeighbourhood", currentUserNeighbourhood);
-    console.log(currentUserNeighbourhood);
   if (type === "event") {
       formData.append("event_name", document.getElementById("event-name").value.trim());
       const day = document.getElementById('event-date').value.trim();  // '2025-05-20'
@@ -281,13 +279,10 @@ form.addEventListener("submit", async (e) => {
 
   } else if (type === "news") {
     formData.append("headline", document.getElementById("news-headline").value.trim());
-    console.log(document.getElementById("news-headline").value);
     formData.append("body", document.getElementById("news-body").value.trim());
-    console.log(document.getElementById("news-body").value);
     formData.append("image_url", document.getElementById("news-image-url").value.trim());
   }
 
-  console.log([...formData.entries()]);
 
 
   const fileInput = document.getElementById("post-image");
@@ -307,9 +302,6 @@ form.addEventListener("submit", async (e) => {
       endpoint = "/news";
     }
 
-    console.log(endpoint);
-    console.log(type);
-    console.log("Form data before image append:", formData.get('content'), formData.get('body'), formData.get('neighbourhood'));
 
     const res = await fetch(endpoint, {
       method: "POST",
@@ -362,7 +354,6 @@ async function fetchAllPosts() {
       const user = await res2.json();
       currentUserId = user._id;
       currentUserNeighbourhood = user.neighbourhood;
-      console.log(currentUserId);
       // Sort posts by newest first
       allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -377,7 +368,6 @@ async function fetchAllPosts() {
 
 function loadMorePosts() {
   const nextPosts = allPosts.slice(offset, offset + limit);
-  console.log(currentUserId);
   nextPosts.forEach(post => {
 
     renderPost(post, currentUserId)
@@ -430,7 +420,6 @@ fetchAllPosts();
         html = renderDefault(post, username, date, typeLabel, userId); break;
     }
 
-  console.log(currentUserId);
 
   if (post.user_id?._id === currentUserId) {
     html += `

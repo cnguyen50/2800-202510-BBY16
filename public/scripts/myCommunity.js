@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const posts = await res.json();
 
       currentUserId = user._id;
-      console.log(currentUserId);
       // Sort posts by newest first
       allPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -53,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadMorePosts() {
     const nextPosts = allPosts.slice(offset, offset + limit);
-    console.log(currentUserId);
     nextPosts.forEach(post => {
 
       renderPost(post, currentUserId)
@@ -105,8 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
         html = renderDefault(post, username, date, typeLabel); break;
     }
 
-    console.log(currentUserId);
-    console.log(post.userNeighbourhood);
   
 
     if (post.user_id?._id === currentUserId) {

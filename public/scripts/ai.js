@@ -25,11 +25,8 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
 
 
     const data = await res.json();
-    console.log(data);
     const { title, items } = formatResponse(data.message);
 
-    console.log(title);
-    items.forEach(item => console.log(item));
   
     const container = document.getElementById('ai-container');
 
