@@ -19,7 +19,7 @@ function makeMapDataRouter() {
         // fetch events in that neighbourhood
         const events = await EventPost
             .find({ neighbourhood: user.neighbourhood })
-            .select('event_name event_date location description lat lng')
+            .select('_id event_name event_date location description lat lng')
             .lean();
 
         // return them
