@@ -4,6 +4,7 @@ let currentPostIndex = 0;
 let currentFilterType = 'all';
 
 async function fetchJson(url, options = {}) {
+  
   const res = await fetch(url, { credentials: 'include', ...options });
   if (!res.ok) {
     console.error(`Request failed: ${res.status}`);
@@ -273,7 +274,8 @@ async function init() {
   try {
     const userId = window.profileUserId;
     const isSelf = window.isSelfProfile;
-
+    console.log(userId);
+    console.log(isSelf);
     const [user, comments, posts] = await Promise.all([
       fetchJson(isSelf ? '/users/me' : `/users/${userId}/json`),
       fetchJson(isSelf ? '/comments/my' : `/comments/users/${userId}`),

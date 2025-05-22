@@ -221,6 +221,7 @@ const requireAuth = require('./middleware/requireAuth.js');
           return res.status(404).send('User not found');  // If user is not found in DB
         }
 
+        console.log(user._id);
         const svgDir = path.join(__dirname, './public/img/svg/');
         fs.readdir(svgDir, (err, files) => {
           if (err) {
@@ -315,6 +316,7 @@ const requireAuth = require('./middleware/requireAuth.js');
         const shuffled = svgs.sort(() => 0.5 - Math.random());
         const count = Math.floor(Math.random() * 6) + 5; // 5 to 10
         const selectedSvgs = shuffled.slice(0, count);
+
 
         res.render('myCommunity', {
           title: 'My Community',
