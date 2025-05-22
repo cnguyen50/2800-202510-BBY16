@@ -18,6 +18,8 @@ const aiRouter = require('./routes/ai.route.js');
 const makeEventsRouter = require('./routes/events.route.js');
 const makeMapDataRouter = require('./routes/map-data.route.js');
 
+const getRandomSvgs = require('./scripts/randomSvgs.js');
+const svgPath = path.join(__dirname, './public/img/svg');
 
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 const requireAuth = require('./middleware/requireAuth.js');
@@ -110,11 +112,7 @@ const requireAuth = require('./middleware/requireAuth.js');
           .populate('user_id', 'username')
           .lean();
 
-        const svgDir = path.join(__dirname, 'public/img/svg');
-        const allSvgs = fs.readdirSync(svgDir).filter(f => f.endsWith('.svg'));
-        const shuffled = allSvgs.sort(() => 0.5 - Math.random());
-        const count = Math.floor(Math.random() * 6) + 5;
-        const svgs = shuffled.slice(0, count);
+         const selectedSvgs = await getRandomSvgs(svgPath);
 
           res.render('map', {
             title: 'Map',
@@ -131,7 +129,7 @@ const requireAuth = require('./middleware/requireAuth.js');
               { src: '/scripts/map.js' }
             ],
             events,
-            svgs
+            selectedSvgs
           });
       } catch (err) {
         console.log("Cannot fetch map and events", err);
@@ -187,14 +185,7 @@ const requireAuth = require('./middleware/requireAuth.js');
         .sort((a, b) => b.totalVotes - a.totalVotes)
         .slice(0, 6); // show 6 trending
 
-      const svgDir = path.join(__dirname, './public/img/svg/');
-      fs.readdir(svgDir, (err, files) => {
-        if (err) return res.status(500).send("Failed to load SVGs");
-
-        const svgs = files.filter(file => file.endsWith('.svg'));
-        const shuffled = svgs.sort(() => 0.5 - Math.random());
-        const count = Math.floor(Math.random() * 6) + 5; // 5–10
-        const selectedSvgs = shuffled.slice(0, count);
+        const selectedSvgs = await getRandomSvgs(svgPath);
 
         res.render('trendingpoll', {
           title: 'Trending Polls',
@@ -210,7 +201,7 @@ const requireAuth = require('./middleware/requireAuth.js');
           ],
           svgs: selectedSvgs // ✅ pass SVGs to your EJS
         });
-      });
+    
     });
 
 
@@ -222,10 +213,11 @@ const requireAuth = require('./middleware/requireAuth.js');
     // app.get(path, handler) sends index page
     // landing page
     app.get('/', (req, res) => {
+      console.log(req.session.userId);
       if (req.session.userId) {
         res.redirect('/home');
       } else {
-        res.sendFile(path.join(__dirname, './public/index.html'))
+        res.sendFile(path.join(__dirname, './public/login.html'))
       }
     });
 
@@ -244,19 +236,8 @@ const requireAuth = require('./middleware/requireAuth.js');
           return res.status(404).send('User not found');  // If user is not found in DB
         }
 
-        const svgDir = path.join(__dirname, './public/img/svg/');
-        fs.readdir(svgDir, (err, files) => {
-          if (err) {
-            console.error('Failed to load SVGs', err);
-            // Optionally, still render with empty svgs array or handle error page
-            return res.status(500).send('Server error loading SVGs');
-          }
-
-          const svgs = files.filter(file => file.endsWith('.svg'));
-          const shuffled = svgs.sort(() => 0.5 - Math.random());
-          const count = Math.floor(Math.random() * 6) + 5; // between 5 and 10
-          const selectedSvgs = shuffled.slice(0, count);
-
+      
+       const selectedSvgs = await getRandomSvgs(svgPath);
           res.render('profile', {
             title: 'Profile',
             headerLinks: [
@@ -273,7 +254,7 @@ const requireAuth = require('./middleware/requireAuth.js');
             svgs: selectedSvgs, 
             viewingOtherUser: false  
           });
-        });
+
       } catch (err) {
         console.error(err);
         res.status(500).send('Server error');
@@ -282,24 +263,12 @@ const requireAuth = require('./middleware/requireAuth.js');
 
     // app.get(path, handler) sends main feed
     // main/home page
-    app.get('/home', requireAuth, (req, res) => {
+    app.get('/home', requireAuth, async (req, res) => {
       if (!req.session.userId) {
         res.redirect('/login');
       }
       else {
-        // Render the main page with the logged-in user
-        // Display random SVGs
-        const svgDir = path.join(__dirname, './public/img/svg/');
-        fs.readdir(svgDir, (err, files) => {
-          if (err) return res.status(500).send("Failed to load SVGs");
-
-          // Filter only .svg files
-          const svgs = files.filter(file => file.endsWith('.svg'));
-
-          // Shuffle and pick 5–10 SVGs
-          const shuffled = svgs.sort(() => 0.5 - Math.random());
-          const count = Math.floor(Math.random() * 6) + 5; // 5 to 10
-          const selectedSvgs = shuffled.slice(0, count);
+          const selectedSvgs = await getRandomSvgs(svgPath);
 
           res.render('main', {
             title: 'Home',
@@ -320,26 +289,14 @@ const requireAuth = require('./middleware/requireAuth.js');
             ],
             svgs: selectedSvgs
           });
-        }
-        )
+
       }
     });
 
-    app.use('/myCommunity', requireAuth, (req, res) => {
-
-      const svgDir = path.join(__dirname, './public/img/svg/');
-      fs.readdir(svgDir, (err, files) => {
-        if (err) return res.status(500).send("Failed to load SVGs");
-
-        // Filter only .svg files
-        const svgs = files.filter(file => file.endsWith('.svg'));
-
-        // Shuffle and pick 5–10 SVGs
-        const shuffled = svgs.sort(() => 0.5 - Math.random());
-        const count = Math.floor(Math.random() * 6) + 5; // 5 to 10
-        const selectedSvgs = shuffled.slice(0, count);
+    app.use('/myCommunity', requireAuth, async (req, res) => {
 
 
+        const selectedSvgs = await getRandomSvgs(svgPath);
         res.render('myCommunity', {
           title: 'My Community',
           headerLinks: [
@@ -353,7 +310,7 @@ const requireAuth = require('./middleware/requireAuth.js');
           ],
           svgs: selectedSvgs
         });
-      });
+
 
     });
 
@@ -366,22 +323,6 @@ const requireAuth = require('./middleware/requireAuth.js');
         res.sendFile(path.join(__dirname, './public/login.html'));
       }
     });
-
-    app.use('/logout', requireAuth, (req, res) => {
-      if (!req.session.userId) {
-        res.redirect('/login');
-      } else {
-        res.render('logout', {
-          title: 'Logout',
-          headerLinks: [
-            { rel: 'stylesheet', href: '/styles/loggedIn.css' }
-          ],
-          footerScripts: [
-
-          ]
-        })
-      }
-    })
 
 
     // Start HTTP server on given port

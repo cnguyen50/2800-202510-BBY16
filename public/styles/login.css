@@ -108,3 +108,75 @@ h1 {
 .suggestions li:hover {
   background: #f0f0f0;
 }
+
+.brand {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ─── Responsive two-column layout ─────────────────────────────────────── */
+@media(min-width: 768px){
+  .login-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;      /* hero | form */
+    min-height: 100vh;
+    width: 100%;
+  }
+}
+
+/* Hero (left-hand) column */
+.login-hero {
+  background: var(--purple-clr, #D7D6F0);   /* palette fallback */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;                    /* fill column neatly */
+}
+
+/* Form column refinements */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 4rem 3rem;
+  box-sizing: border-box;
+}
+
+/* Brand row */
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.commUnity {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-clr, #4A4A4A);
+}
+
+/* Tablets / phones: collapse to one column and hide image */
+@media (max-width: 767px) {
+  .login-wrapper {
+    grid-template-columns: 1fr;
+  }
+  .login-hero {
+    display: none;
+  }
+  .login-container {
+    padding: 3rem 1.25rem;
+  }
+}

@@ -24,6 +24,7 @@
 </head>
 
 <body>
+  
   <!-- ===== top bar (only visible on mobile) ===== -->
   <header class="top-bar">
     <div class="brand">
@@ -40,14 +41,20 @@
   <!-- ===== sidebar / off‑canvas nav ===== -->
   <aside id="sidebar" class="sidebar">
     <nav>
+      <a href="/home" class="brand">
+        <img src="/img/Community_logo.png" alt="CommUnity logo" height="26" />
+        <span>CommUnity</span>
+      </a>
       <ul>
         <li><a href="/home">Home</a></li>
         <li><a href="/profile">My&nbsp;Profile</a></li>
         <li><a href="/myCommunity">My&nbsp;CommUnity</a></li>
         <li><a href="/trendingpoll">Trending&nbsp;Polls</a></li>
         <li><a href="/map">Map</a></li>
-        <li><a href="/notifications">&nbsp;Notifications</a></li>
-        <li class="logout"><a href="/logout">Logout</a></li>
+        <li><a href="/notifications">Notifications</a></li>
+        <li class="logout"><form method="POST" action="/auth/logout">
+          <button type="submit">Log out</button>
+        </form></li>
       </ul>
     </nav>
   </aside>

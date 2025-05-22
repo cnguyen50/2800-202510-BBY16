@@ -25,8 +25,8 @@ module.exports = function makeTypedRouter(Model) {
       const doc = await Model.create({
         ...req.body,
         user_id: req.session.userId,
+        image_url,
         neighbourhood: req.session.neighbourhood,
-        image_url
       });
 
 
