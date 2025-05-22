@@ -169,11 +169,13 @@ async function init() {
     const userId = window.profileUserId;
     const isSelf = window.isSelfProfile;
 
+
     const [user, comments, posts] = await Promise.all([
       fetchJson(isSelf ? '/users/me' : `/users/${userId}/json`),
       fetchJson(isSelf ? '/comments/my' : `/comments/users/${userId}`),
       fetchJson(isSelf ? '/posts/me' : `/posts/users/${userId}`)
     ]);
+    console.log(isSelf);
 
 
     console.log('User:', user);
