@@ -109,8 +109,8 @@ document.getElementById("post-type").addEventListener("change", (e) => {
         q,
         limit: "5",
         countrycodes: "ca",
-      });
-
+    });
+      
       try {
         const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`);
         const list = await res.json();
@@ -152,11 +152,13 @@ document.getElementById("post-type").addEventListener("change", (e) => {
   const eventFields = document.getElementById("event-fields");
   const pollFields = document.getElementById("poll-fields");
   const newsFields = document.getElementById("news-fields");
+  const fileContainer = document.getElementById("post-image");
 
   // Show only the fields related to the selected post type and hide others
   eventFields.style.display = (type === "event") ? "block" : "none";
   pollFields.style.display = (type === "poll") ? "block" : "none";
   newsFields.style.display = (type === "news") ? "block" : "none";
+  fileContainer.style.display = (type === "poll") ? "none" : "block";
 });
 
 // Add event listener to the main post filter dropdown
@@ -232,6 +234,43 @@ form.addEventListener("submit", async (e) => {
       formData.append("lat", latField.value.trim());
       formData.append("lng", lngField.value.trim());
 
+      //Error handling when submitting
+      const errorPopup = document.getElementById("event-date-error-popup");
+      const errorPopupMessage = document.getElementById("event-date-error-popup-message");
+      function showEventDateError(message) {
+        errorPopupMessage.textContent = message;
+        errorPopup.style.display = "block";
+        errorPopup.classList.remove("show", "hide");
+        void errorPopup.offsetWidth;
+        errorPopup.classList.add("show");
+        setTimeout(() => {
+          errorPopup.classList.remove("show");
+          errorPopup.classList.add("hide");
+          setTimeout(() => {
+            errorPopup.style.display = "none";
+            errorPopup.classList.remove("hide"); // reset for next use
+          }, 500);
+        }, 3000);
+      }
+      // Date validation
+      const eventDateInput = document.getElementById("event-date");
+      const inputVal = eventDateInput.value;
+      if (!inputVal) {
+        showEventDateError("Please select a valid event date (today or in the future).");
+        return;
+      }
+      // Get today's date in YYYY-MM-DD format
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+      // Compare input date string with today string
+      if (inputVal < todayStr) {
+        showEventDateError("Please select a valid event date (today or in the future).");
+        return;
+      }
+
   } else if (type === "poll") {
     const pollText = document.getElementById('poll-text').value.trim();
     const pollOptions = Array.from(document.querySelectorAll('.poll-option'))
@@ -271,12 +310,12 @@ form.addEventListener("submit", async (e) => {
       console.log(document.getElementById("news-headline").value);
       formData.append("body", document.getElementById("news-body").value);
       console.log(document.getElementById("news-body").value);
-      formData.append("image_url", document.getElementById("news-image-url").value);
       formData.append("neighbourhood", document.getElementById("news-neighbourhood").value);
     }
 
     console.log(endpoint);
     console.log(type);
+    console.log("Form data before image append:", formData.get('content'), formData.get('body'), formData.get('neighbourhood'));
 
     const res = await fetch(endpoint, {
       method: "POST",
@@ -688,5 +727,31 @@ fetchAllPosts();
 
   updateRemoveButtons(); // for initial 2 options
 
+
+  // Instant error handling for calendar
+  const eventDateInput = document.getElementById("event-date");
+  const eventDateError = document.getElementById("event-date-error");
+
+  if (eventDateInput && eventDateError) {
+    eventDateInput.addEventListener("change", () => {
+      const inputVal = eventDateInput.value;
+      if (!inputVal) {
+        eventDateError.classList.remove("d-none");
+        return;
+      }
+      // Convert date strings to YYYY-MM-DD format for easy comparison
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+
+      if (inputVal < todayStr) {
+        eventDateError.classList.remove("d-none");
+      } else {
+        eventDateError.classList.add("d-none");
+      }
+    });
+  }
 
 });

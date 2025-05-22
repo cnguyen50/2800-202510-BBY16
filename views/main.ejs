@@ -69,8 +69,9 @@
         </button>
                         <div class="modal-body">
                             <input type="file" class="form-control mb-2" id="post-image" accept="image/*">
-                            <textarea id="post-content" class="form-control mb-2" rows="3"
-                                placeholder="Share your thoughts!"></textarea>
+                            <textarea id="post-content" hidden></textarea>
+                            <!-- <textarea id="post-content" class="form-control mb-2" rows="3"
+                                placeholder="Share your thoughts!"></textarea> -->
 
                             <select id="post-type" class="form-select mb-2">
                                 <option value="news">News</option>
@@ -83,7 +84,7 @@
                                 <textarea class="form-control mb-2" id="news-body" rows="3"
                                     placeholder="Body text"></textarea>
                                 <input type="url" class="form-control mb-2" id="news-image-url"
-                                    placeholder="Image URL (optional)">
+                                    placeholder="Image URL (optional)" hidden>
                                 <input type="text" class="form-control mb-2" id="news-neighbourhood"
                                     placeholder="Neighbourhood">
                             </div>
@@ -91,15 +92,22 @@
                             <div id="event-fields">
                                 <input type="text" class="form-control mb-2" id="event-name" placeholder="Event Name">
                                 <input type="date" class="form-control mb-2" id="event-date">
+                                <small id="event-date-error" class="text-danger d-none">
+                                    Please select a valid event date.
+                                </small>
+                                <div id="event-date-error-popup" class="event-date-error-popup">
+                                    <p id="event-date-error-popup-message">Please select a valid event date (today or in the future).</p>
+                                </div>
                                 <!-- <input type="text" class="form-control mb-2" id="event-location" placeholder="Location">
                                 <input type="hidden" name="neighbourhood" id="event-neighbourhood"> -->
 
                                 <!-- location and suggestions -->
                                 <div class="position-relative mb-2">
-                                    <input type="text" class="form-control mb-2" id="event-location" placeholder="Look Up Location" name="location-input">
+                                    <input type="text" class="form-control mb-2" id="event-location"
+                                        placeholder="Look Up Location" name="location-input">
                                     <ul id="loc-suggestions" class="suggestions list-group"></ul>
                                 </div>
-                                
+
                                 <!-- hidden fields to carry the chosen coords -->
                                 <input type="hidden" id="event-lat" name="lat">
                                 <input type="hidden" id="event-lng" name="lng">

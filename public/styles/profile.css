@@ -5,6 +5,14 @@ body {
     color: var(--text-clr);
 }
 
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+
 h2 {
     font-weight: bold;
     text-align: center;
@@ -151,7 +159,7 @@ h2 {
 }
 
 .tab.active {
-    background-color: var(--blue-clr);
+    background-color: rgb(180, 164, 164);
     color: white;
 }
 
@@ -187,49 +195,95 @@ h2 {
 
 .post {
     position: relative;
-    /* for absolute positioning of preview if needed */
 }
 
 .post-preview {
     display: none;
-    /* hide by default */
     margin-top: 10px;
-    /* your existing styles */
 }
 
 .post-preview.open {
     display: block !important;
-    /* show if toggled open */
-    position: static; /* Let it expand in place, not float */
+    position: static;
     background: rgba(255, 255, 255, 0.7);
     margin-top: 10px;
 }
 
-.post .dropdown-arrow {
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
+/* Drop-down arrow */
+.dropdown-arrow {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-.post:hover .dropdown-arrow {
-    visibility: visible;
-    opacity: 1;
+.dropdown-arrow svg {
+    display: block;
+    transition: fill 0.2s ease;
 }
 
-.post:hover .post-preview:not(.open) {
-    display: block !important;
+
+.dropdown-arrow svg path {
+    fill: #d3b0b0;
+    stroke: #fff;
+    stroke-width: 0.5;
+}
+
+.dropdown-arrow:hover {
+    transform: scale(1.3);
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
+}
+
+.dropdown-arrow:hover svg path {
+    fill: #d7d6d6;
+    stroke-width: 1;
+}
+
+
+/* === TOOLTIP === */
+.post .dropdown-arrow:hover::after {
+    content: "See more detail";
     position: absolute;
-    bottom: 100%; /* Show above the post */
-    left: 0;
-    transform: translateY(-10px); /* Small gap */
-    background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 0.75rem;
-    border-radius: 8px;
-    width: 300px;
-    z-index: 20;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 1;
+    pointer-events: none;
+    z-index: 10;
+    transition: opacity 0.3s ease;
 }
 
+.post .dropdown-arrow::after {
+    content: "";
+    opacity: 0;
+}
+
+/* Load Button */
+#loadMoreBtn {
+    background-color: transparent;
+    color: var(--text-clr);
+    border: 1px solid var(--text-clr);
+    border-radius: 20px;
+    padding: 0.5rem 1.2rem;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+#loadMoreBtn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--blue-clr);
+    color: var(--blue-clr);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+}
 
 /* === RESPONSIVE DESIGN === */
 @media (max-width: 768px) {
