@@ -150,19 +150,19 @@ canvas {
   color: #007bff;
 }
 
-main{
+.guardrails{
   width: 90%;
   margin: auto;
 }
 @media(min-width: 900px){
-  main{
+  .guardrails{
     width: 70%;
     margin: auto;
   }
 }
 
 @media(min-width: 1200px){
-  main{
+  .guardrails{
     width: 50%;
     margin: auto;
   }
