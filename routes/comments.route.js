@@ -30,7 +30,7 @@ function makeCommentsRouter() {
                     }
                 })
 
-                console.log('[emit]', post.user_id.toString(), notification._id.toString());
+              
                 req.app.io.to(String(post.user_id)).emit('notification', notification);
             }
 

@@ -86,7 +86,7 @@ function makeUsersRouter() {
     }
   })
 
-    router.put('/me/neighbourhood', requireAuth, async (req, res) => {
+  router.put('/me/neighbourhood', requireAuth, async (req, res) => {
     const { neighbourhood } = req.body;
     if (typeof neighbourhood !== 'string') {
       return res.status(400).json({ error: 'neighbourhood must be a string' });

@@ -32,7 +32,7 @@ function makePostsRouter() {
     try {
     
       const posts = await Post.find({ userNeighbourhood: req.session.neighbourhood.toLowerCase() })
-        .sort({ createdAt: -1 })
+        .populate('user_id', 'username').sort({ createdAt: -1 })
 
 
       res.json(posts);
