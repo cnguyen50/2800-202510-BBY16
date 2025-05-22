@@ -178,6 +178,7 @@ const requireAuth = require('./middleware/requireAuth.js');
           polls: sorted,
           headerLinks: [
             { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+            { rel: 'stylesheet', href: '/styles/polls.css' },
             { rel: 'stylesheet', href: '/styles/trendingPoll.css' }
           ],
           footerScripts: [
@@ -237,6 +238,7 @@ const requireAuth = require('./middleware/requireAuth.js');
             title: 'Profile',
             headerLinks: [
               { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+              { rel: 'stylesheet', href: '/styles/polls.css' },
               { rel: 'stylesheet', href: '/styles/profile.css' }
             ],
             footerScripts: [
@@ -281,6 +283,7 @@ const requireAuth = require('./middleware/requireAuth.js');
             headerLinks: [
               { rel: 'stylesheet', href: '/styles/main.css' },
               { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+              { rel: 'stylesheet', href: '/styles/polls.css' },
               { rel: 'stylesheet', href: '/styles/ai.css' },
               { rel: 'stylesheet', href: '/styles/modal.css' },
 

@@ -126,17 +126,17 @@ document.getElementById("post-type").addEventListener("change", (e) => {
     }, 300);
   });
 
-  suggList.addEventListener("click", (e) => {
-    if (e.target.tagName === "LI") {
-      locInput.value = e.target.textContent.trim();
-      latField.value = e.target.dataset.lat;
-      lngField.value = e.target.dataset.lon;
-      suggList.innerHTML = "";
+    suggList.addEventListener("click", (e) => {
+      if (e.target.tagName === "LI") {
+        locInput.value = e.target.textContent.trim();
+        latField.value = e.target.dataset.lat;
+        lngField.value = e.target.dataset.lon;
+        suggList.innerHTML = "";
 
-      console.log("Selected location:", locInput.value);
-    }
-  });
-})
+        console.log("Selected location:", locInput.value);
+      }
+    });
+  })
 
 //helper function to shorten location data
 function shortLocation(loc) {
@@ -367,7 +367,8 @@ fetchAllPosts();
   function renderPost(post, currentUserId) {
     const div = document.createElement("div");
     div.classList.add("post-card", `post-${post.type}`);
-   
+    div.id = `post-${post._id}`; // add unique ID to each post wrapper to refresh it individually later
+
     const typeLabel = {
       event: "Event",
       post: "Post",
@@ -456,38 +457,72 @@ fetchAllPosts();
 }
 
   function renderPoll(post, username, date, typeLabel, userId) {
-    const optionsHtml = post.options.map(option => `
+    const now = Date.now();
+    const expired = new Date(post.expires_at) < now;
+    const hasVoted = post.voted_user_ids?.includes(currentUserId);
+
+    let pollStateClass = '';
+    if (!hasVoted && !expired) {
+      pollStateClass = 'poll-unvoted';
+    } else if (hasVoted && !expired) {
+      pollStateClass = 'poll-voted';
+    } else {
+      pollStateClass = 'poll-expired';
+    }
+
+    let optionsHtml = '';
+
+    if (!hasVoted && !expired) {
+      // Show clickable buttons to vote
+      optionsHtml = post.options.map(option => `
       <li>
-        <span>${option.label}</span>
+        <button type="button" class="btn btn-outline-primary vote-option"
+                data-post-id="${post._id}"
+                data-option-id="${option._id}">
+          ${option.label}
+        </button>
+      </li>
+    `).join('');
+    } else {
+      // Show results with vote counts
+      optionsHtml = post.options.map(option => `
+      <li>
+        <span class="poll-label">${option.label}</span>
         <span class="badge bg-secondary">${option.votes} vote(s)</span>
       </li>
     `).join('');
+    }
 
   const chartId = `chart-${post._id}`;
 
   return `
       <div class="post-header">
-       <a href="/users/${userId}" class="text-decoration-none">
+        <a href="/users/${userId}" class="text-decoration-none">
         <strong>@${username}</strong>
         <span class="post-date">${date}</span>
       </a>
       </div>
-      <div class="post-type-label">${typeLabel}</div>
+      <div class="post-type-label ${pollStateClass}">${typeLabel}</div>
       <p><strong>Poll:</strong> ${post.text}</p>
-      <ul class="list-unstyled ps-3">
+      <ul class="list-unstyled ps-3 ${pollStateClass}">
         ${optionsHtml}
       </ul>
 
-      <button class="btn btn-sm btn-outline-primary toggle-chart" data-post-id="${post._id}">Show Chart</button>
+      ${hasVoted || expired ? `
+      <div class="d-grid gap-2 col-6 mx-auto">
+        <button class="btn btn-sm btn-outline-info toggle-chart" data-post-id="${post._id}">Show Chart</button>
+      </div>
+      
       <div class="chart-controls d-none" data-controls-id="${post._id}">
-      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="bar" data-chart-id="${chartId}">Bar</button>
-      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="pie" data-chart-id="${chartId}">Pie</button>
-      <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="doughnut" data-chart-id="${chartId}">Doughnut</button>
+        <div class="d-flex justify-content-center gap-2 mt-2">
+        <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="bar" data-chart-id="${chartId}">Bar</button>
+        <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="pie" data-chart-id="${chartId}">Pie</button>
+        <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="doughnut" data-chart-id="${chartId}">Doughnut</button>
+        </div>
       </div>
 
       <canvas id="${chartId}" class="mt-3 d-none" height="250"></canvas>
-
-      <a href="/polls/${post._id}/view" class="btn btn-outline-primary btn-sm">Vote or View Results</a>
+      ` : ''}
 
       <div class="post-footer">
         <div class="post-actions-left">
@@ -506,7 +541,7 @@ fetchAllPosts();
   function renderDefault(post, username, date, typeLabel, userId) {
     return `
     <div class="post-header">
-     <a href="/users/${userId}" class="text-decoration-none">
+      <a href="/users/${userId}" class="text-decoration-none">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
     </a>
@@ -530,7 +565,7 @@ fetchAllPosts();
   function renderNews(post, username, date, typeLabel, userId) {
     return `
     <div class="post-header">
-     <a href='/users/${userId}' class="text-decoration-none">
+      <a href='/users/${userId}' class="text-decoration-none">
       <strong>@${username}</strong>
       <span class="post-date">${date}</span>
     </a>
@@ -539,7 +574,7 @@ fetchAllPosts();
     <h5>${post.headline}</h5>
     <p>${post.body}</p>
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
-    <p><strong>Neighborhood:</strong> ${post.neighbourhood || 'N/A'}</p>
+    <p><strong>Neighborhood:</strong> ${post.neighborhood || 'N/A'}</p>
     <div class="post-footer">
       <div class="post-actions-left">
         <button class="post-like" data-id="${post._id}">
@@ -552,5 +587,106 @@ fetchAllPosts();
       </div>
     </div>
   `;
-}
+  }
+
+  postContainer.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('delete-post')) {
+      const postId = e.target.getAttribute('data-id');
+      if (!confirm('Are you sure you want to delete this post?')) return;
+
+      try {
+        await fetch(`/posts/${postId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+
+        // Remove the post element from the DOM
+        e.target.closest('.post-card').remove();
+      } catch (err) {
+        console.error('Failed to delete post:', err);
+        alert('Could not delete post.');
+      }
+    }
+  })
+
+  document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('vote-option')) {
+      const postId = e.target.dataset.postId;
+      const optionId = e.target.dataset.optionId;
+
+      try {
+        const res = await fetch(`/polls/${postId}/vote`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ optionId })
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          alert(err.error || "Voting failed");
+          return;
+        }
+
+        // Update frontend state
+        const postIndex = allPosts.findIndex(p => p._id === postId);
+        if (postIndex !== -1) {
+          const updatedPoll = { ...allPosts[postIndex] };
+          const votedOption = updatedPoll.options.find(o => o._id === optionId);
+          if (votedOption) votedOption.votes += 1;
+
+          updatedPoll.voted_user_ids.push(currentUserId);
+          allPosts[postIndex] = updatedPoll;
+          window.loadedPosts = allPosts;
+
+          // Re-render just this one post
+          const card = document.getElementById(`post-${postId}`);
+          if (card) {
+            const username = updatedPoll.user_id?.username || 'Anonymous';
+            const date = new Date(updatedPoll.createdAt).toLocaleDateString("en-US", {
+              weekday: "short", month: "short", day: "numeric"
+            });
+
+            card.innerHTML = renderPoll(updatedPoll, username, date, "Poll");
+          }
+        }
+
+      } catch (err) {
+        console.error("Voting failed:", err);
+      }
+    }
+  });
+
+  // Dynamic poll option management
+  const optionContainer = document.getElementById('poll-options-container');
+  const addOptionBtn = document.getElementById('add-option-btn');
+
+  function updateRemoveButtons() {
+    const removeButtons = optionContainer.querySelectorAll('.remove-option');
+    removeButtons.forEach(btn => {
+      btn.onclick = () => {
+        if (optionContainer.children.length > 2) {
+          btn.closest('.poll-option-group').remove();
+        }
+      };
+    });
+  }
+
+  addOptionBtn.addEventListener('click', () => {
+    const count = optionContainer.querySelectorAll('.poll-option-group').length;
+    if (count >= 7) return;
+
+    const newOption = document.createElement('div');
+    newOption.className = 'input-group mb-2 poll-option-group';
+    newOption.innerHTML = `
+    <input type="text" class="form-control poll-option" placeholder="Option ${count + 1}" required>
+    <button type="button" class="btn btn-outline-danger remove-option">×</button>
+  `;
+    optionContainer.appendChild(newOption);
+    updateRemoveButtons();
+  });
+
+  updateRemoveButtons(); // for initial 2 options
+
+
 });

@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // When "All" button is clicked, show all polls and hide the 'no nearby' message
-document.querySelector(".filter-btn-all").addEventListener("click", () => {
+document.querySelector(".filter-btn-all")?.addEventListener("click", () => {
     document.querySelectorAll(".poll-card").forEach(card => {
         card.style.display = "block";
     });
@@ -29,7 +29,7 @@ document.querySelector(".filter-btn-all").addEventListener("click", () => {
 });
 
 // When "Near" button is clicked, filter polls by user's neighbourhood
-document.querySelector(".filter-btn-near").addEventListener("click", async () => {
+document.querySelector(".filter-btn-near")?.addEventListener("click", async () => {
     const { neighbourhood } = await getLocationData();
     let hasVisible = false;
 
@@ -63,12 +63,24 @@ document.addEventListener("click", (e) => {
         const postId = e.target.dataset.postId;
         const canvas = document.getElementById(`chart-${postId}`);
         const controls = document.querySelector(`[data-controls-id="${postId}"]`);
+        const isHidden = canvas.classList.contains("d-none");
         canvas.classList.toggle("d-none");
         controls.classList.toggle("d-none");
 
-        if (!chartInstances[postId]) {
-            const defaultType = getDefaultChartType(postId);
-            renderPollChart(postId, defaultType);
+        // Check if the chart is already rendered to fix bug where chart size is
+
+        if (isHidden) {
+            // Wait one frame so canvas has proper layout size
+            requestAnimationFrame(() => {
+                const type = getDefaultChartType(postId);
+
+                // Always destroy and recreate chart to avoid wrong canvas sizing
+                if (chartInstances[postId]) {
+                    chartInstances[postId].destroy();
+                }
+
+                renderPollChart(postId, type);
+            });
         }
     }
 

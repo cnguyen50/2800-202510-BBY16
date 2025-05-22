@@ -1,0 +1,84 @@
+<%- include('templates/loggedHeader') %>
+
+    <main class="container mt-4">
+        <div class="post-card post-poll">
+            <div class="post-header">
+                <strong>@<%= poll.user_id?.username || 'Anonymous' %></strong>
+                <span class="post-date">
+                    <%= new Date(poll.createdAt).toLocaleDateString('en-US', { weekday: 'short' , month: 'short' ,
+                        day: 'numeric' }) %>
+                </span>
+            </div>
+
+            <div class="post-type-label <%= expired ? 'poll-expired' : hasVoted ? 'poll-voted' : 'poll-unvoted' %>">Poll
+            </div>
+
+            <p><strong>Poll:</strong>
+                <%= poll.text %>
+            </p>
+
+            <ul class="list-unstyled ps-3 <%= expired ? 'poll-expired' : hasVoted ? 'poll-voted' : 'poll-unvoted' %>">
+                <% poll.options.forEach(opt=> { %>
+                    <li>
+                        <% if (!hasVoted && !expired) { %>
+                            <form action="/polls/<%= poll._id %>/vote" method="POST" style="display: inline;">
+                                <input type="hidden" name="optionId" value="<%= opt._id %>">
+                                <button class="btn btn-outline-primary vote-option">
+                                    <%= opt.label %>
+                                </button>
+                            </form>
+                            <% } else { %>
+                                <span class="poll-label">
+                                    <%= opt.label %>
+                                </span>
+                                <span class="badge bg-secondary">
+                                    <%= opt.votes %> vote(s)
+                                </span>
+                                <% } %>
+                    </li>
+                    <% }) %>
+            </ul>
+
+            <% if (hasVoted || expired) { %>
+                <button class="btn btn-sm btn-outline-primary toggle-chart" data-post-id="<%= poll._id %>">Show
+                    Chart</button>
+                <div class="chart-controls d-none" data-controls-id="<%= poll._id %>">
+                    <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="bar"
+                        data-chart-id="chart-<%= poll._id %>">Bar</button>
+                    <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="pie"
+                        data-chart-id="chart-<%= poll._id %>">Pie</button>
+                    <button class="btn btn-sm btn-outline-secondary chart-type-btn" data-type="doughnut"
+                        data-chart-id="chart-<%= poll._id %>">Doughnut</button>
+                </div>
+                <canvas id="chart-<%= poll._id %>" class="mt-3 d-none" height="250"></canvas>
+                <% } %>
+
+                        <div class="comment-section" data-post-id="<%= poll._id %>">
+            <form class="comment-form mt-2">
+                <input type="text" class="form-control mb-2" name="comment" placeholder="Write a comment..." required>
+                <button type="submit" class="btn btn-outline-secondary btn-sm">Post</button>
+            </form>
+            <div class="comments-list"></div>
+        </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Ignore the syntax error, code is correct like <%- JSON.stringify(poll) %>
+        window.loadedPosts = [<%- JSON.stringify(poll) %>]; 
+
+            document.addEventListener("DOMContentLoaded", () => {
+            const section = document.querySelector(".comment-section");
+            const postId = section.dataset.postId;
+            const container = section.querySelector(".comments-list");
+
+            if (typeof loadComments === "function") {
+            loadComments(postId, container);
+            } else {
+            console.error("loadComments() not found");
+            }
+        });
+    </script>
+
+    <%- include('templates/loggedFooter') %>
