@@ -607,7 +607,7 @@ function renderPost(post, currentUserId) {
   postContainer.addEventListener('click', async (e) => {
     if (e.target.classList.contains('delete-post')) {
       const postId = e.target.getAttribute('data-id');
-      if (!confirm('Are you sure you want to delete this post?')) return;
+      
 
       try {
         await fetch(`/posts/${postId}`, {
