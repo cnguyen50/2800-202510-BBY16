@@ -71,7 +71,8 @@ pollsRouter.get('/:pollId/view', requireAuth, async (req, res) => {
       ],
       footerScripts: [
 
-        { src: '/scripts/pollChart.js' }
+        { src: '/scripts/pollChart.js' },
+        { src: '/scripts/comment.js' }
       ]
     });
 });

@@ -52,11 +52,33 @@
                 </div>
                 <canvas id="chart-<%= poll._id %>" class="mt-3 d-none" height="250"></canvas>
                 <% } %>
+
+                        <div class="comment-section" data-post-id="<%= poll._id %>">
+            <form class="comment-form mt-2">
+                <input type="text" class="form-control mb-2" name="comment" placeholder="Write a comment..." required>
+                <button type="submit" class="btn btn-outline-secondary btn-sm">Post</button>
+            </form>
+            <div class="comments-list"></div>
+        </div>
+
         </div>
     </main>
 
     <script>
-        window.loadedPosts = [<%- JSON.stringify(poll) %>]; <!--Ignore the syntax error, code is correct-->
+        // Ignore the syntax error, code is correct like <%- JSON.stringify(poll) %>
+        window.loadedPosts = [<%- JSON.stringify(poll) %>]; 
+
+            document.addEventListener("DOMContentLoaded", () => {
+            const section = document.querySelector(".comment-section");
+            const postId = section.dataset.postId;
+            const container = section.querySelector(".comments-list");
+
+            if (typeof loadComments === "function") {
+            loadComments(postId, container);
+            } else {
+            console.error("loadComments() not found");
+            }
+        });
     </script>
 
-            <%- include('templates/loggedFooter') %>
+    <%- include('templates/loggedFooter') %>
