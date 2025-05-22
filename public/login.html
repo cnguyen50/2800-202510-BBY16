@@ -41,10 +41,20 @@
             </div>
 
              <div class="form-group extra" hidden>
-                <div class="input-group">
+                <div class="input-group position-relative">
                     <i class="bi bi-geo-alt"></i>
-                    <input type="neighbourhood" id="neighbourhood" name="neighbourhood"
-                        placeholder="Enter your neighbourhood" required />
+                    <!-- <input type="neighbourhood" id="neighbourhood" name="neighbourhood"
+                        placeholder="Enter your neighbourhood" required /> -->
+                    <input
+                        type="text"
+                        id="login-neighbourhood"
+                        name="neighbourhood"
+                        class="form-control"
+                        placeholder="Start typing your neighbourhood…"
+                        
+                        required
+                    />
+                    <ul id="hood-suggestions" class="suggestions list-group"></ul>
                 </div>
             </div>
        

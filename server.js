@@ -97,20 +97,45 @@ const requireAuth = require('./middleware/requireAuth.js');
     // profile, update, delete, current user endpoints
     app.use('/users', requireAuth, makeUsersRouter());
 
-    app.get('/map', requireAuth, (req, res) => {
-      res.render('map', {
-        title: 'Map',
-        headerLinks: [
-          { rel: 'stylesheet', href: 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css' },
-          { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
-          { rel: 'stylesheet', href: '/styles/map.css' },
-          { rel: 'stylesheet', href: '/styles/loggedIn.css' }
-        ],
-        footerScripts: [
-          { src: 'https://unpkg.com/leaflet/dist/leaflet.js' },
-          { src: '/scripts/map.js' }
-        ]
-      });
+    app.get('/map', requireAuth, async (req, res) => {
+      try {
+        const today = new Date();
+        const nextWeek = new Date();
+
+        nextWeek.setDate(today.getDate() + 7);
+
+        const events = await EventPost
+          .find({ event_date:{ $gte: today, $lte: nextWeek} })
+          .sort({ event_date: 1 })
+          .populate('user_id', 'username')
+          .lean();
+
+        const svgDir = path.join(__dirname, 'public/img/svg');
+        const allSvgs = fs.readdirSync(svgDir).filter(f => f.endsWith('.svg'));
+        const shuffled = allSvgs.sort(() => 0.5 - Math.random());
+        const count = Math.floor(Math.random() * 6) + 5;
+        const svgs = shuffled.slice(0, count);
+
+          res.render('map', {
+            title: 'Map',
+            headerLinks: [
+              { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
+              { rel: 'stylesheet', href: 'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css' },
+              { rel: 'stylesheet', href: 'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css' },
+              { rel: 'stylesheet', href: '/styles/map.css' },
+              { rel: 'stylesheet', href: '/styles/loggedIn.css' }
+            ],
+            footerScripts: [
+              { src: 'https://unpkg.com/leaflet/dist/leaflet.js' },
+              { src: 'https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js' },
+              { src: '/scripts/map.js' }
+            ],
+            events,
+            svgs
+          });
+      } catch (err) {
+        console.log("Cannot fetch map and events", err);
+      }
     });
 
     // JSON API: events in my neighbourhood for map pins
