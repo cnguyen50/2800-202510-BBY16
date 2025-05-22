@@ -13,14 +13,14 @@
         </div>
     </div>
 
-    <section id="event-list" class="event‐cards container my-4">
+    <section id="event-list" class="event-cards container my-4">
     <h2>Upcoming Events</h2>
         <% if (!events.length) { %>
             <p>No events scheduled.</p>
         <% } else { %>
-            <div class="row">
+            <div class="row" id="event-cards-row">
                 <% events.forEach(ev => { %>
-                <div class="col-12 mb-3">
+                <div class="col-12 mb-3 event-col" data-id="<%= ev._id %>">
                     <div class="card h-100" data-id="<%= ev._id %>">
                     <div class="card-body">
                         <div class="title">

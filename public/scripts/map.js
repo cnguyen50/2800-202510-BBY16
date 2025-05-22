@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
         [49.2827, -123.1207], //set to Vancouver coords
         10 //zoom level
     )
-    const listContainer = document.getElementById('event-list');
 
     //Load and display tile layers on the map
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -32,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const clusterBtn = document.getElementById('toggle-cluster');
     const nearbyBtn = document.getElementById('toggle-near');
+
+    clusterBtn.classList.remove('active');
+    nearbyBtn .classList.remove('active');
 
     let nearbyEvents = [];
     let allEvents = [];
@@ -89,20 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     
         group.addLayer(marker);
-    
-        const card = document.createElement('div');
-        card.className = 'card mb-2';
-        card.dataset.id = e._id;
-        card.innerHTML = `
-            <div class="card-body">
-            <h5 class="card-title">${e.event_name}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">${formattedDate}</h6>
-            <p class="card-text">${location}</p>
-            <p class="card-text">${e.description || ''}</p>
-            </div>
-        `;
-    
-        listContainer.appendChild(card);
     }
 
     //Checking geolocation service is supported by browser
@@ -118,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { latitude, longitude } = coords;
 
             //Re-center the map to user's current position
-            map.setView([latitude, longitude], 15);
+            map.setView([latitude, longitude], 13);
 
             //Drop a pin on user's current location with a popup
             L.marker([latitude, longitude], {icon: userIcon})
@@ -155,11 +143,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!allRes.ok) throw new Error(await allRes.text());
                 allEvents = await allRes.json();
 
-                //add only if lat/lng are numbers
+                // hide all cards
+                document.querySelectorAll('.event-col').forEach(c => c.style.display = 'none');
+
+                //then un-hide only the ones in nearbyEvents
                 nearbyEvents.forEach(e => {
-                    if (typeof e.lat === 'number' && typeof e.lng === 'number') {
-                        addEvent(e, nearbyGroup);
-                    }
+                    const col = document.querySelector(`.event-col[data-id="${e._id}"]`);
+                    if (col) col.style.display = '';
                 });
 
                 allEvents.forEach(e => {
@@ -168,33 +158,40 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                // Start in nearby view
+                //Made the nearby button active by default
+                nearbyBtn.classList.add('active');
+                clusterBtn.classList.remove('active');
+
+                // Start by adding nearby view
                 map.addLayer(nearbyGroup);
 
                 clusterBtn.addEventListener('click', () => {
                     map.removeLayer(nearbyGroup);
                     map.addLayer(clusterGroup);
                     map.setView([49.2827, -123.1207], 10);
-                    listContainer.innerHTML = '';
 
-                    allEvents.forEach(e => {
-                        if (typeof e.lat === 'number' && typeof e.lng === 'number') {
-                            addEvent(e, clusterGroup);
-                        }
-                    });
+                    document.querySelectorAll('.event-col').forEach(col => col.style.display = '');
+
+                    // toggle button styles 
+                    clusterBtn.classList.add('active');
+                    nearbyBtn.classList.remove('active');
                 });
                 
                 nearbyBtn.addEventListener('click', () => {
                     map.removeLayer(clusterGroup);
                     map.addLayer(nearbyGroup);
                     map.setView([latitude, longitude], 15);
-                    listContainer.innerHTML = '';
 
+                    document.querySelectorAll('.event-col').forEach(col => col.style.display = 'none');
+                    
                     nearbyEvents.forEach(e => {
-                        if (typeof e.lat === 'number' && typeof e.lng === 'number') {
-                            addEvent(e, nearbyGroup);
-                        }
+                        const col = document.querySelector(`.event-col[data-id="${e._id}"]`);
+                        if (col) col.style.display = '';
                     });
+
+                    // toggle button styles 
+                    nearbyBtn.classList.add('active');
+                    clusterBtn.classList.remove('active');
                 });
 
             } catch (err) {
