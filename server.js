@@ -155,14 +155,10 @@ const requireAuth = require('./middleware/requireAuth.js');
 
     app.use('/news', requireAuth, makeTypedRouter(NewsPost));
 
-    app.get('/notifications', requireAuth, (req, res) => {
-      const svgDir = path.join(__dirname, './public/img/svg/');
-      fs.readdir(svgDir, (err, files) => {
-        if (err) return res.status(500).send("Failed to load SVGs");
-        const svgs = files.filter(file => file.endsWith('.svg'));
-        const shuffled = svgs.sort(() => 0.5 - Math.random());
-        const count = Math.floor(Math.random() * 6) + 5; // 5 to 10
-        const selectedSvgs = shuffled.slice(0, count);
+    app.get('/notifications', requireAuth, async (req, res) => {
+ 
+         const selectedSvgs = await getRandomSvgs(svgPath);
+
         res.render('notifications', {
           userId: req.session.userId,
           headerLinks: [
@@ -174,7 +170,7 @@ const requireAuth = require('./middleware/requireAuth.js');
           ],
           svgs: selectedSvgs
         });
-      });
+
     });
 
     const pollsRouter = require('./routes/polls.route.js');
