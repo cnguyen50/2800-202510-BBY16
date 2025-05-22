@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to CommUnity</title>
+
+  <!-- Core styles -->
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <!-- Page-specific additions live here -->
+  <link rel="stylesheet" href="/styles/index.css" />
+</head>
+
+<body>
+  <!-- Header is injected by loadHeaderFooter.js -->
+  <main>
+    <!-- 🎯 HERO -------------------------------------------------------------->
+    <section class="hero">
+      <div class="hero__copy">
+        <h1>CommUnity</h1>
+        <p>Your local hub for staying connected with your neighbours.</p>
+        <a href="/login" class="button button--cta">Join Now</a>
+      </div>
+      <div class="hero__art">
+        <!-- Replace with a real illustration/photo if you have one -->
+        <img src="/img/hero-neighbourhood.svg" alt="Friendly neighbourhood illustration"/>
+      </div>
+    </section>
+
+    <!-- 🗂️  ABOUT (card style) --------------------------------------------->
+    <section id="about" class="card">
+      <h2>About Us</h2>
+      <p>
+        CommUnity is a social platform built to bring neighbours closer together.
+        Share updates, plan events and stay in-the-know with what’s happening
+        right next-door.
+      </p>
+    </section>
+
+    <!-- ✨ FEATURES (responsive grid) --------------------------------------->
+    <section id="features">
+      <h2>Key Features</h2>
+      <div class="features__grid">
+        <article class="feature card">
+          <h3>Neighbour News</h3>
+          <p>Post updates &amp; share local stories.</p>
+        </article>
+        <article class="feature card">
+          <h3>Events &amp; Meet-ups</h3>
+          <p>Create or join happenings in one tap.</p>
+        </article>
+        <article class="feature card">
+          <h3>Marketplace</h3>
+          <p>Buy, sell or trade items safely nearby.</p>
+        </article>
+        <article class="feature card">
+          <h3>Alerts &amp; Announcements</h3>
+          <p>Stay informed when it matters most.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 🚀 CALL-TO-ACTION ---------------------------------------------------->
+    <section id="signup" class="cta card">
+      <h2>Ready to get started?</h2>
+      <p>Sign up today and start connecting with your neighbours!</p>
+      <a href="/login" class="button">Create Account</a>
+    </section>
+  </main>
+
+  <!-- JS -------------------------------------------------------------------->
+  <script src="/scripts/loadHeaderFooter.js" defer></script>
+  <script src="/scripts/index.js" defer></script>
+</body>
+</html>

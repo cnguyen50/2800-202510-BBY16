@@ -46,10 +46,7 @@ function makeAuthRouter() {
       if (!match) return res.status(401).json({ error: 'Invalid credentials' });
       req.session.userId = user._id;
       req.session.neighbourhood = user.neighbourhood;
-
-
   
-      res.redirect('/profile');
     } else {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -58,7 +55,7 @@ function makeAuthRouter() {
     if (!ok) return res.redirect(303, '/login?error=BAD_PASSWORD');
 
     req.session.userId = user._id;
-    res.redirect('/profile');
+    res.redirect('/home');
   
   });
 
