@@ -73,20 +73,38 @@ document.addEventListener('DOMContentLoaded', () => {
             .addTo(map)
             .bindPopup(eventInfoHTML);
     
-        marker.on('popupopen', () => {
-            const link = document.querySelector('.details-link');
+        marker.on('popupopen', (evt) => {
+            // Grabbing the just opened popup element
+            const popupEl = evt.popup.getElement();
+            const link = popupEl.querySelector('.details-link');
             if (!link) return;
     
-            link.addEventListener('click', (evt) => {
-                evt.preventDefault();
-                const id = evt.target.dataset.id;
+            link.addEventListener('click', (clickEvt) => {
+                clickEvt.preventDefault();
+                const id = clickEvt.target.dataset.id;
+                const cardWrapper = document.querySelector(`.event-col[data-id="${id}"]`);
                 const card = document.querySelector(`#event-list .card[data-id="${id}"]`);
     
-                if (card) {
-                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    card.classList.add('highlight');
-                    setTimeout(() => card.classList.remove('highlight'), 2000);
+                //checks if wrapper is shown in your current filter
+                if (clusterBtn.classList.contains('active')) {
+                    // all events view
+                    document.querySelectorAll('.event-col')
+                    .forEach(c => c.style.display = '');
+                } else {
+                    // nearby view, hide everything then show this one
+                    document.querySelectorAll('.event-col')
+                    .forEach(c => c.style.display = 'none');
+                    if (cardWrapper) cardWrapper.style.display = '';
                 }
+                
+                setTimeout(() => {
+                    if (card) {
+                        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        card.classList.add('highlight');
+                        setTimeout(() => card.classList.remove('highlight'), 2000);
+                    }
+                }, 50);
+
             }, { once: true });
         });
     
@@ -180,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nearbyBtn.addEventListener('click', () => {
                     map.removeLayer(clusterGroup);
                     map.addLayer(nearbyGroup);
-                    map.setView([latitude, longitude], 15);
+                    map.setView([latitude, longitude], 14);
 
                     document.querySelectorAll('.event-col').forEach(col => col.style.display = 'none');
                     
