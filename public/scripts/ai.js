@@ -27,6 +27,7 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
 
     const titleHeader = document.getElementById('ai-title');
     const list = document.getElementById('ai-list');
+    const box = document.getElementById('ai-response');
 
     titleHeader.textContent = title;
 
@@ -39,6 +40,9 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
 
     titleHeader.style.display = 'block';
     list.style.display = 'block';
+
+    box.append(titleHeader);
+    box.append(list);
   } catch (err) {
     console.error('Location or AI request failed:', err);
     document.getElementById('ai-response').textContent = 'Could not determine your location.';
