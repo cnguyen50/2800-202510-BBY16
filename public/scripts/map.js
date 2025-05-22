@@ -135,28 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 //Fetching users static neighbourhood value from login form
                 const meRes = await fetch('/users/me', { credentials: 'include' });
                 const { neighbourhood } = await meRes.json();
-                
-                //Reverse geocoded to get current neighbourhood with Nominatim as per documentation
-                const nomURL = 'https://nominatim.openstreetmap.org/reverse?' +
-                    new URLSearchParams({
-                        format: 'json',
-                        lat: latitude,
-                        lon: longitude,
-                        addressdetails: 1, // need to access the address elementss
-                        zoom: 14 // neighbourhood zoom level
-                });
-
-                //Fetching neighbourhood info
-                const nomRes = await fetch(nomURL);
-                const nomResData = await nomRes.json();
-
-                // Extracted neighbourhood from address object
-                const address = nomResData.address || "Can't find address";
-                const currentNeighbourhood = address.neighbourhood || 'Unknown';
 
                 //Update the div with id=location-info
                 document.getElementById('location-info').textContent =
-                `📍 ${city}, ${region} | Your Neighbourhood: ${neighbourhood} | Your Current Neighbourhood: ${currentNeighbourhood}`;
+                `📍 Current Location: ${neighbourhood} | ${city}, ${region}`;
 
             } catch (err) {
                 console.log('Location info fetch error:', err);

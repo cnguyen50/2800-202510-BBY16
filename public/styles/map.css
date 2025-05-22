@@ -1,15 +1,182 @@
 #map { 
-    width: 50vw; 
-    height: 50vh; 
-    margin: 0; 
-    padding: 0; 
+    width: 100%;
+    height: 400px;
+    margin-bottom: 1rem;
+    border-radius: 12px;
+    border: 2px solid var(--grey-clr, #ccc);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+h2, h4 {
+    font-weight: bold;
+    text-align: center;
+    color: var(--text-clr);
 }
 
 body { 
     margin: 0; 
+    font-family: 'Satoshi', sans-serif;
+    background-color: var(--background-clr);
+}
+
+#bottom-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+#location-info {
+    text-transform: capitalize;
+    font-weight: bold;
+    color: var(--text-clr);
+}
+
+.title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.title .card-title,
+.title .card-subtitle {
+    margin: 0;
+}
+
+.custom-btn-green {
+    border: 2px solid var(--green-clr);
+    background: transparent;
+    border-radius: 25px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+}
+
+.custom-btn-green:hover {
+    color: black;
+    transform: translateY(-1px);
+    box-shadow: 0px 6px 15px var(--btn-shadow);
+}
+
+.custom-btn-purple {
+    border: 2px solid var(--purple-clr);
+    background-color: var(--purple-clr);
+    border-radius: 25px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+}
+
+.custom-btn-purple:hover {
+    color: black;
+    transform: translateY(-1px);
+    box-shadow: 0px 6px 15px var(--btn-shadow);
+}
+
+/* === Toggle button “active” styles === */
+.custom-btn-green.active {
+  background-color: var(--green-clr) !important;
+  color: #fff !important;
+  border-color: var(--green-clr) !important;
+}
+
+.custom-btn-purple.active {
+  background-color: var(--purple-clr) !important;
+  color: #fff !important;
+  border-color: var(--purple-clr) !important;
 }
 
 #event-list .card.highlight {
-    border: 2px solid #007bff;
-    box-shadow: 0 0 8px rgba(0,123,255,0.6);
+    border: 2px solid var(--grey-clr, #ccc);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.event-cards .card {
+    background-color: #fff;
+    opacity: 0.9;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 1rem;
+}
+
+.event-cards .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.event-cards .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#event-list img.card-img-bottom {
+    width: 100% !important;
+    max-height: 250px !important;
+    height: auto !important;
+    object-fit: cover !important;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+
+.card-text strong {
+    color: var(--text-clr);
+}
+
+.leaflet-popup-content-wrapper {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    padding: 1rem;
+    font-family: 'Satoshi', sans-serif;
+    color: var(--text-clr);
+}
+
+.leaflet-popup-tip,
+.leaflet-popup-tip-container .leaflet-popup-tip {
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.leaflet-popup-close-button {
+    color: var(--text-clr);
+    font-size: 1.2rem;
+    top: 0.5rem;
+    right: 0.5rem;
+}
+
+.leaflet-popup-content {
+    margin: 0;
+}
+.leaflet-popup-content strong {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.leaflet-popup-content span,
+.leaflet-popup-content a {
+    display: block;
+    font-size: 0.9rem;
+}
+.leaflet-popup-content a.details-link {
+    font-weight: bold;
+    text-decoration: none;
+}
+.leaflet-popup-content a.details-link:hover {
+    text-decoration: underline;
 }

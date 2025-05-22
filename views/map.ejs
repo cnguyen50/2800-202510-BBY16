@@ -3,12 +3,14 @@
 }) %>
 <main>
     <h1>Map</h1>
-    <div id="location-info">location info</div>
-    <div id="map" style="height:400px;"></div>
-
-    <div class="btn-group my-2">
-        <button id="toggle-cluster">All Events</button>
-        <button id="toggle-near">Nearby Events</button>
+    <div id="map"></div>
+    
+    <div id="bottom-container">
+        <div id="location-info">location info</div>
+        <div class="btn-group my-2">
+            <button id="toggle-cluster" class="custom-btn-green">All Events</button>
+            <button id="toggle-near" class="custom-btn-purple">Nearby Events</button>
+        </div>
     </div>
 
     <section id="event-list" class="event‐cards container my-4">
@@ -18,13 +20,15 @@
         <% } else { %>
             <div class="row">
                 <% events.forEach(ev => { %>
-                <div class="col-md-4 mb-3">
+                <div class="col-12 mb-3">
                     <div class="card h-100" data-id="<%= ev._id %>">
                     <div class="card-body">
-                        <h5 class="card-title"><%= ev.event_name %></h5>
-                        <h6 class="card-subtitle mb-2 text-muted">
-                            <%= new Date(ev.event_date).toLocaleDateString('en-US',{ month:'short', day:'numeric', year:'numeric' }) %>
-                        </h6>
+                        <div class="title">
+                            <h4 class="card-title"><%= ev.event_name %></h4>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <%= new Date(ev.event_date).toLocaleDateString('en-US',{ month:'short', day:'numeric', year:'numeric' }) %>
+                            </h6>
+                        </div>
                         <% if (ev.image_url) { %>
                             <img src="<%= ev.image_url %>" class="card-img-bottom" alt="Event image">
                         <% } %>
