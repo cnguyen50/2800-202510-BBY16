@@ -95,6 +95,12 @@
                             <div id="event-fields">
                                 <input type="text" class="form-control mb-2" id="event-name" placeholder="Event Name">
                                 <input type="date" class="form-control mb-2" id="event-date">
+                                <small id="event-date-error" class="text-danger d-none">
+                                    Please select a valid event date.
+                                </small>
+                                <div id="event-date-error-popup" class="event-date-error-popup">
+                                    <p id="event-date-error-popup-message">Please select a valid event date (today or in the future).</p>
+                                </div>
                                 <!-- <input type="text" class="form-control mb-2" id="event-location" placeholder="Location">
                                 <input type="hidden" name="neighbourhood" id="event-neighbourhood"> -->
 

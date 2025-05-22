@@ -233,6 +233,7 @@ main {
         left: 5%;
     }
 }
+
 #event-fields {
     display: none;
     position: relative;
@@ -262,4 +263,57 @@ main {
 
 #loc-suggestions li:hover {
     background: #f0f0f0;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 30%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+@keyframes fadeOutDown {
+    from {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate(-50%, 30%);
+    }
+}
+
+.event-date-error-popup {
+    display: none;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(100, 100, 100, 0.6);
+    border: 0.5px solid var(--red-clr);
+    color: var(--red-clr);
+    font-weight: bold;
+    padding: 1rem 1.5rem;
+    border-radius: 20px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    z-index: 1060;
+    width: 280px;
+    text-align: center;
+    font-family: 'Satoshi', sans-serif;
+    animation-duration: 0.5s;
+}
+
+.event-date-error-popup.show {
+    display: block;
+    animation-name: fadeInUp;
+}
+
+.event-date-error-popup.hide {
+    animation-name: fadeOutDown;
 }
