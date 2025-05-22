@@ -93,7 +93,7 @@ const requireAuth = require('./middleware/requireAuth.js');
 
     // app.use('/auth', router) mounts router under /auth
     // routes for login, register, logout, etc.
-    app.use('/auth',  makeAuthRouter());
+    app.use('/auth', makeAuthRouter());
 
     // app.use('/users', router) mounts router under /users
     // profile, update, delete, current user endpoints
@@ -117,7 +117,7 @@ const requireAuth = require('./middleware/requireAuth.js');
 
     // JSON API: events in my neighbourhood for map pins
     app.use('/map/data', requireAuth, makeMapDataRouter());
-    
+
     // app.use('/posts', router) mounts router under /posts
     // create, read, update, delete posts
     app.use('/posts', requireAuth, makePostsRouter());
@@ -198,7 +198,7 @@ const requireAuth = require('./middleware/requireAuth.js');
 
     // app.get(path, handler) sends index page
     // landing page
-    app.get('/',  (req, res) => {
+    app.get('/', (req, res) => {
       if (req.session.userId) {
         res.redirect('/home');
       } else {
@@ -246,9 +246,9 @@ const requireAuth = require('./middleware/requireAuth.js');
               { src: '/scripts/comment.js' },
               { src: '/scripts/pollChart.js' }
             ],
-            user,  // Pass the user object to the EJS template
-            svgs: selectedSvgs, // Pass svgs here so your EJS template can use it
-            viewingOtherUser: false  // Flag to indicate if viewing own profile
+            user,  
+            svgs: selectedSvgs, 
+            viewingOtherUser: false  
           });
         });
       } catch (err) {
@@ -259,7 +259,7 @@ const requireAuth = require('./middleware/requireAuth.js');
 
     // app.get(path, handler) sends main feed
     // main/home page
-    app.get('/home' , requireAuth, (req, res) => {
+    app.get('/home', requireAuth, (req, res) => {
       if (!req.session.userId) {
         res.redirect('/login');
       }
@@ -316,21 +316,21 @@ const requireAuth = require('./middleware/requireAuth.js');
         const count = Math.floor(Math.random() * 6) + 5; // 5 to 10
         const selectedSvgs = shuffled.slice(0, count);
 
-             res.render('myCommunity', {
-        title: 'My Community',
-        headerLinks: [
-          { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-           { rel: 'stylesheet', href: '/styles/main.css' },
-        ],
-        footerScripts: [
-          { src: '/scripts/myCommunity.js' },
-          { src: '/scripts/comment.js' },
-             { src: '/scripts/post.js' }
-        ],
-        svgs: selectedSvgs
+        res.render('myCommunity', {
+          title: 'My Community',
+          headerLinks: [
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+            { rel: 'stylesheet', href: '/styles/main.css' },
+          ],
+          footerScripts: [
+            { src: '/scripts/myCommunity.js' },
+            { src: '/scripts/comment.js' },
+            { src: '/scripts/post.js' }
+          ],
+          svgs: selectedSvgs
+        });
       });
-      });
-      
+
     });
 
     // app.use(path, handler) intercepts /login

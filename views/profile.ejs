@@ -16,20 +16,20 @@
                 <div class="profile-img-wrapper">
                     <img id="profilePic" class="profile-img" src="<%= user.profilePic || '/uploads/default.jpg' %>"
                         alt="Profile Picture">
-                         <% if (!viewingOtherUser) { %>
-                    <label for="profilePicInput" class="camera-icon-label">
-                        <i class="fas fa-camera"></i>
-                    </label>
-                     <% } %>
+                    <% if (!viewingOtherUser) { %>
+                        <label for="profilePicInput" class="camera-icon-label">
+                            <i class="fas fa-camera"></i>
+                        </label>
+                        <% } %>
                 </div>
 
                 <% if (!viewingOtherUser) { %>
-                <form id="profilePicForm" action="/profile/upload" method="POST" enctype="multipart/form-data">
-                    <input type="file" id="profilePicInput" name="profilePic" accept="image/*" hidden>
-                </form>
-                <% } %>
+                    <form id="profilePicForm" action="/profile/upload" method="POST" enctype="multipart/form-data">
+                        <input type="file" id="profilePicInput" name="profilePic" accept="image/*" hidden>
+                    </form>
+                    <% } %>
 
-                <p id="uploadMessage" class="upload-message"></p>
+                        <p id="uploadMessage" class="upload-message"></p>
             </div>
 
             <!-- Right: Profile Info -->
@@ -59,13 +59,16 @@
         <div id="filtered-content">
             <!-- This will dynamically hold either #posts-list or #comments-list -->
             <div id="posts-list"></div>
+            <div style="text-align: center; margin-top: 1em;">
+                <button id="loadMoreBtn">Load More</button>
+            </div>
             <div id="comments-list" style="display:none;"></div>
         </div>
     </main>
 
-      <script>
-         window.profileUserId   = <%- JSON.stringify(user._id.toString()) %>;
-        window.isSelfProfile   = <%= viewingOtherUser ? 'false' : 'true' %>;
+    <script>
+        window.profileUserId = <% - JSON.stringify(user._id.toString()) %>;
+        window.isSelfProfile = <%= viewingOtherUser ? 'false' : 'true' %>;
     </script>
 
 
