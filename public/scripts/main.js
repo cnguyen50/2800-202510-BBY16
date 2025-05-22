@@ -304,11 +304,7 @@ form.addEventListener("submit", async (e) => {
     } else if (type === "event") {
       endpoint = "/events";
     } else if (type === "news") {
-      formData.append("headline", document.getElementById("news-headline").value);
-      console.log(document.getElementById("news-headline").value);
-      formData.append("body", document.getElementById("news-body").value);
-      console.log(document.getElementById("news-body").value);
-      formData.append("neighbourhood", document.getElementById("news-neighbourhood").value);
+      endpoint = "/news";
     }
 
     console.log(endpoint);
