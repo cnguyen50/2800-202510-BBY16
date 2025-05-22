@@ -149,3 +149,21 @@ canvas {
 .post-footer span:hover {
   color: #007bff;
 }
+
+main{
+  width: 90%;
+  margin: auto;
+}
+@media(min-width: 900px){
+  main{
+    width: 70%;
+    margin: auto;
+  }
+}
+
+@media(min-width: 1200px){
+  main{
+    width: 50%;
+    margin: auto;
+  }
+}

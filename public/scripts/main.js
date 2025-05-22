@@ -216,12 +216,9 @@ form.addEventListener("submit", async (e) => {
   if (!meRes.ok) throw new Error('Not authenticated');
   const { neighbourhood } = await meRes.json();
 
-    const rawType = document.getElementById("post-type").value.trim();
-
-    formData.append("content", document.getElementById("post-content").value.trim());
-
-    formData.append("userNeighbourhood", currentUserNeighbourhood);
-    if (type === "event") {
+  formData.append("userNeighbourhood", currentUserNeighbourhood);
+    console.log(currentUserNeighbourhood);
+  if (type === "event") {
       formData.append("event_name", document.getElementById("event-name").value.trim());
       const day = document.getElementById('event-date').value.trim();  // '2025-05-20'
       formData.append('event_date', day ? `${day}T23:59` : ''); // → '2025-05-20T23:59'
@@ -244,14 +241,15 @@ form.addEventListener("submit", async (e) => {
     });
 
   } else if (type === "news") {
-    formData.append("headline", document.getElementById("news-headline").value);
+    formData.append("headline", document.getElementById("news-headline").value.trim());
     console.log(document.getElementById("news-headline").value);
-    formData.append("body", document.getElementById("news-body").value);
+    formData.append("body", document.getElementById("news-body").value.trim());
     console.log(document.getElementById("news-body").value);
-    formData.append("image_url", document.getElementById("news-image-url").value);
+    formData.append("image_url", document.getElementById("news-image-url").value.trim());
   }
 
-  console.log("Form data before image append:", formData.get('content'), formData.get('body'), formData.get('neighborhood'));
+  console.log([...formData.entries()]);
+
 
   const fileInput = document.getElementById("post-image");
   if (fileInput.files.length > 0) {
@@ -267,12 +265,7 @@ form.addEventListener("submit", async (e) => {
     } else if (type === "event") {
       endpoint = "/events";
     } else if (type === "news") {
-      formData.append("headline", document.getElementById("news-headline").value);
-      console.log(document.getElementById("news-headline").value);
-      formData.append("body", document.getElementById("news-body").value);
-      console.log(document.getElementById("news-body").value);
-      formData.append("image_url", document.getElementById("news-image-url").value);
-      formData.append("neighbourhood", document.getElementById("news-neighbourhood").value);
+      endpoint = "/news"
     }
 
     console.log(endpoint);
@@ -446,11 +439,9 @@ fetchAllPosts();
         <button class="post-like" data-id="${post._id}">
           <i class="bi bi-hand-thumbs-up"></i> 0
         </button>
-        <span><i class="bi bi-share-fill"></i></span>
+      
       </div>
-      <div class="post-bookmark">
-        <span><i class="bi bi-bookmark-fill"></i></span>
-      </div>
+     
     </div>
 
   `;
@@ -529,11 +520,9 @@ fetchAllPosts();
           <button class="post-like" data-id="${post._id}">
           <i class="bi bi-hand-thumbs-up-fill"></i> 0
         </button>
-          <span><i class="bi bi-share"></i></span>
+        
         </div>
-        <div class="post-bookmark">
-          <span><i class="bi bi-bookmark-fill"></i></span>
-        </div>
+
       </div>
     `;
 }
@@ -553,11 +542,9 @@ fetchAllPosts();
         <button class="post-like" data-id="${post._id}">
           <i class="bi bi-hand-thumbs-up"></i> 0
         </button>
-        <span><i class="bi bi-share-fill"></i></span>
+      
       </div>
-      <div class="post-bookmark">
-        <span><i class="bi bi-bookmark-fill"></i></span>
-      </div>
+     
     </div>
   `;
 }
@@ -580,11 +567,9 @@ fetchAllPosts();
         <button class="post-like" data-id="${post._id}">
           <i class="bi bi-hand-thumbs-up"></i> 0
         </button>
-        <span><i class="bi bi-share-fill"></i></span>
+      
       </div>
-      <div class="post-bookmark">
-        <span><i class="bi bi-bookmark-fill"></i></span>
-      </div>
+     
     </div>
   `;
   }

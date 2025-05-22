@@ -11,7 +11,8 @@
 }
 
 nav {
-    position: fixed;
+    position: relative;
+    width: 100%;
 }
 
 .top-bar .brand {
