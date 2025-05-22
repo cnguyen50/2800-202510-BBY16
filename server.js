@@ -85,9 +85,7 @@ const requireAuth = require('./middleware/requireAuth.js');
       const uid = socket.request.session.userId;
       if (uid) {
         socket.join(String(uid));
-        console.log('[socket-join]', uid);
       } else {
-        console.log('[socket-join]', 'anonymous');
       }
     })
 
@@ -316,6 +314,7 @@ const requireAuth = require('./middleware/requireAuth.js');
         const count = Math.floor(Math.random() * 6) + 5; // 5 to 10
         const selectedSvgs = shuffled.slice(0, count);
 
+
         res.render('myCommunity', {
           title: 'My Community',
           headerLinks: [
@@ -365,7 +364,6 @@ const requireAuth = require('./middleware/requireAuth.js');
     const PORT = process.env.PORT || 3000;
 
     http.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
     });
 
   } catch (error) {

@@ -6,7 +6,7 @@ async function connectDB() {
         await mongoose.connect(uri, {
             dbName: process.env.DB_NAME,
         });
-        console.log('Connected to MongoDB');
+       
     }
 
     return {

@@ -5,7 +5,6 @@ const RSVP = require('../models/rsvp.model.js');
 
 module.exports = function startReminders(io) {
     cron.schedule('*/2 * * * *', async () => {
-        console.log('[cron-tick]', new Date().toISOString(), 'checking for reminders');
         const now = Date.now();
         const windowLow = new Date(now + 59*60*1000);
         const windowHigh = new Date(now + 61*60*1000);
@@ -58,7 +57,6 @@ module.exports = function startReminders(io) {
             data: { poll_id: poll._id, title: poll.text }
           });
           io.to(uid).emit('notification', notif);
-          console.log('[poll-reminder]', poll._id.toString(), '→', uid);
         }
 
         poll.reminder_sent = true;

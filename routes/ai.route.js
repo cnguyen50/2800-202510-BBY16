@@ -2,11 +2,11 @@
 const router = require('express').Router();
 router.post('/', async (req, res) => {
   const { lat, lon, neighbourhood, city } = req.body;
-  console.log('Received from client:', lat, lon, neighbourhood, city);
+ 
 
   // Use neighbourhood directly if sent, or reverse geocode lat/lon on server
   const userLocation = neighbourhood + ', ' + city || 'your area';
-    console.log('User location:', userLocation);
+  
 
   const { default: OpenAI } = await import('openai');
   const openai = new OpenAI({

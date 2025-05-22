@@ -73,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 `📍 ${city}, ${region} | Your Neighbourhood: ${neighbourhood} | Your Current Neighbourhood: ${currentNeighbourhood}`;
 
             } catch (err) {
-                console.log('Location info fetch error:', err);
                 document.getElementById('location-info').textContent = 'Could not load location info';
             }
 
@@ -120,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         //Error callback
         (err) => {
-            console.log("Error: ", err);
             document.getElementById('location-info').textContent =
             'Location unavailable';
         }

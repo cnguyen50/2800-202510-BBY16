@@ -19,10 +19,7 @@ const BasePostSchema = new Schema(
       type: [Schema.Types.ObjectId],
       ref: 'User',
       default: [],
-      validate: {
-        validator: v => !v || /^https?:\/\//.test(v) || v.startsWith('/uploads/'),
-        message: 'Bad image URL'
-      }
+
     }
   },
   {

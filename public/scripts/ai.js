@@ -4,6 +4,12 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
   const spinner = document.getElementById('spinner');
   const titleHeader = document.getElementById('ai-title');
   const list = document.getElementById('ai-list');
+  const box = document.getElementById('ai-response');
+  const background = document.getElementById('aiBackground');
+  const image = document.getElementById('ai-image');
+    const imageContainer = document.getElementById('ai-image-container');
+  const responseContainer = document.getElementById('response-container');
+
 
   spinner.style.display = 'block';
   titleHeader.style.display = 'none';
@@ -19,14 +25,10 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
 
 
     const data = await res.json();
-    console.log(data);
     const { title, items } = formatResponse(data.message);
 
-    console.log(title);
-    items.forEach(item => console.log(item));
-
-    const titleHeader = document.getElementById('ai-title');
-    const list = document.getElementById('ai-list');
+  
+    const container = document.getElementById('ai-container');
 
     titleHeader.textContent = title;
 
@@ -37,8 +39,21 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
       list.appendChild(li);
     });
 
+    box.style.display = 'flex';
     titleHeader.style.display = 'block';
     list.style.display = 'block';
+    background.style.display = 'block';
+
+
+    box.append(titleHeader);
+    box.append(list);
+    responseContainer.append(box);
+
+    // let imageHeight = box.offsetHeight;
+    // image.height = imageHeight * 2;
+    // image.width = imageHeight * 2;
+    imageContainer.style.display = 'block';
+
   } catch (err) {
     console.error('Location or AI request failed:', err);
     document.getElementById('ai-response').textContent = 'Could not determine your location.';
