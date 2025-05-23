@@ -1,4 +1,4 @@
-
+//this function gets the users current location
 async function getLocationData() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
