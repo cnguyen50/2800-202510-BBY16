@@ -25,7 +25,9 @@
   - Trending polls (`/trendingPolls`)
   - Filter posts by type
 - **Interactive Map**
-  - View neighborhood events with detailed info (`/map`)
+  - Autocomplete location input with Nominatim
+  - Stores lat/lng, displays pins clustered or by proximity
+  - Click a pin → scroll to event details card
 - **Profiles**
   - View and manage your profile (`/profile`)
   - View other users' profiles (`/user/:id`)

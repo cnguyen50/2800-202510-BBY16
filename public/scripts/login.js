@@ -1,4 +1,5 @@
 
+//handles front end if user does not already have an account
 document.addEventListener('DOMContentLoaded', () => {
   const extras = document.querySelectorAll('.extra');
   const errorBox = document.getElementById('error-box');
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(location.search);
   const err    = params.get('error');
 
+  // if login attempt fails
   if (err === 'USER_NOT_FOUND') {
     extras.forEach(el => {
     el.hidden  = false;
@@ -28,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const suggList = document.getElementById('hood-suggestions');
   let debounce;
 
+  //get valid neighbourhood using nominatim
   input.addEventListener('input', () => {
     clearTimeout(debounce);
     const q = input.value.trim();

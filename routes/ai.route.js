@@ -1,6 +1,7 @@
 
 const router = require('express').Router();
 router.post('/', async (req, res) => {
+  //lat and lon not used
   const { lat, lon, neighbourhood, city } = req.body;
  
 

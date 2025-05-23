@@ -1,3 +1,5 @@
+//note: ai assistance was used here, particularly to handle the socket instance
+
 // ---------- SVG background positioning ----------
 document.addEventListener("DOMContentLoaded", () => {
     const svgIcons = document.querySelectorAll(".bg-svg-icon");

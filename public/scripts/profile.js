@@ -1,10 +1,11 @@
+// Chart, pagination, and filter state variables
 let currentChartType = "doughnut";
 let postsPerPage = 5;
 let currentPostIndex = 0;
 let currentFilterType = 'all';
 
+// Utility to fetch JSON data from API with credentials
 async function fetchJson(url, options = {}) {
-  
   const res = await fetch(url, { credentials: 'include', ...options });
   if (!res.ok) {
     console.error(`Request failed: ${res.status}`);
@@ -13,23 +14,25 @@ async function fetchJson(url, options = {}) {
   return res.json();
 }
 
+// Render a list of posts to the UI with filter and pagination support
 function renderPosts(list, filterType = 'all', append = false) {
   const container = document.getElementById('posts-list');
-
   if (!append) {
     container.innerHTML = '';
     currentPostIndex = 0;
   }
-
   currentFilterType = filterType;
 
+  // Filter posts by type
   const filtered = list.filter(post => {
     if (filterType === 'all') return true;
     return post.type?.toLowerCase() === filterType;
   });
 
+  // Get posts for current page
   const postsToShow = filtered.slice(currentPostIndex, currentPostIndex + postsPerPage);
 
+  // Display a message if no posts found
   if (!append && !postsToShow.length) {
     container.textContent = 'No posts to display.';
     return;
@@ -44,6 +47,7 @@ function renderPosts(list, filterType = 'all', append = false) {
       weekday: 'short', month: 'short', day: 'numeric'
     });
 
+    // Prepare post display details based on type
     let postTitle = '';
     let postBody = '';
     const type = post.type?.toLowerCase();
@@ -85,6 +89,7 @@ function renderPosts(list, filterType = 'all', append = false) {
       postBody = `<p>${post.content || 'No content available.'}</p>`;
     }
 
+    // Build main post HTML
     div.innerHTML = `
       <div class="post-header" style="display: flex; justify-content: space-between; align-items: center;">
         <div>
@@ -103,9 +108,9 @@ function renderPosts(list, filterType = 'all', append = false) {
       </div>
     `;
 
+    // Dropdown toggle to expand/collapse post preview (and show poll chart if needed)
     const dropdown = div.querySelector('.dropdown-arrow');
     const preview = div.querySelector('.post-preview');
-
     dropdown.addEventListener('click', e => {
       e.stopPropagation();
       const isOpen = preview.classList.toggle('open');
@@ -117,10 +122,9 @@ function renderPosts(list, filterType = 'all', append = false) {
       }
     });
 
-    // fixed redirection of polls to /polls/:id/view instead of /posts/:id/view
+    // Redirect on click: polls to /polls/:id/view, others to /posts/:id/view
     div.addEventListener('click', () => {
       const type = post.type?.toLowerCase();
-
       if (type === 'poll') {
         window.location.href = `/polls/${post._id}/view`;
       } else {
@@ -128,7 +132,7 @@ function renderPosts(list, filterType = 'all', append = false) {
       }
     });
 
-    // Local chart type switcher
+    // Allow switching poll chart type via local chart buttons
     div.addEventListener('click', e => {
       const target = e.target;
       if (target.classList.contains('chart-type-btn')) {
@@ -144,11 +148,11 @@ function renderPosts(list, filterType = 'all', append = false) {
       }
     });
 
-
     container.appendChild(div);
   });
   currentPostIndex += postsPerPage;
 
+  // Handle "Load More" button
   const loadMoreBtn = document.getElementById('loadMoreBtn');
   if (currentPostIndex >= filtered.length) {
     loadMoreBtn.style.display = 'none';
@@ -157,6 +161,7 @@ function renderPosts(list, filterType = 'all', append = false) {
   }
 }
 
+// Render a chart for poll results
 function renderPollChart(canvas, poll, type = "doughnut") {
   if (!canvas || !poll) return;
 
@@ -197,7 +202,7 @@ function renderPollChart(canvas, poll, type = "doughnut") {
   });
 }
 
-// Function to render comments
+// Render a list of user comments
 function renderComments(list) {
   const container = document.getElementById('comments-list');
   container.innerHTML = '';
@@ -227,12 +232,14 @@ function renderComments(list) {
   });
 }
 
+// Render user profile information
 function renderUser(user) {
   document.getElementById('username').textContent = user.username || 'N/A';
   document.getElementById('email').textContent = user.email || 'N/A';
   document.getElementById('neighbourhood').textContent = user.neighbourhood || 'N/A';
 }
 
+// Upload profile picture using a form and update display
 async function uploadProfilePic(event) {
   event.preventDefault();
 
@@ -267,22 +274,25 @@ async function uploadProfilePic(event) {
   }
 }
 
+// Global variables for posts and comments
 let allPosts = [];
 let allComments = [];
 
+// Main initialization function for profile page
 async function init() {
   try {
     const userId = window.profileUserId;
     const isSelf = window.isSelfProfile;
+    // Fetch user, their comments, and posts
     const [user, comments, posts] = await Promise.all([
       fetchJson(isSelf ? '/users/me' : `/users/${userId}/json`),
       fetchJson(isSelf ? '/comments/my' : `/comments/users/${userId}`),
       fetchJson(isSelf ? '/posts/me' : `/posts/users/${userId}`)
     ]);
 
+    // Set profile header name
     let profileName = document.getElementById('profile-name');
     profileName.innerText = user.username;
-
 
     if (user) {
       renderUser(user);
@@ -301,6 +311,7 @@ async function init() {
     renderPosts(allPosts);
     renderComments(allComments);
 
+    // If it's your own profile, set up profile pic upload
     if (isSelf) {
       const form = document.getElementById('profilePicForm');
       if (form) {
@@ -317,7 +328,7 @@ async function init() {
       }
     }
 
-    // Tab filtering logic & toggle containers
+    // Tab logic for switching between posts/comments
     const tabButtons = document.querySelectorAll('.tab');
     tabButtons.forEach(tab => {
       tab.addEventListener('click', () => {
@@ -351,18 +362,19 @@ async function init() {
   }
 }
 
+// Randomly position SVG icons for a dynamic background effect
 const svgIcons = document.querySelectorAll(".svg-icon");
-
 svgIcons.forEach(icon => {
   icon.style.top = Math.floor(Math.random() * 90) + "vh";
   icon.style.left = Math.floor(Math.random() * 90) + "vw";
-  icon.style.position = "absolute";  // Make sure they are positioned absolutely for top/left to work
+  icon.style.position = "absolute";
   icon.style.transform = `rotate(${Math.floor(Math.random() * 360)}deg)`;
 });
 
+// Load more posts on button click
 document.getElementById('loadMoreBtn').addEventListener('click', () => {
   renderPosts(allPosts, currentFilterType, true);
 });
 
-
+// Initialize everything on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', init);
