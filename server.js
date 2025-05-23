@@ -217,7 +217,7 @@ const requireAuth = require('./middleware/requireAuth.js');
     // app.get(path, handler) sends index page
     // landing page
     app.get('/', (req, res) => {
-      console.log(req.session.userId);
+  
       if (req.session.userId) {
         res.redirect('/home');
       } else {
@@ -267,32 +267,32 @@ const requireAuth = require('./middleware/requireAuth.js');
 
     // app.get(path, handler) sends main feed
     // main/home page
-    app.get('/home', requireAuth, async (req, res) => {
+    app.get('/home', async (req, res) => {
       if (!req.session.userId) {
         res.redirect('/login');
       }
       else {
-          const selectedSvgs = await getRandomSvgs(svgPath);
+        const selectedSvgs = await getRandomSvgs(svgPath);
 
-          res.render('main', {
-            title: 'Home',
-            headerLinks: [
-              { rel: 'stylesheet', href: '/styles/main.css' },
-              { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-              { rel: 'stylesheet', href: '/styles/polls.css' },
-              { rel: 'stylesheet', href: '/styles/ai.css' },
-              { rel: 'stylesheet', href: '/styles/modal.css' },
+        res.render('main', {
+          title: 'CommUnity Feed',
+          headerLinks: [
+            { rel: 'stylesheet', href: '/styles/main.css' },
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+            { rel: 'stylesheet', href: '/styles/polls.css' },
+            { rel: 'stylesheet', href: '/styles/ai.css' },
+            { rel: 'stylesheet', href: '/styles/modal.css' },
 
-            ],
-            footerScripts: [
-              { src: '/scripts/main.js' },
-              { src: '/scripts/comment.js' },
-              { src: '/scripts/pollChart.js' },
-              { src: '/scripts/ai.js' },
-              { src: '/scripts/post.js' }
-            ],
-            svgs: selectedSvgs
-          });
+          ],
+          footerScripts: [
+            { src: '/scripts/main.js' },
+            { src: '/scripts/comment.js' },
+            { src: '/scripts/pollChart.js' },
+            { src: '/scripts/ai.js' },
+            { src: '/scripts/post.js' }
+          ],
+          svgs: selectedSvgs
+        });
 
       }
     });
