@@ -1,11 +1,15 @@
-// /public/scripts/loadHeaderFooter.js
-
 function loadHeaderFooter() {
-    // Header HTML
+    // Header HTML with logo and responsive nav
     const header = `
         <header>
-            <nav>
-                <ul>
+            <nav class="navbar">
+                <a href="/" class="logo">
+                    <img src="/img/Community_logo.png" alt="CommUnity logo" height="26" />
+                    <span class="site-title">CommUnity</span>
+                </a>
+                <input type="checkbox" id="nav-toggle" class="nav-toggle" />
+                <label for="nav-toggle" class="nav-toggle-label">&#9776;</label>
+                <ul class="nav-links">
                     <li><a href="/">Home</a></li>
                     <li><a href="/login">Login</a></li>    
                 </ul>
@@ -27,6 +31,5 @@ function loadHeaderFooter() {
 
 // Example usage: call this function on page load
 document.addEventListener('DOMContentLoaded', () => {
-    // Replace 'false' with your actual login check
-    loadHeaderFooter(false);
+    loadHeaderFooter();
 });

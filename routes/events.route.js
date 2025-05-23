@@ -37,6 +37,7 @@ function makeEventsRouter() {
                 user_id : req.session.userId,
                 event_name,
                 event_date : new Date(event_date),
+                userNeighbourhood: req.session.neighbourhood,
                 location,
                 description,
                 image_url,

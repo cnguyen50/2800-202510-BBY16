@@ -16,7 +16,7 @@ function makeCommentsRouter() {
             const comment = await Comment.create({post_id, user_id, content});
             const post = await Post.findById(post_id).select('user_id');
             const commenter = await User.findById(user_id).select('username');
-            comment
+  
             if(post && String(post.user_id) !== String(user_id)) {
                 const notification = await Notification.create({
                     user_id: post.user_id,
@@ -30,7 +30,7 @@ function makeCommentsRouter() {
                     }
                 })
 
-                console.log('[emit]', post.user_id.toString(), notification._id.toString());
+              
                 req.app.io.to(String(post.user_id)).emit('notification', notification);
             }
 
@@ -73,13 +73,14 @@ function makeCommentsRouter() {
         res.json(comments);
     });
 
-    router.get('/user/:userId', async (req, res) => {
+    router.get('/users/:userId', async (req, res) => {
         const comments = await Comment.find({ user_id: req.params.userId }).populate('post_id', 'text').sort({ create_at: -1 });
+        //console.log(comments);
         res.json(comments);
     })
 
     router.get('/my', requireAuth, async (req, res) => {
-        const comments = await Comment.find({ user_id: req.session.userId }).populate('post_id', 'text').sort({ created_at: -1 });
+        const comments = await Comment.find({ user_id: req.session.userId }).populate('post_id', 'title headline event_name text').sort({ created_at: -1 });
         res.json(comments);
     });
 

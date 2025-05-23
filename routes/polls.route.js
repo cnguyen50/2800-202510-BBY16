@@ -60,7 +60,21 @@ pollsRouter.get('/:pollId/view', requireAuth, async (req, res) => {
   const hasVoted = poll.voted_user_ids?.includes(String(req.session.userId));
   const expired  = Date.now() > poll.expires_at;
 
-  res.render('poll', { poll, hasVoted, expired });
+  res.render('poll', {
+      poll,
+      hasVoted,
+      expired,
+      title: poll.title || 'Post Details',
+      headerLinks: [
+        { rel: 'stylesheet', href: '/styles/polls.css' },
+        { rel: 'stylesheet', href: '/styles/main.css' }
+      ],
+      footerScripts: [
+
+        { src: '/scripts/pollChart.js' },
+        { src: '/scripts/comment.js' }
+      ]
+    });
 });
 
 /* ---------------------------------------------------------------------- */

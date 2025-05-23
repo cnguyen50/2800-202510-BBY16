@@ -19,17 +19,68 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// When "All" button is clicked, show all polls and hide the 'no nearby' message
+document.querySelector(".filter-btn-all")?.addEventListener("click", () => {
+    document.querySelectorAll(".poll-card").forEach(card => {
+        card.style.display = "block";
+    });
+    // Hide the message
+    document.getElementById("no-nearby-msg").style.display = "none";
+});
+
+// When "Near" button is clicked, filter polls by user's neighbourhood
+document.querySelector(".filter-btn-near")?.addEventListener("click", async () => {
+    const { neighbourhood } = await getLocationData();
+    let hasVisible = false;
+
+    // Loop through each poll card to check if it matches the user's neighbourhood
+    document.querySelectorAll(".poll-card").forEach(card => {
+        const cardNeighbourhood = card.dataset.neighbourhood?.toLowerCase();
+        const isMatch = cardNeighbourhood === neighbourhood.toLowerCase();
+        card.style.display = isMatch ? "block" : "none";
+        if (isMatch) hasVisible = true;
+    });
+    // Show or hide the "no nearby polls" message
+    if (!hasVisible) {
+        Swal.fire({
+            icon: 'info',
+            title: 'No Nearby Polls',
+            text: 'We couldn’t find any trending polls in your neighbourhood.',
+            confirmButtonText: 'Show All Polls',
+            confirmButtonColor: '#6A86E9',
+            background: '#fffdf7'
+        }).then(() => {
+            // After user clicks OK, show all polls again
+            document.querySelectorAll(".poll-card").forEach(card => {
+                card.style.display = "block";
+            });
+        });
+    }
+});
+
 document.addEventListener("click", (e) => {
     if (e.target.classList.contains("toggle-chart")) {
         const postId = e.target.dataset.postId;
         const canvas = document.getElementById(`chart-${postId}`);
         const controls = document.querySelector(`[data-controls-id="${postId}"]`);
+        const isHidden = canvas.classList.contains("d-none");
         canvas.classList.toggle("d-none");
         controls.classList.toggle("d-none");
 
-        if (!chartInstances[postId]) {
-            const defaultType = getDefaultChartType(postId);
-            renderPollChart(postId, defaultType);
+        // Check if the chart is already rendered to fix bug where chart size is
+
+        if (isHidden) {
+            // Wait one frame so canvas has proper layout size
+            requestAnimationFrame(() => {
+                const type = getDefaultChartType(postId);
+
+                // Always destroy and recreate chart to avoid wrong canvas sizing
+                if (chartInstances[postId]) {
+                    chartInstances[postId].destroy();
+                }
+
+                renderPollChart(postId, type);
+            });
         }
     }
 

@@ -1,6 +1,10 @@
 // routes/makeTypedRouter.js
 const express = require('express');
 const multer = require('multer');
+const path = require('path');
+const mongoose = require('mongoose');
+const fs = require('fs').promises;
+const Comment = require('../models/comment.model.js');
 const upload = multer({ dest: 'public/uploads/' });
 const requireAuth = require('../middleware/requireAuth.js');
 
@@ -21,8 +25,10 @@ module.exports = function makeTypedRouter(Model) {
       const doc = await Model.create({
         ...req.body,
         user_id: req.session.userId,
-        image_url
+        image_url,
+        neighbourhood: req.session.neighbourhood,
       });
+
 
       res.status(201).json(doc);
     } catch (err) {
@@ -54,9 +60,31 @@ module.exports = function makeTypedRouter(Model) {
 
   // DELETE
   router.delete('/:id', requireAuth, async (req, res) => {
-    const doc = await Model.findByIdAndDelete(req.params.id);
-    if (!doc) return res.status(404).json({ error: 'Not found' });
-    res.status(204).end();
+    try {
+      const post = await Model.findById(req.params.id);
+      if (!post) return res.status(404).json({ error: 'Not found' });
+
+      await Comment.deleteMany({ parent_id: post._id });
+
+      if (post.image_url && post.image_url.startsWith('/uploads/')) {
+        const imgPath = path.join(__dirname, '../public', post.image_url);
+        try {
+          await fs.unlink(imgPath);
+        } catch (err) {
+          console.warn('Failed to delete image:', imgPath, err.message);
+        }
+      }
+
+      await mongoose.model(post.constructor.modelName).deleteOne({ _id: post._id });
+
+      res.status(204).end();
+    } catch (err) {
+      console.error('Error deleting typed post:', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.get('/sameNeighbourhood', requireAuth, async (req, res) => {
   });
 
   return router;

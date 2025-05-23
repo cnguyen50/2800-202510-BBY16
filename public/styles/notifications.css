@@ -1,36 +1,119 @@
-
 body {
+  font-family: 'Satoshi', sans-serif;
+  background-color: var(--background-clr);
+  color: var(--text-clr);
   max-width: 600px;
   margin: 2rem auto;
-  font-family: system-ui, sans-serif;
+  padding: 0 1rem;
+  overflow-y: auto;
+  position: relative;
 }
+
+main {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+h1 {
+  font-weight: bold;
+}
+
+h2 {
+  text-align: center;
+  font-weight: bold;
+  color: var(--text-clr);
+}
+
 .notif-wrapper ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
+
 .notif-wrapper li {
   display: flex;
   gap: 0.75rem;
   align-items: flex-start;
-  border: 1px solid #ccc;
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
-  border-radius: 6px;
+  background-color: #fff;
+  opacity: 0.9;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease;
 }
+
+.notif-wrapper li:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
 .notif-wrapper li.unread {
-  background: #f7fbff;
+  background-color: #f7fbff;
   font-weight: 600;
 }
+
 .notif-wrapper .check {
   cursor: pointer;
   user-select: none;
   font-size: 1.25rem;
   margin-top: 0.15rem;
+  color: #888;
 }
+
 .notif-wrapper .check.done {
   color: seagreen;
 }
+
 .notif-wrapper small {
-  color: #666;
+  color: #888;
   display: block;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+/* === Notification Bar == */
+.notifications-bar {
+  height: 4px;
+  width: 60px;                  
+  background: linear-gradient(90deg, var(--blue-clr), var(--purple-clr));
+  border-radius: 3px;
+  margin: 0.3rem auto 1rem;   
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+  transition: background 0.3s ease;
+}
+
+/* === SVG BACKGROUND === */
+.bg-svg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.bg-svg-icon {
+  position: absolute;
+  opacity: 0.25;
+  width: 250px;
+  height: auto;
+}
+
+@media (max-width: 767px) {
+  body {
+    margin: 1rem;
+  }
+
+  .notif-wrapper li {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .notif-wrapper .check {
+    font-size: 1rem;
+  }
 }

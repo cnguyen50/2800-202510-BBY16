@@ -1,13 +1,20 @@
 <%- include('templates/loggedHeader') %>
 
     <main>
+
+        <div class="svg-background">
+            <% svgs.forEach(file=> { %>
+                <img src="/img/svg/<%= file %>" class="svg-icon" />
+                <% }) %>
+        </div>
+
         <h2 class="text-center my-4">User Profile</h2>
 
         <div class="profile-container">
             <!-- Left: Profile Picture and Upload Form -->
             <div class="profile-left">
                 <div class="profile-img-wrapper">
-                    <img id="profilePic" class="profile-img" src="<%= user.profilePic || '/uploads/default.jpg' %>"
+                    <img id="profilePic" class="profile-img" src=" /img/yellowguy.PNG"
                         alt="Profile Picture">
                     <label for="profilePicInput" class="camera-icon-label">
                         <i class="fas fa-camera"></i>
@@ -29,7 +36,7 @@
                 <p><strong>Email:</strong> <span id="email">
                         <%= user.email %>
                     </span></p>
-                <p><strong>Neighborhood:</strong> <span id="neighbourhood">
+                <p><strong>Neighbourhood:</strong> <span id="neighbourhood">
                         <%= user.neighbourhood %>
                     </span></p>
             </div>
@@ -48,10 +55,16 @@
         <div id="filtered-content">
             <!-- This will dynamically hold either #posts-list or #comments-list -->
             <div id="posts-list"></div>
+            <div style="text-align: center; margin-top: 1em;">
+                <button id="loadMoreBtn">Load More</button>
+            </div>
             <div id="comments-list" style="display:none;"></div>
         </div>
     </main>
 
-    <script src="/scripts/profile.js" type="module"></script>
+    <script>
+        window.profileUserId = <%- JSON.stringify(user._id.toString()) %>;
+        window.isSelfProfile = <%= viewingOtherUser ? 'false' : 'true' %>;
+    </script>
 
     <%- include('templates/loggedFooter') %>

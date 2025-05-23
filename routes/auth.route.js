@@ -10,40 +10,14 @@ const validateBody = require('../middleware/validate.js');
 function makeAuthRouter() {
   const router = express.Router();
 
-  // router.post(path, handler) → create new account
-  // purpose: register user, reject duplicates, start session
-  router.post('/register', validateBody(registerSchema), async (req, res) => {
-    try {
-      const { username, password, email, neighbourhood } = req.body;
-
-      // User.exists(query) checks for duplicate username OR email
-      if (await User.exists({ $or: [{ username }, { email }] }))
-        return res.status(409).json({ error: 'Username or email already exists' });
-
-      // bcrypt.hash(plain, saltRounds) hashes the password
-      const hash = await bcrypt.hash(password, 10);
-
-      // User.create(doc) inserts user
-      const user = await User.create({
-        username,
-        password: hash,
-        email,
-        neighbourhood: neighbourhood.toLowerCase().trim()
-      });
-
-      // req.session.userId stores login in session cookie
-      req.session.userId = user._id;
-      req.session.neighbourhood = neighbourhood;
-      res.status(201).json({ _id: user._id, username, email, neighbourhood });
-    } catch (err) {
-      res.status(400).json({ error: err.message });
-    }
-  });
 
   // router.post(path, handler) → login (auto-register if not found)
   // purpose: sign in existing user or create one on the fly
   router.post('/login', validateBody(loginSchema), async (req, res) => {
-    const { username, password, email, neighbourhood } = req.body;
+    const username = (req.body.username || "").trim();
+    const password = (req.body.password || "").trim();
+    const email = (req.body.email || "").trim();
+    const neighbourhood = (req.body.neighbourhood || "").trim().toLowerCase();
 
     // User.findOne finds user by username
     let user = await User.findOne({ username });
@@ -62,7 +36,7 @@ function makeAuthRouter() {
         username,
         password: hash,
         email,
-        neighbourhood: neighbourhood.toLowerCase().trim()
+        neighbourhood: neighbourhood
       });
     }    
 
@@ -71,12 +45,8 @@ function makeAuthRouter() {
       const match = await bcrypt.compare(password, user.password);
       if (!match) return res.status(401).json({ error: 'Invalid credentials' });
       req.session.userId = user._id;
-      req.session.neighbourhood = neighbourhood;
-
-      //cache in session for quick access
-      req.session.userNeighbourhood = user.neighbourhood;
-
-      res.redirect('/profile');
+      req.session.neighbourhood = user.neighbourhood;
+  
     } else {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -85,7 +55,7 @@ function makeAuthRouter() {
     if (!ok) return res.redirect(303, '/login?error=BAD_PASSWORD');
 
     req.session.userId = user._id;
-    res.redirect('/profile');
+    res.redirect('/home');
   
   });
 

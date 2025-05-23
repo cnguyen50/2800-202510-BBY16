@@ -1,29 +1,25 @@
 <%- include('templates/loggedHeader') %>
     <main>
-        <!-- Header -->
-        <div class="buttons">
+        <!-- Sticky buttons -->
+        <div class="sticky-buttons guardrails">
             <button class="btn custom-btn-green" data-bs-toggle="modal" data-bs-target="#postModal">
-                CREATE POSTS</button>
+                CREATE POSTS
+            </button>
+
+            <!-- Modal-style options -->
+            <div class="filter-container">
+                <!-- Fake filter button for better mobile display -->
+                <button id="filterTrigger" class="btn custom-btn-purple dropdown-toggle">FILTER POSTS</button>
+                <div id="filterOptions" class="filter-dropdown">
+                    <button class="filter-option" data-value="all">All</button>
+                    <button class="filter-option" data-value="event">Event</button>
+                    <button class="filter-option" data-value="poll">Poll</button>
+                    <button class="filter-option" data-value="news">News</button>
+                </div>
+            </div>
         </div>
 
-        <div class="svg-background">
-            <% svgs.forEach(file=> { %>
-                <img src="/img/svg/<%= file %>" class="svg-icon" />
-                <% }) %>
-        </div>
-
-        <!-- Fake filter button for better mobile display -->
-        <button id="filterTrigger" class="btn custom-btn-purple">FILTER POSTS</button>
-
-        <!-- Modal-style options -->
-        <div id="filterOptions" class="filter-popup" style="display: none;">
-            <button class="filter-option" data-value="all">All Posts</button>
-            <button class="filter-option" data-value="event">Event</button>
-            <button class="filter-option" data-value="poll">Poll</button>
-            <button class="filter-option" data-value="news">News</button>
-        </div>
-
-        <!-- Hidden select to trigger your JS -->
+        <!-- Hidden select to trigger our JS -->
         <select id="post-select" style="display: none;">
             <option value="all">All Posts</option>
             <option value="event">Event</option>
@@ -31,23 +27,41 @@
             <option value="news">News</option>
         </select>
 
-        <div class="ai-container">
+        <div class="svg-background">
+            <% svgs.forEach(file=> { %>
+                <img src="/img/svg/<%= file %>" class="svg-icon" />
+                <% }) %>
+        </div>
+
+        <div class="ai-container" id="ai-container">
             <h2>Looking for Something to do Around Your Area?</h2>
             <form id="ai-form">
-            <button type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M4.908 2.081l-2.828 2.828 19.092 19.091 2.828-2.828-19.092-19.091zm17.678 19.091l-1.414 1.414-14.143-14.142 1.414-1.414 14.143 14.142zm-13.826-18.573c1.232.376 2.197 1.341 2.572 2.573.377-1.232 1.342-2.197 2.573-2.573-1.231-.376-2.196-1.34-2.573-2.573-.375 1.232-1.34 2.197-2.572 2.573zm-5.348 6.954c-.498 1.635-1.777 2.914-3.412 3.413 1.635.499 2.914 1.777 3.412 3.411.499-1.634 1.778-2.913 3.412-3.411-1.634-.5-2.913-1.778-3.412-3.413zm9.553-3.165c.872.266 1.553.948 1.819 1.82.266-.872.948-1.554 1.819-1.82-.871-.266-1.553-.948-1.819-1.82-.266.871-.948 1.554-1.819 1.82zm4.426-6.388c-.303.994-1.082 1.772-2.075 2.076.995.304 1.772 1.082 2.077 2.077.303-.994 1.082-1.772 2.074-2.077-.992-.303-1.772-1.082-2.076-2.076z"/></svg> Ask AI</button>
+                <button type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                        viewBox="0 0 24 24">
+                        <path
+                            d="M4.908 2.081l-2.828 2.828 19.092 19.091 2.828-2.828-19.092-19.091zm17.678 19.091l-1.414 1.414-14.143-14.142 1.414-1.414 14.143 14.142zm-13.826-18.573c1.232.376 2.197 1.341 2.572 2.573.377-1.232 1.342-2.197 2.573-2.573-1.231-.376-2.196-1.34-2.573-2.573-.375 1.232-1.34 2.197-2.572 2.573zm-5.348 6.954c-.498 1.635-1.777 2.914-3.412 3.413 1.635.499 2.914 1.777 3.412 3.411.499-1.634 1.778-2.913 3.412-3.411-1.634-.5-2.913-1.778-3.412-3.413zm9.553-3.165c.872.266 1.553.948 1.819 1.82.266-.872.948-1.554 1.819-1.82-.871-.266-1.553-.948-1.819-1.82-.266.871-.948 1.554-1.819 1.82zm4.426-6.388c-.303.994-1.082 1.772-2.075 2.076.995.304 1.772 1.082 2.077 2.077.303-.994 1.082-1.772 2.074-2.077-.992-.303-1.772-1.082-2.076-2.076z" />
+                    </svg> Ask AI</button>
             </form>
 
             <div id="spinner" style="display: none;">
-            <p>Loading...</p>
+                <p>Loading...</p>
             </div>
 
-            <div id="ai-response"></div>
-            <h3 id="ai-title"></h3>
-            <ul id="ai-list"></ul>
+            <div id="response-container" class="response-container">
+                <div id="ai-image-container" class="ai-image">
+                    <img src="/img/yellowguy.PNG" id="ai-image" alt="yellow mascot guy" height="200px" width="200px">
+                </div>
+                <div id="ai-response">
+                    <h3 id="ai-title"></h3>
+                    <ul id="ai-list"></ul>
+                    <div class="backgroundDiv" id="aiBackground"></div>
+                </div>
+            </div>
+
         </div>
 
         <!-- Feed -->
-        <section class="feed">
+        <section class="feed guardrails">
             <h2>Community Feed</h2>
             <div id="post-container"></div>
             <div class="text-center my-4">
@@ -55,79 +69,12 @@
                 <p id="no-more-msg" class="mt-2 text-muted" style="display: none;">All posts loaded.</p>
             </div>
         </section>
+ 
+         <button id="refreshBtn" class="btn rounded-circle shadow" title="Refresh page">
+            <i class="bi bi-arrow-clockwise"></i>
+        </button>
+        <%- include('partials/postModal') %>
 
-        <!-- Post Modal -->
-        <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <form id="create-post-form" enctype="multipart/form-data">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="postModalLabel">Create a Post</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-
-                        <div class="modal-body">
-                            <input type="file" class="form-control mb-2" id="post-image" accept="image/*">
-                            <textarea id="post-content" class="form-control mb-2" rows="3"
-                                placeholder="Share your thoughts!"></textarea>
-
-                            <select id="post-type" class="form-select mb-2">
-                                <option value="news">News</option>
-                                <option value="event">Event</option>
-                                <option value="poll">Poll</option>
-                            </select>
-
-                            <div id="news-fields">
-                                <input type="text" class="form-control mb-2" id="news-headline" placeholder="Headline">
-                                <textarea class="form-control mb-2" id="news-body" rows="3"
-                                    placeholder="Body text"></textarea>
-                                <input type="url" class="form-control mb-2" id="news-image-url"
-                                    placeholder="Image URL (optional)">
-                                <input type="text" class="form-control mb-2" id="news-neighborhood"
-                                    placeholder="Neighborhood">
-                            </div>
-
-                            <div id="event-fields">
-                                <input type="text" class="form-control mb-2" id="event-name" placeholder="Event Name">
-                                <input type="date" class="form-control mb-2" id="event-date">
-                                <!-- <input type="text" class="form-control mb-2" id="event-location" placeholder="Location">
-                                <input type="hidden" name="neighbourhood" id="event-neighbourhood"> -->
-
-                                <!-- location and suggestions -->
-                                <div class="position-relative mb-2">
-                                    <input type="text" class="form-control mb-2" id="event-location" placeholder="Look Up Location" name="location-input">
-                                    <ul id="loc-suggestions" class="suggestions list-group"></ul>
-                                </div>
-                                
-                                <!-- hidden fields to carry the chosen coords -->
-                                <input type="hidden" id="event-lat" name="lat">
-                                <input type="hidden" id="event-lng" name="lng">
-
-                                <textarea class="form-control mb-2" id="event-description" rows="2"
-                                    placeholder="Event Description"></textarea>
-                            </div>
-
-                            <div id="poll-fields" style="display: none;">
-                                <input type="text" class="form-control mb-2" id="poll-text" placeholder="Poll Question">
-                                <input type="text" class="form-control mb-2 poll-option" id="poll-option1"
-                                    placeholder="Option 1">
-                                <input type="text" class="form-control mb-2 poll-option" id="poll-option2"
-                                    placeholder="Option 2">
-                                <input type="text" class="form-control mb-2 poll-option" id="poll-option3"
-                                    placeholder="Option 3">
-                                <input type="text" class="form-control mb-2 poll-option" id="poll-option4"
-                                    placeholder="Option 4">
-                            </div>
-
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Submit Post</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
+                      
     </main>
     <%- include('templates/loggedFooter') %>

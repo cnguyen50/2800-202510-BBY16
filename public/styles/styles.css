@@ -19,7 +19,7 @@
   --green-clr: #A3F279;
   --red-clr: #ea4625;
   --purple-clr: #D7D6F0;
-  --yellow-clr: #e1e45f;
+  --yellow-clr: #FEE440;
   --background-clr: #F9F6F0;
   --btn-shadow: rgba(215, 214, 240, 0.5);
 }
@@ -148,4 +148,43 @@ canvas {
 
 .post-footer span:hover {
   color: #007bff;
+}
+
+.guardrails{
+  width: 100%;
+  margin: auto;
+}
+
+@media(min-width: 768px){
+  .guardrails{
+    width: 90%;
+    margin: auto;
+  }
+}
+
+@media(min-width: 900px){
+  .guardrails{
+    width: 70%;
+    margin: auto;
+  }
+}
+
+@media(min-width: 1200px){
+  .guardrails{
+    width: 50%;
+    margin: auto;
+  }
+}
+
+.community{
+  padding-top: 2rem;
+}
+
+.community h2{
+  padding:2rem;
+}
+
+.post-actions-left button {
+  background-color: transparent;
+  border: none;
 }

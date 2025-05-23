@@ -3,6 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const User = require('../models/user.model.js');
 const requireAuth = require('../middleware/requireAuth.js');
+const fs = require('fs');
 
 function makeUsersRouter() {
   const router = express.Router();
@@ -42,6 +43,14 @@ function makeUsersRouter() {
     if (!user) return res.status(404).json({ error: 'Not found' });
     res.json(user);
   })
+
+  // purely-JSON version
+  router.get('/:id/json', async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'Not found' });
+    res.json(user);
+  });
+
   
   router.put('/me/location', requireAuth, async (req,res) => {
     const { latitude, longitude } = req.body;
@@ -77,7 +86,7 @@ function makeUsersRouter() {
     }
   })
 
-    router.put('/me/neighbourhood', requireAuth, async (req, res) => {
+  router.put('/me/neighbourhood', requireAuth, async (req, res) => {
     const { neighbourhood } = req.body;
     if (typeof neighbourhood !== 'string') {
       return res.status(400).json({ error: 'neighbourhood must be a string' });
@@ -119,13 +128,41 @@ function makeUsersRouter() {
     }
   });
 
-  // GET user by ID
+// GET user by ID
   router.get('/:id', async (req, res) => {
+    //console.log('Fetching user with ID:', req.params.id);
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'Not found' });
-    res.json(user);
-  });
+    const svgDir = path.join(process.cwd(), './public/img/svg/');
+    fs.readdir(svgDir, (err, files) => {
+      if (err) {
+        console.error('Failed to load SVGs', err);
+        // Optionally, still render with empty svgs array or handle error page
+        return res.status(500).send('Server error loading SVGs');
+      }
 
+      const svgs = files.filter(file => file.endsWith('.svg'));
+      const shuffled = svgs.sort(() => 0.5 - Math.random());
+      const count = Math.floor(Math.random() * 6) + 5; // between 5 and 10
+      const selectedSvgs = shuffled.slice(0, count);
+
+      res.render('profile', {
+        title: 'Profile',
+        headerLinks: [
+          { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+          { rel: 'stylesheet', href: '/styles/profile.css' }
+        ],
+        footerScripts: [
+          { src: '/scripts/profile.js', type: 'module' },
+          { src: '/scripts/comment.js' },
+          { src: '/scripts/pollChart.js' }
+        ],
+        user,  // Pass the user object to the EJS template
+        svgs: selectedSvgs, // Pass svgs here so your EJS template can use it
+        viewingOtherUser: true  // Flag to indicate if viewing own profile
+      });
+    });
+  });
   // PUT update user by ID
   router.put('/:id', async (req, res) => {
     try {

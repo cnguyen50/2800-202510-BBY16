@@ -11,7 +11,8 @@
 }
 
 nav {
-    position: fixed;
+    position: relative;
+    width: 100%;
 }
 
 .top-bar .brand {
@@ -95,6 +96,17 @@ nav {
     font-weight: 500;
 }
 
+.sidebar form{
+    padding: .75rem 1.5rem;
+}
+
+.sidebar button{
+    background-color: white;
+    border: none;
+    padding: 0;
+    color: #333;
+}
+
 .sidebar a:hover,
 .sidebar a:focus {
     background: #f5f5f5;
@@ -125,6 +137,13 @@ nav {
     padding-top: 56px;
 }
 
+a.brand{
+    text-decoration: none;
+}
+
+a.brand:hover{
+    text-decoration: none;
+}
 /* push below top bar on mobile */
 
 /*  ========  LARGE SCREENS  ========  */
