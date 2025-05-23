@@ -19,7 +19,7 @@ module.exports = function startReminders(io) {
         });
 
        for (const poll of polls) {
-        console.log(poll);
+  
         const userIds = new Set(
           poll.voted_user_ids.map(String).concat(String(poll.user_id))
         );
