@@ -6,13 +6,14 @@ async function connectDB() {
         await mongoose.connect(uri, {
             dbName: process.env.DB_NAME,
         });
-        console.log('Connected to MongoDB');
+       
     }
 
     return {
         db: mongoose.connection.db,
         client: mongoose.connection.getClient(),
     };
+    
 }
 
 module.exports = { connectDB, mongoose };

@@ -1,30 +1,85 @@
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Black.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
 :root {
-    --text-clr: #2C3E3A;
-    --icon-clr: #2C3E3A;
-    --btn-shadow: rgba(122, 197, 176, 0.2);
+  --text-clr: #4A4A4A;
+  --icon-clr: #0D1209;
+  --blue-clr: #6A86E9;
+  --green-clr: #A3F279;
+  --red-clr: #ea4625;
+  --purple-clr: #D7D6F0;
+  --yellow-clr: #FEE440;
+  --background-clr: #F9F6F0;
+  --btn-shadow: rgba(215, 214, 240, 0.5);
 }
 
 body {
-    color: var(--text-clr);
+  font-family: 'Satoshi', sans-serif;
+  background-color: var(--background-clr);
+  color: var(--text-clr);
+}
+
+h1, h2 {
+  font-weight: bold;
 }
 
 /* Buttons */
 .custom-btn-white {
-    border: 2px solid black;
-    background: transparent;
-    border-radius: 25px;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    color: black;
+  border: 2px solid black;
+  background: transparent;
+  border-radius: 25px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: black;
 }
+
 .custom-btn-white:hover {
-    background-color: rgba(0, 0, 0, 0.15);
-    color: black;
-    transform: translateY(-1px);
-    box-shadow: 0px 6px 15px var(--btn-shadow);
+  background-color: rgba(0, 0, 0, 0.15);
+  color: black;
+  transform: translateY(-1px);
+  box-shadow: 0px 6px 15px var(--btn-shadow);
 }
+
+/* Like Button */
+/* Heart icon base */
+.like-btn i.bi-heart, .like-btn i.bi-heart-fill {
+  color: #d63384; /* Bootstrap pink */
+  transition: color 0.2s ease, transform 0.2s ease;
+  margin-right: 4px;
+  font-size: 1.1rem;
+}
+
+/* On hover, pop a bit */
+.like-btn:hover i {
+  transform: scale(1.2);
+  color: #a61e4d; /* darker pink on hover */
+}
+
+/* Chart Styling */
+canvas {
+  display: block;
+  max-width: 100%;
+  width: 300px;
+  height: auto;
+  margin: 0 auto;
+}
+.chart-controls {
+  margin-top: 0.5rem;
+}
+
 
 /* modal */
 .modal-content {
@@ -93,4 +148,43 @@ body {
 
 .post-footer span:hover {
   color: #007bff;
+}
+
+.guardrails{
+  width: 100%;
+  margin: auto;
+}
+
+@media(min-width: 768px){
+  .guardrails{
+    width: 90%;
+    margin: auto;
+  }
+}
+
+@media(min-width: 900px){
+  .guardrails{
+    width: 70%;
+    margin: auto;
+  }
+}
+
+@media(min-width: 1200px){
+  .guardrails{
+    width: 50%;
+    margin: auto;
+  }
+}
+
+.community{
+  padding-top: 2rem;
+}
+
+.community h2{
+  padding:2rem;
+}
+
+.post-actions-left button {
+  background-color: transparent;
+  border: none;
 }

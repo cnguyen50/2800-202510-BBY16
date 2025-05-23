@@ -33,9 +33,9 @@ const UserSchema = new Schema(
     neighbourhood: {
       type: String,
       required: true,
+      lowercase: true,
       trim: true,
     },
-
     location: {
       type: {
         type: String,
@@ -48,7 +48,11 @@ const UserSchema = new Schema(
         default: [0,0],
         required: true
       }
-    }
+    },
+    profilePic: {
+      type: String, 
+      default: '/uploads/default.jpg', 
+    },
 },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },

@@ -1,10 +1,56 @@
 <%- include('templates/loggedHeader', {                
-      headerLinks:  headerLinks
+    headerLinks:  headerLinks
 }) %>
 <main>
-    <h1>Map</h1>
-    <div id="location-info">location info</div>
-    <div id="map" style="height:400px;"></div>
+    <div id="map"></div>
+    
+    <div class="svg-background">
+        <% selectedSvgs.forEach(file=> { %>
+        <img src="/img/svg/<%= file %>" class="svg-icon" />
+        <% }) %>
+    </div>
+
+    <div id="bottom-container">
+        <div id="location-info">location info</div>
+        <div class="btn-group my-2">
+            <button id="toggle-cluster" class="custom-btn-green">All Events</button>
+            <button id="toggle-near" class="custom-btn-purple">Nearby Events</button>
+        </div>
+    </div>
+
+    <section id="event-list" class="event-cards container my-4">
+    <h2>Upcoming Events</h2>
+        <% if (!events.length) { %>
+            <p>No events scheduled.</p>
+        <% } else { %>
+            <div class="row" id="event-cards-row">
+                <% events.forEach(ev => { %>
+                <div class="col-12 mb-3 event-col" data-id="<%= ev._id %>">
+                    <div class="card h-100" data-id="<%= ev._id %>">
+                    <div class="card-body">
+                        <div class="title">
+                            <h4 class="card-title"><%= ev.event_name %></h4>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <%= new Date(ev.event_date).toLocaleDateString('en-US',{ month:'short', day:'numeric', year:'numeric' }) %>
+                            </h6>
+                        </div>
+                        <% if (ev.image_url) { %>
+                            <img src="<%= ev.image_url %>" class="card-img-bottom" alt="Event image">
+                        <% } %>
+                        <p class="card-text">
+                        <strong>Location:</strong> <%= ev.location %><br>
+                        <strong>Hosted By:</strong> @<%= ev.user_id.username %>
+                        </p>
+                        <% if (ev.description) { %>
+                            <p class="card-text"> <strong>Details:</strong> <%= ev.description %></p>
+                        <% } %>
+                    </div>
+                    </div>
+                </div>
+                <% }) %>
+            </div>
+        <% } %>
+    </section>
 </main>
 
 <%- include('templates/loggedFooter', { footerScripts }) %>

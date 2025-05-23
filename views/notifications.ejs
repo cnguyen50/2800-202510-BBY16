@@ -1,0 +1,14 @@
+<%- include('templates/loggedHeader', { title: 'Notifications' }) %>
+    <main id="notif-page" class="notif-wrapper">
+        <h1>Notifications</h1>
+        <div class="notifications-bar"></div>
+        <ul id="notif-list"></ul>
+
+        <div class="bg-svg">
+            <% svgs.forEach(file=> { %>
+                <img src="/img/svg/<%= file %>" class="bg-svg-icon" />
+                <% }) %>
+        </div>
+
+    </main>
+    <%- include('templates/loggedFooter') %>

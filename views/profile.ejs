@@ -1,22 +1,70 @@
 <%- include('templates/loggedHeader') %>
-<main>
-    <section id="profile">
-        <h1 id="username">Loading…</h1>
-        <p><strong>Email:</strong> <span id="email"></span></p>
-        <p><strong>Neighbourhood:</strong> <span id="neighbourhood"></span></p>
-    </section>
 
-    <section id="comments">
-        <h2>My Comments</h2>
-        <div id="comments-list">Loading comments…</div>
-    </section>
+    <main>
 
-    <section id="posts">
-        <h2>My Posts</h2>
-        <div id="posts-list">Loading posts…</div>
+        <div class="svg-background">
+            <% svgs.forEach(file=> { %>
+                <img src="/img/svg/<%= file %>" class="svg-icon" />
+                <% }) %>
+        </div>
 
-    </section>
+        <h2 class="text-center my-4"><span id="profile-name"></span>'s Profile</h2>
 
-    <script src="./scripts/profile.js" type="module"></script>
-</main>
-<%- include('templates/loggedFooter') %>
+        <div class="profile-container">
+            <!-- Left: Profile Picture and Upload Form -->
+            <div class="profile-left">
+                <div class="profile-img-wrapper">
+                    <img id="profilePic" class="profile-img" src=" /img/yellowguy.PNG"
+                        alt="Profile Picture">
+                    <label for="profilePicInput" class="camera-icon-label">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                </div>
+
+                <form id="profilePicForm" action="/profile/upload" method="POST" enctype="multipart/form-data">
+                    <input type="file" id="profilePicInput" name="profilePic" accept="image/*" hidden>
+                </form>
+
+                <p id="uploadMessage" class="upload-message"></p>
+            </div>
+
+            <!-- Right: Profile Info -->
+            <div class="profile-right">
+                <p><strong>Username:</strong> <span id="username">
+                        <%= user.username %>
+                    </span></p>
+                <p><strong>Email:</strong> <span id="email">
+                        <%= user.email %>
+                    </span></p>
+                <p><strong>Neighbourhood:</strong> <span id="neighbourhood">
+                        <%= user.neighbourhood %>
+                    </span></p>
+            </div>
+        </div>
+
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab active" data-type="all">All</button>
+                <button class="tab" data-type="news">News</button>
+                <button class="tab" data-type="poll">Polls</button>
+                <button class="tab" data-type="event">Events</button>
+                <button class="tab" data-type="comment">My Comments</button>
+            </div>
+        </div>
+
+        <div id="filtered-content">
+            <!-- This will dynamically hold either #posts-list or #comments-list -->
+            <div id="posts-list"></div>
+            <div style="text-align: center; margin-top: 1em;">
+                <button id="loadMoreBtn">Load More</button>
+            </div>
+            <div id="comments-list" style="display:none;"></div>
+        </div>
+    </main>
+
+    <script>
+        window.profileUserId = <%- JSON.stringify(user._id.toString()) %>;
+        window.isSelfProfile = <%= viewingOtherUser ? 'false' : 'true' %>;
+    </script>
+
+    <%- include('templates/loggedFooter') %>

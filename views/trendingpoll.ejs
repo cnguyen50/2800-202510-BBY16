@@ -1,0 +1,63 @@
+<%- include('templates/loggedHeader') %>
+
+    <main class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Trending Polls</h2>
+            <div class="svg-background">
+                <% svgs.forEach(file=> { %>
+                    <img src="/img/svg/<%= file %>" class="svg-icon" />
+                    <% }) %>
+            </div>
+
+            <div>
+                <button class="btn filter-btn-all" data-filter="all">All</button>
+                <button class="btn filter-btn-near" data-filter="near">Near</button>
+            </div>
+            <div class="btn-group">
+                <button class="btn dropdown-toggle" type="button" id="chartTypeDropdown" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Chart Type
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="chartTypeDropdown">
+                    <li><a class="dropdown-item global-chart-type" data-type="bar" href="#">Bar</a></li>
+                    <li><a class="dropdown-item global-chart-type" data-type="pie" href="#">Pie</a></li>
+                    <li><a class="dropdown-item global-chart-type" data-type="doughnut" href="#">Doughnut</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+            <% polls.forEach(poll=> { %>
+                <div class="col poll-card" data-neighbourhood="<%= poll.neighbourhood %>">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <%= poll.text %>
+                            </h5>
+                            <ul class="list-unstyled small mb-3">
+                                <% poll.options.forEach(opt=> { %>
+                                    <li>
+                                        <%= opt.label %>: <%= opt.votes %> votes
+                                    </li>
+                                    <% }) %>
+                            </ul>
+                            <div class="text-center">
+                                <canvas id="chart-<%= poll._id %>" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
+                    <p id="no-nearby-msg" class="no-nearby-message text-muted mt-4" style="display: none;">
+                        No nearby polls found in your neighbourhood.
+                    </p>
+        </div>
+    </main>
+    <script id="poll-data" type="application/json">
+  <%- JSON.stringify(polls) %>
+</script>
+
+    <script>
+        window.loadedPosts = JSON.parse(document.getElementById('poll-data').textContent);
+    </script>
+    <%- include('templates/loggedFooter') %>
