@@ -1,3 +1,4 @@
+//logic to display nav 
 document.addEventListener('DOMContentLoaded', () => {
 
   const toggle   = document.getElementById('menu-toggle');

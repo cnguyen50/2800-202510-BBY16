@@ -19,7 +19,6 @@ const BasePostSchema = new Schema(
       type: [Schema.Types.ObjectId],
       ref: 'User',
       default: [],
-
     }
   },
   {

@@ -1,3 +1,4 @@
+//fetches the current amount of posts and populates the like button with the response
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("post-container").addEventListener("click", async (event) => {
     const button = event.target.closest(".post-like");

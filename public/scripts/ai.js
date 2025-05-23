@@ -6,7 +6,6 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
   const list = document.getElementById('ai-list');
   const box = document.getElementById('ai-response');
   const background = document.getElementById('aiBackground');
-  const image = document.getElementById('ai-image');
     const imageContainer = document.getElementById('ai-image-container');
   const responseContainer = document.getElementById('response-container');
 
@@ -27,9 +26,6 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
     const data = await res.json();
     const { title, items } = formatResponse(data.message);
 
-  
-    const container = document.getElementById('ai-container');
-
     titleHeader.textContent = title;
 
     list.innerHTML = ''; // Clear existing list items
@@ -49,9 +45,6 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
     box.append(list);
     responseContainer.append(box);
 
-    // let imageHeight = box.offsetHeight;
-    // image.height = imageHeight * 2;
-    // image.width = imageHeight * 2;
     imageContainer.style.display = 'block';
 
   } catch (err) {
@@ -62,6 +55,7 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
   }
 });
 
+// this function was generated using ai to help template the response
 function formatResponse(response) {
   // 1. Normalise line-breaks & remove asterisks
   const lines = response

@@ -52,11 +52,11 @@
                         No nearby polls found in your neighbourhood.
                     </p>
         </div>
+
     </main>
     <script id="poll-data" type="application/json">
   <%- JSON.stringify(polls) %>
 </script>
-
     <script>
         window.loadedPosts = JSON.parse(document.getElementById('poll-data').textContent);
     </script>

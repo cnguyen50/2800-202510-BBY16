@@ -1,13 +1,12 @@
 const express = require('express');
 const multer = require('multer');
-const upload = multer({ dest: 'public/uploads/' });
 const { Post } = require('../models/post.model.js')
 const mongoose = require('mongoose');
 const Comment = require('../models/comment.model.js');
 const requireAuth = require('../middleware/requireAuth.js');
 const fs = require('fs').promises;
 
-const User = require('../models/user.model.js');
+
 function makePostsRouter() {
   const router = express.Router();
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt  = require('bcrypt');
 const User    = require('../models/user.model.js');
-const { registerSchema, loginSchema } = require('../middleware/validateUser.js');
+const {loginSchema } = require('../middleware/validateUser.js');
 const validateBody = require('../middleware/validate.js');
 /*
   makeAuthRouter() returns an Express Router

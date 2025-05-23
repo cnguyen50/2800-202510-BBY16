@@ -24,86 +24,92 @@ const svgPath = path.join(__dirname, './public/img/svg');
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 const requireAuth = require('./middleware/requireAuth.js');
 
-
 (async () => {
   try {
-    // connectDB() returns { db, client }
+    // Connect to MongoDB and get both db and client for session storage
     const { db, client } = await connectDB();
 
     const app = express();
 
-    // app.use(middleware) attaches JSON-body parser to all requests
-    // handles application/json
+    // Parse JSON request bodies
     app.use(express.json());
 
+    // Set up EJS as the template engine and set views directory
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'views'));
 
-    // app.use(middleware) attaches URL-encoded parser
-    // handles form submissions from HTML <form>
+    // Parse URL-encoded request bodies (form submissions)
     app.use(express.urlencoded({ extended: true }));
 
-    // app.use(express.static(dir)) serves static files
-    // exposes everything inside /public
+    // Serve static files from the /public directory
     app.use(express.static('public'));
 
-    // app.use(session(options)) adds req.session support
-    // stores sessions in MongoDB, 14-day cookie
-    const sessionMiddleware =
-      session({
-        name: 'sessionId',
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-        store: MongoDBStore.create({
-          client,
-          dbName: process.env.DB_NAME,
-          collectionName: 'sessions',
-          ttl: 14 * 24 * 60 * 60
-        }),
-        cookie: {
-          httpOnly: true,
-          sameSite: 'lax',
-          // secure: process.env.NODE_ENV === 'production',
-          maxAge: 14 * 24 * 60 * 60 * 1000
-        }
-      });
+    // Set up session middleware, using MongoDB as the session store
+    const sessionMiddleware = session({
+      name: 'sessionId',
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      store: MongoDBStore.create({
+        client,
+        dbName: process.env.DB_NAME,
+        collectionName: 'sessions',
+        ttl: 14 * 24 * 60 * 60 // 14 days
+      }),
+      cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        // secure: process.env.NODE_ENV === 'production',
+        maxAge: 14 * 24 * 60 * 60 * 1000
+      }
+    });
 
     app.use(sessionMiddleware);
 
+    // Set up HTTP server and Socket.io for real-time features (e.g., notifications)
     const http = require('http').createServer(app);
     const { Server } = require('socket.io');
-
     const io = new Server(http, { cors: { origin: '*' } });
     app.io = io;
 
+    // Initialize reminders system to use sockets for scheduled notifications
     require('./scripts/reminders.js')(io);
 
+    // Allow Socket.io to use session data
     io.use((socket, next) => {
       sessionMiddleware(socket.request, {}, next);
-    })
+    });
 
+    // On socket connection, join a user-specific room if logged in
     io.on('connection', (socket) => {
       const uid = socket.request.session.userId;
       if (uid) {
         socket.join(String(uid));
-      } else {
       }
-    })
+    });
 
-    // app.use('/auth', router) mounts router under /auth
-    // routes for login, register, logout, etc.
+    // Public routes (authentication)
     app.use('/auth', makeAuthRouter());
 
-    // app.use('/users', router) mounts router under /users
-    // profile, update, delete, current user endpoints
+    // Authenticated routes (require logged-in user)
     app.use('/users', requireAuth, makeUsersRouter());
+    app.use('/posts', requireAuth, makePostsRouter());
+    app.use('/comments', requireAuth, makeCommentsRouter());
+    app.use('/events', requireAuth, makeEventsRouter());
+    app.use('/news', requireAuth, makeTypedRouter(NewsPost));
+    app.use('/map/data', requireAuth, makeMapDataRouter());
+    app.use('/polls', requireAuth, require('./routes/polls.route.js'));
+    app.use('/api/notifications', requireAuth, require('./routes/notifications.api.js'));
+    app.use('/ai', requireAuth, aiRouter);
 
+    // Serve uploaded profile pictures from /public/uploads
+    app.use('/uploads', requireAuth, express.static(path.join(__dirname, 'public/uploads')));
+
+    // MAP PAGE: render map and event markers
     app.get('/map', requireAuth, async (req, res) => {
       try {
         const today = new Date();
         const nextWeek = new Date();
-
         nextWeek.setDate(today.getDate() + 7);
 
         const events = await EventPost
@@ -112,70 +118,48 @@ const requireAuth = require('./middleware/requireAuth.js');
           .populate('user_id', 'username')
           .lean();
 
-         const selectedSvgs = await getRandomSvgs(svgPath);
+        const selectedSvgs = await getRandomSvgs(svgPath);
 
-          res.render('map', {
-            title: 'Map',
-            headerLinks: [
-              { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
-              { rel: 'stylesheet', href: 'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css' },
-              { rel: 'stylesheet', href: 'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css' },
-              { rel: 'stylesheet', href: '/styles/map.css' },
-              { rel: 'stylesheet', href: '/styles/loggedIn.css' }
-            ],
-            footerScripts: [
-              { src: 'https://unpkg.com/leaflet/dist/leaflet.js' },
-              { src: 'https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js' },
-              { src: '/scripts/map.js' }
-            ],
-            events,
-            selectedSvgs
-          });
+        res.render('map', {
+          title: 'Map',
+          headerLinks: [
+            { rel: 'stylesheet', href: 'https://unpkg.com/leaflet/dist/leaflet.css' },
+            { rel: 'stylesheet', href: 'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css' },
+            { rel: 'stylesheet', href: 'https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css' },
+            { rel: 'stylesheet', href: '/styles/map.css' },
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' }
+          ],
+          footerScripts: [
+            { src: 'https://unpkg.com/leaflet/dist/leaflet.js' },
+            { src: 'https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js' },
+            { src: '/scripts/map.js' }
+          ],
+          events,
+          selectedSvgs
+        });
       } catch (err) {
         console.log("Cannot fetch map and events", err);
       }
     });
 
-    // JSON API: events in my neighbourhood for map pins
-    app.use('/map/data', requireAuth, makeMapDataRouter());
-
-    // app.use('/posts', router) mounts router under /posts
-    // create, read, update, delete posts
-    app.use('/posts', requireAuth, makePostsRouter());
-
-    // app.use('/comments', router) mounts router under /comments
-    // create and list current user comments
-    app.use('/comments', requireAuth, makeCommentsRouter());
-
-    // app.use('/events', router) mounts router under /events
-    // create, read, update, delete typed posts
-    //app.use('/events', makeTypedRouter(EventPost));
-    // Useing this since seperated event.route.js
-    app.use('/events', requireAuth, makeEventsRouter());
-
-    app.use('/news', requireAuth, makeTypedRouter(NewsPost));
-
+    // NOTIFICATIONS PAGE: render notifications UI for user
     app.get('/notifications', requireAuth, async (req, res) => {
- 
-         const selectedSvgs = await getRandomSvgs(svgPath);
+      const selectedSvgs = await getRandomSvgs(svgPath);
 
-        res.render('notifications', {
-          userId: req.session.userId,
-          headerLinks: [
-            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-            { rel: 'stylesheet', href: '/styles/notifications.css' }
-          ],
-          footerScripts: [
-            { src: '/scripts/notifications.js' }
-          ],
-          svgs: selectedSvgs
-        });
-
+      res.render('notifications', {
+        userId: req.session.userId,
+        headerLinks: [
+          { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+          { rel: 'stylesheet', href: '/styles/notifications.css' }
+        ],
+        footerScripts: [
+          { src: '/scripts/notifications.js' }
+        ],
+        svgs: selectedSvgs
+      });
     });
 
-    const pollsRouter = require('./routes/polls.route.js');
-    app.use('/polls', requireAuth, pollsRouter);
-
+    // TRENDING POLLS PAGE: show top polls sorted by votes
     app.get('/trendingpoll', requireAuth, async (req, res) => {
       if (!req.session.userId) return res.redirect('/login');
 
@@ -187,91 +171,73 @@ const requireAuth = require('./middleware/requireAuth.js');
           totalVotes: p.options.reduce((sum, o) => sum + o.votes, 0)
         }))
         .sort((a, b) => b.totalVotes - a.totalVotes)
-        .slice(0, 6); // show 6 trending
+        .slice(0, 6); // show top 6
 
-        const selectedSvgs = await getRandomSvgs(svgPath);
+      const selectedSvgs = await getRandomSvgs(svgPath);
 
-        res.render('trendingpoll', {
-          title: 'Trending Polls',
-          polls: sorted,
-          headerLinks: [
-            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-            { rel: 'stylesheet', href: '/styles/polls.css' },
-            { rel: 'stylesheet', href: '/styles/trendingPoll.css' }
-          ],
-          footerScripts: [
-            { src: 'https://cdn.jsdelivr.net/npm/chart.js' },
-            { src: '/scripts/pollChart.js' }
-          ],
-          svgs: selectedSvgs // ✅ pass SVGs to your EJS
-        });
-    
+      res.render('trendingpoll', {
+        title: 'Trending Polls',
+        polls: sorted,
+        headerLinks: [
+          { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+          { rel: 'stylesheet', href: '/styles/polls.css' },
+          { rel: 'stylesheet', href: '/styles/trendingPoll.css' }
+        ],
+        footerScripts: [
+          { src: 'https://cdn.jsdelivr.net/npm/chart.js' },
+          { src: '/scripts/pollChart.js' }
+        ],
+        svgs: selectedSvgs
+      });
     });
 
-
-    // Serve uploaded profile pictures
-    app.use('/uploads', requireAuth, express.static(path.join(__dirname, 'public/uploads')));
-
-    app.use('/api/notifications', requireAuth, require('./routes/notifications.api.js'));
-
-    // app.get(path, handler) sends index page
-    // landing page
+    // LANDING PAGE: redirect logged-in users, show login for guests
     app.get('/', (req, res) => {
-  
       if (req.session.userId) {
         res.redirect('/home');
       } else {
-        res.sendFile(path.join(__dirname, './public/login.html'))
+        res.sendFile(path.join(__dirname, './public/login.html'));
       }
     });
 
-    app.use('/ai', requireAuth, aiRouter);
-
-    //app.get(path, handler) sends profile page
-    //profile page (uses JS to fetch /current endpoints)
+    // PROFILE PAGE: view/update your profile
     app.get('/profile', requireAuth, async (req, res) => {
       if (!req.session.userId) {
-        return res.redirect('/login');  // If user is not logged in, redirect to login
+        return res.redirect('/login');
       }
-
       try {
-        const user = await User.findById(req.session.userId);  // Fetch user from DB
+        const user = await User.findById(req.session.userId);
         if (!user) {
-          return res.status(404).send('User not found');  // If user is not found in DB
+          return res.status(404).send('User not found');
         }
-
-      
-       const selectedSvgs = await getRandomSvgs(svgPath);
-          res.render('profile', {
-            title: 'Profile',
-            headerLinks: [
-              { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-              { rel: 'stylesheet', href: '/styles/polls.css' },
-              { rel: 'stylesheet', href: '/styles/profile.css' }
-            ],
-            footerScripts: [
-              { src: '/scripts/profile.js', type: 'module' },
-              { src: '/scripts/comment.js' },
-              { src: '/scripts/pollChart.js' }
-            ],
-            user,
-            svgs: selectedSvgs,
-            viewingOtherUser: false
-          });
-
+        const selectedSvgs = await getRandomSvgs(svgPath);
+        res.render('profile', {
+          title: 'Profile',
+          headerLinks: [
+            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+            { rel: 'stylesheet', href: '/styles/polls.css' },
+            { rel: 'stylesheet', href: '/styles/profile.css' }
+          ],
+          footerScripts: [
+            { src: '/scripts/profile.js', type: 'module' },
+            { src: '/scripts/comment.js' },
+            { src: '/scripts/pollChart.js' }
+          ],
+          user,
+          svgs: selectedSvgs,
+          viewingOtherUser: false
+        });
       } catch (err) {
         console.error(err);
         res.status(500).send('Server error');
       }
     });
 
-    // app.get(path, handler) sends main feed
-    // main/home page
+    // MAIN FEED PAGE: home feed for logged-in users
     app.get('/home', async (req, res) => {
       if (!req.session.userId) {
         res.redirect('/login');
-      }
-      else {
+      } else {
         const selectedSvgs = await getRandomSvgs(svgPath);
 
         res.render('main', {
@@ -281,8 +247,7 @@ const requireAuth = require('./middleware/requireAuth.js');
             { rel: 'stylesheet', href: '/styles/loggedIn.css' },
             { rel: 'stylesheet', href: '/styles/polls.css' },
             { rel: 'stylesheet', href: '/styles/ai.css' },
-            { rel: 'stylesheet', href: '/styles/modal.css' },
-
+            { rel: 'stylesheet', href: '/styles/modal.css' }
           ],
           footerScripts: [
             { src: '/scripts/main.js' },
@@ -293,33 +258,28 @@ const requireAuth = require('./middleware/requireAuth.js');
           ],
           svgs: selectedSvgs
         });
-
       }
     });
 
+    // NEIGHBOURHOOD FEED PAGE: posts and events in your area
     app.use('/myCommunity', requireAuth, async (req, res) => {
-
-
-        const selectedSvgs = await getRandomSvgs(svgPath);
-        res.render('myCommunity', {
-          title: 'My Community',
-          headerLinks: [
-            { rel: 'stylesheet', href: '/styles/loggedIn.css' },
-            { rel: 'stylesheet', href: '/styles/main.css' },
-          ],
-          footerScripts: [
-            { src: '/scripts/myCommunity.js' },
-            { src: '/scripts/comment.js' },
-            { src: '/scripts/post.js' }
-          ],
-          svgs: selectedSvgs
-        });
-
-
+      const selectedSvgs = await getRandomSvgs(svgPath);
+      res.render('myCommunity', {
+        title: 'My Community',
+        headerLinks: [
+          { rel: 'stylesheet', href: '/styles/loggedIn.css' },
+          { rel: 'stylesheet', href: '/styles/main.css' }
+        ],
+        footerScripts: [
+          { src: '/scripts/myCommunity.js' },
+          { src: '/scripts/comment.js' },
+          { src: '/scripts/post.js' }
+        ],
+        svgs: selectedSvgs
+      });
     });
 
-    // app.use(path, handler) intercepts /login
-    // redirects logged-in users, otherwise shows login form
+    // LOGIN PAGE: redirect to home if already logged in
     app.use('/login', (req, res) => {
       if (req.session.userId) {
         res.redirect('/home');
@@ -328,34 +288,30 @@ const requireAuth = require('./middleware/requireAuth.js');
       }
     });
 
+    // 404 HANDLER: custom not found page for logged-in users
     app.use(async (req, res, next) => {
       if (!req.session.userId) {
-        
         res.redirect('/login');
       } else {
-      
         const selectedSvgs = await getRandomSvgs(svgPath);
         res.status(404).render('404', {
-           title: '404 Not Found',
+          title: '404 Not Found',
           headerLinks: [
             { rel: 'stylesheet', href: '/styles/main.css' },
-            { rel: 'stylesheet', href: '/styles/404.css'}
+            { rel: 'stylesheet', href: '/styles/404.css' }
           ],
           footerScripts: [
-            {src: '/scripts/renderSvgs.js'}
+            { src: '/scripts/renderSvgs.js' }
           ],
           svgs: selectedSvgs
         });
       }
     });
 
-
-
-    // Start HTTP server on given port
-    // default 3000
+    // Start the HTTP server on configured port (default: 3000)
     const PORT = process.env.PORT || 3000;
-
     http.listen(PORT, () => {
+      // Server started
     });
 
   } catch (error) {
