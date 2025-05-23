@@ -6,7 +6,6 @@ document.getElementById('ai-form').addEventListener('submit', async (e) => {
   const list = document.getElementById('ai-list');
   const box = document.getElementById('ai-response');
   const background = document.getElementById('aiBackground');
-  const image = document.getElementById('ai-image');
     const imageContainer = document.getElementById('ai-image-container');
   const responseContainer = document.getElementById('response-container');
 
