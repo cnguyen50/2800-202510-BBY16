@@ -24,7 +24,6 @@ const svgPath = path.join(__dirname, './public/img/svg');
 const { EventPost, PollPost, NewsPost } = require('./models/post.model.js');
 const requireAuth = require('./middleware/requireAuth.js');
 
-
 (async () => {
   try {
     // connectDB() returns { db, client }
@@ -208,7 +207,6 @@ const requireAuth = require('./middleware/requireAuth.js');
     
     });
 
-
     // Serve uploaded profile pictures
     app.use('/uploads', requireAuth, express.static(path.join(__dirname, 'public/uploads')));
 
@@ -239,7 +237,6 @@ const requireAuth = require('./middleware/requireAuth.js');
         if (!user) {
           return res.status(404).send('User not found');  // If user is not found in DB
         }
-
       
        const selectedSvgs = await getRandomSvgs(svgPath);
           res.render('profile', {
@@ -348,8 +345,6 @@ const requireAuth = require('./middleware/requireAuth.js');
         });
       }
     });
-
-
 
     // Start HTTP server on given port
     // default 3000
