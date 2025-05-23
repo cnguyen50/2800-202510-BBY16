@@ -275,7 +275,7 @@ const requireAuth = require('./middleware/requireAuth.js');
         const selectedSvgs = await getRandomSvgs(svgPath);
 
         res.render('main', {
-          title: 'Home',
+          title: 'CommUnity Feed',
           headerLinks: [
             { rel: 'stylesheet', href: '/styles/main.css' },
             { rel: 'stylesheet', href: '/styles/loggedIn.css' },
