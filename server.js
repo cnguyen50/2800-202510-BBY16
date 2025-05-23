@@ -107,7 +107,7 @@ const requireAuth = require('./middleware/requireAuth.js');
         nextWeek.setDate(today.getDate() + 7);
 
         const events = await EventPost
-          .find({ event_date: { $gte: today, $lte: nextWeek } })
+          .find()
           .sort({ event_date: 1 })
           .populate('user_id', 'username')
           .lean();
