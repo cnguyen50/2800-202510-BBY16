@@ -283,9 +283,9 @@ async function init() {
 
     if (user) {
       renderUser(user);
-      document.getElementById('profilePic').src = user.profilePic || '/uploads/default.jpg';
+      document.getElementById('profilePic').src = ' /img/yellowguy.PNG';
     } else {
-      document.getElementById('profilePic').src = '/uploads/default.jpg';
+      document.getElementById('profilePic').src = '/img/yellowguy.PNG';
       document.getElementById('username').textContent = 'Login required';
       document.getElementById('email').textContent = 'N/A';
       document.getElementById('neighbourhood').textContent = 'N/A';
@@ -343,7 +343,7 @@ async function init() {
     document.getElementById('username').textContent = 'Login required';
     document.getElementById('email').textContent = 'N/A';
     document.getElementById('neighbourhood').textContent = 'N/A';
-    document.getElementById('profilePic').src = '/uploads/default.jpg';
+    document.getElementById('profilePic').src = '/img/yellowguy.PNG';
     document.getElementById('uploadMessage').textContent = 'Error loading user data. Please try again.';
   }
 }
