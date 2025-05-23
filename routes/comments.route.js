@@ -80,7 +80,7 @@ function makeCommentsRouter() {
     })
 
     router.get('/my', requireAuth, async (req, res) => {
-        const comments = await Comment.find({ user_id: req.session.userId }).populate('post_id', 'text').sort({ created_at: -1 });
+        const comments = await Comment.find({ user_id: req.session.userId }).populate('post_id', 'title headline event_name text').sort({ created_at: -1 });
         res.json(comments);
     });
 
