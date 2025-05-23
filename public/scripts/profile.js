@@ -280,6 +280,9 @@ async function init() {
       fetchJson(isSelf ? '/posts/me' : `/posts/users/${userId}`)
     ]);
 
+    let profileName = document.getElementById('profile-name');
+    profileName.innerText = user.username;
+
 
     if (user) {
       renderUser(user);
