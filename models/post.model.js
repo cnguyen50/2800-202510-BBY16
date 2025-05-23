@@ -2,7 +2,7 @@
 const { Schema, model } = require('mongoose');
 
 // helper: reject $ and . in strings (mongo‑operator injection)
-const noDollarDot = v => !/[$.]/.test(v);
+const noDollar = v => !/\$/.test(v);
 
 const BasePostSchema = new Schema(
   {
@@ -34,14 +34,14 @@ const Post = model('Post', BasePostSchema);
 const EventPost = Post.discriminator(
   'Event',
   new Schema({
-    event_name: { type: String, required: true, maxlength: 40, validate: noDollarDot },
+    event_name: { type: String, required: true, maxlength: 1000, validate: noDollar },
     event_date: {
       type: Date,
       required: true,
       validate: { validator: d => d > Date.now(), message: 'Date must be in the future' }
     },
-    location: { type: String, required: true, minlength: 2, maxlength: 200, validate: noDollarDot },
-    description: { type: String, maxlength: 2000, validate: noDollarDot },
+    location: { type: String, required: true, minlength: 2, maxlength: 200, validate: noDollar },
+    description: { type: String, maxlength: 2000, validate: noDollar },
       image_url: {
       type: String,
       validate: { validator: v => !v || /^https?:\/\//.test(v), message: 'Bad image URL' }
@@ -60,14 +60,14 @@ const EventPost = Post.discriminator(
 const PollPost = Post.discriminator(
   'Poll',
   new Schema({
-    text: { type: String, required: true, maxlength: 1000, validate: noDollarDot },
+    text: { type: String, required: true, maxlength: 1000, validate: noDollar },
     expires_at: {
       type: Date,
       default: () => Date.now() + 24 * 60 * 60 * 1000,
       validate: { validator: d => d > Date.now(), message: 'Expiry must be in the future' }
     },
     options: [{
-      label: { type: String, required: true, maxlength: 280, validate: noDollarDot },
+      label: { type: String, required: true, maxlength: 280, validate: noDollar },
       votes: { type: Number, default: 0 }
     }],
     voted_user_ids: [String],
@@ -78,8 +78,8 @@ const PollPost = Post.discriminator(
 const NewsPost = Post.discriminator(
   'News',
   new Schema({
-    headline  : { type: String, required: true, minlength: 3, maxlength: 200, validate: noDollarDot },
-    body      : { type: String, required: true, validate: noDollarDot },
+    headline  : { type: String, required: true, minlength: 3, maxlength: 1000, validate: noDollar },
+    body      : { type: String, required: true, validate: noDollar },
      image_url: {
       type: String,
       validate: { validator: v => !v || /^https?:\/\//.test(v), message: 'Bad image URL' }

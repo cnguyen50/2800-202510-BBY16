@@ -151,9 +151,17 @@ canvas {
 }
 
 .guardrails{
-  width: 90%;
+  width: 100%;
   margin: auto;
 }
+
+@media(min-width: 768px){
+  .guardrails{
+    width: 90%;
+    margin: auto;
+  }
+}
+
 @media(min-width: 900px){
   .guardrails{
     width: 70%;
@@ -166,4 +174,17 @@ canvas {
     width: 50%;
     margin: auto;
   }
+}
+
+.community{
+  padding-top: 2rem;
+}
+
+.community h2{
+  padding:2rem;
+}
+
+.post-actions-left button {
+  background-color: transparent;
+  border: none;
 }

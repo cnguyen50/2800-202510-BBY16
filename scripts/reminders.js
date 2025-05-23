@@ -3,9 +3,9 @@ const {PollPost} = require('../models/post.model.js');
 const Notification = require('../models/notification.model.js');
 
 module.exports = function startReminders(io) {
-     console.log('[reminders] cron job initialised');
+     
     cron.schedule('*/2 * * * *', async () => {
-        console.log('[reminders] running at', new Date().toISOString());
+       
         const now = Date.now();
         const windowLow = new Date(now + 59*60*1000);
         const windowHigh = new Date(now + 61*60*1000);
@@ -19,7 +19,7 @@ module.exports = function startReminders(io) {
         });
 
        for (const poll of polls) {
-        console.log(poll);
+  
         const userIds = new Set(
           poll.voted_user_ids.map(String).concat(String(poll.user_id))
         );
