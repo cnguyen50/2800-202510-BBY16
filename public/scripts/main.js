@@ -591,7 +591,7 @@ function renderPost(post, currentUserId) {
     <h5>${post.headline}</h5>
     <p>${post.body}</p>
     ${post.image_url ? `<img src="${post.image_url}" class="img-fluid rounded mt-2">` : ""}
-    <p><strong>Neighborhood:</strong> ${post.neighborhood || 'N/A'}</p>
+    <p><strong>Neighborhood:</strong> ${makeFirstUpperCase(post.userNeighbourhood) || 'N/A'}</p>
     <div class="post-footer">
       <div class="post-actions-left">
         <button class="post-like" data-id="${post._id}">
@@ -728,6 +728,13 @@ function renderPost(post, currentUserId) {
         eventDateError.classList.add("d-none");
       }
     });
+  }
+
+   function makeFirstUpperCase(string) {
+    let firstLetter = string.charAt(0);
+    let firstLetterCap = firstLetter.toUpperCase();
+    let remainingLetters = string.slice(1);
+    return firstLetterCap + remainingLetters;
   }
 
 });
