@@ -280,7 +280,6 @@ form.addEventListener("submit", async (e) => {
   } else if (type === "news") {
     formData.append("headline", document.getElementById("news-headline").value.trim());
     formData.append("body", document.getElementById("news-body").value.trim());
-    formData.append("image_url", document.getElementById("news-image-url").value.trim());
   }
 
 
